@@ -96,7 +96,7 @@ private:
   uint16_t                m_initCWAnalyze;
   vvencReshapeCW          m_reshapeCW;
   int                     m_rspBaseQP;
-  Pel                     m_cwLumaWeight[PIC_CODE_CW_BINS]; //TODO: potential for instrumentation
+  Pel                     m_cwLumaWeight[PIC_CODE_CW_BINS]; //instrumentado //TODO: potential for instrumentation
   double                  m_chromaWeight;
   int                     m_chromaAdj;
   int                     m_binNum;

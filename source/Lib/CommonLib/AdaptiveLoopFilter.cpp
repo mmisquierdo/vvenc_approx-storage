@@ -64,6 +64,8 @@ AdaptiveLoopFilter::AdaptiveLoopFilter()
   , m_filterShapes     { AlfFilterShape(           7 ), AlfFilterShape(           5 ) }
   , m_classifier( nullptr )
 {
+  ApproxSS::add_approx((void*) m_alfClippingValues, (void*) m_alfClippingValues[MAX_NUM_CH-1][MaxAlfNumClippingValues], ApproxInter::BufferId::AdaptiveLoopFilter_m_alfClippingValues, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+
   for( int compIdx = 0; compIdx < MAX_NUM_COMP; compIdx++ )
   {
     m_ctuEnableFlag[compIdx] = nullptr;

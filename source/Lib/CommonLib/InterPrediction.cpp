@@ -627,11 +627,12 @@ InterPredInterpolation::InterPredInterpolation()
   , m_isBi(false)
   , m_ifpLines(0)
 {
-
+  ApproxSS::add_approx((void*) &m_gradBuf[0], (void*) &m_gradBuf[2-1][(AFFINE_MIN_BLOCK_SIZE + 2) * (AFFINE_MIN_BLOCK_SIZE + 2)], ApproxInter::BufferId::InterPredInterpolation_m_gradBuf, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
 }
 
 InterPredInterpolation::~InterPredInterpolation()
 {
+  ApproxSS::remove_approx((void*) &m_gradBuf[0], (void*) &m_gradBuf[2-1][(AFFINE_MIN_BLOCK_SIZE + 2) * (AFFINE_MIN_BLOCK_SIZE + 2)]);
   destroy();
 }
 

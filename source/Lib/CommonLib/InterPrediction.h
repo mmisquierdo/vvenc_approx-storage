@@ -71,7 +71,7 @@ class InterPredInterpolation
   Pel*                 m_gradY0;
   Pel*                 m_gradX1;
   Pel*                 m_gradY1;
-  Pel                  m_gradBuf[2][(AFFINE_MIN_BLOCK_SIZE + 2) * (AFFINE_MIN_BLOCK_SIZE + 2)]; //TODO: potential for instrumentation
+  Pel                  m_gradBuf[2][(AFFINE_MIN_BLOCK_SIZE + 2) * (AFFINE_MIN_BLOCK_SIZE + 2)]; //instrumentado //TODO: potential for instrumentation
   int                  m_dMvBuf[2][16 * 2];
   Mv*                  m_storedMv;
 

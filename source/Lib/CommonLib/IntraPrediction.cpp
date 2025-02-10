@@ -257,6 +257,8 @@ IntraPrediction::IntraPrediction()
 :  m_pMdlmTemp( nullptr )
 ,  m_currChromaFormat( NUM_CHROMA_FORMAT )
 {
+  ApproxSS::add_approx((void*) &m_refBuffer[0], (void*) &m_refBuffer[MAX_NUM_COMP-1][NUM_PRED_BUF-1][(MAX_CU_SIZE * 2 + 1 + MAX_REF_LINE_IDX) * 2], ApproxInter::BufferId::InterInterpolation_m_refBuffer, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  
   IntraPredAngleLuma    = IntraPredAngleLuma_Core;
   IntraPredAngleChroma  = IntraPredAngleChroma_Core;
   IntraAnglePDPC        = IntraAnglePDPC_Core;
@@ -267,6 +269,7 @@ IntraPrediction::IntraPrediction()
 
 IntraPrediction::~IntraPrediction()
 {
+  ApproxSS::remove_approx((void*) &m_refBuffer[0], (void*) &m_refBuffer[MAX_NUM_COMP-1][NUM_PRED_BUF-1][(MAX_CU_SIZE * 2 + 1 + MAX_REF_LINE_IDX) * 2]);
   destroy();
 }
 

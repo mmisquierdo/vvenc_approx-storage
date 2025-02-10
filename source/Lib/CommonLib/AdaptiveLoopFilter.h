@@ -98,7 +98,7 @@ public:
   static constexpr int m_ALF_UNUSED_TRANSPOSIDX  = 255;
 
   AdaptiveLoopFilter();
-  virtual ~AdaptiveLoopFilter() {}
+  virtual ~AdaptiveLoopFilter() { ApproxSS::remove_approx((void*) &m_alfClippingValues[0], (void*) &m_alfClippingValues[MAX_NUM_CH-1][MaxAlfNumClippingValues]); }
   void        reconstructCoeffAPSs    ( CodingStructure& cs, bool luma, bool chroma, bool isRdo);
   void        reconstructCoeffFixedAPSs(CodingStructure& cs, bool luma, bool chroma, bool isRdo);
   void        reconstructCoeff(AlfParam& alfParam, ChannelType channel, const bool isRdo, const bool isRedo = false);
@@ -151,7 +151,7 @@ protected:
   bool                         m_created = false;
   short                        m_chromaCoeffFinal[VVENC_MAX_NUM_ALF_ALTERNATIVES_CHROMA][MAX_NUM_ALF_LUMA_COEFF];
   AlfParam*                    m_alfParamChroma;
-  Pel                          m_alfClippingValues[MAX_NUM_CH][MaxAlfNumClippingValues]; //TODO: potential for instrumentation
+  Pel                          m_alfClippingValues[MAX_NUM_CH][MaxAlfNumClippingValues]; //instrumentado //TODO: potential for instrumentation
   AlfFilterShape               m_filterShapesCcAlf[2];
   AlfFilterShape               m_filterShapes[MAX_NUM_CH];
   AlfClassifier*               m_classifier;

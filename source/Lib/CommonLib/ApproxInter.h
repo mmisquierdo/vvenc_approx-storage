@@ -206,6 +206,15 @@
 				constexpr int64_t InterSearch_m_tmpAffiDeri1 = 820;  
 				constexpr int64_t vvenc_YUVBuffer_alloc_buffer_yuvPlane_int16 = 830;
 
+				constexpr int64_t AdaptiveLoopFilter_m_alfClippingValues = 840;
+
+				constexpr int64_t InterPredInterpolation_m_gradBuf = 850;
+
+				constexpr int64_t InterInterpolation_m_refBuffer = 860;
+
+				constexpr int64_t EncReshape_m_cwLumaWeight = 870;
+
+				
 
 
 

@@ -73,7 +73,7 @@ static const uint32_t MAX_INTRA_FILTER_DEPTHS=8;
 class IntraPrediction
 {
 private:
-  Pel         m_refBuffer[MAX_NUM_COMP][NUM_PRED_BUF][(MAX_CU_SIZE * 2 + 1 + MAX_REF_LINE_IDX) * 2];
+  Pel         m_refBuffer[MAX_NUM_COMP][NUM_PRED_BUF][(MAX_CU_SIZE * 2 + 1 + MAX_REF_LINE_IDX) * 2]; //instrumentado
   uint32_t    m_refBufferStride[MAX_NUM_COMP];
   int         m_numIntraNeighbor;
   bool        m_neighborFlags[4 * MAX_NUM_PART_IDXS_IN_CTU_WIDTH + 1];
