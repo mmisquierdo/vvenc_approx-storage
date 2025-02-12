@@ -1907,7 +1907,9 @@ void EncCu::xCheckRDCostUnifiedMerge( CodingStructure *&tempCS, CodingStructure 
 
       if( resetCiip2Regular )
       {
+		ApproxSS::start_level(ApproxInter::LevelId::merge_RD_copyFrom);
         dstPredBuf.copyFrom( mrgPredBufNoCiip[mergeItem->mergeIdx] );
+		ApproxSS::end_level();
       }
       else
       {
@@ -1927,9 +1929,12 @@ void EncCu::xCheckRDCostUnifiedMerge( CodingStructure *&tempCS, CodingStructure 
           }
         }
 
-        if(  mergeItem->lumaPredReady ||  mergeItem->chromaPredReady )
+        if(  mergeItem->lumaPredReady ||  mergeItem->chromaPredReady ) {
+		  ApproxSS::start_level(ApproxInter::LevelId::merge_RD_copyFrom);
           dstPredBuf.copyFrom( mergeItem->getPredBuf( localUnitArea ), mergeItem->lumaPredReady, mergeItem->chromaPredReady );
-        if( !mergeItem->lumaPredReady || !mergeItem->chromaPredReady )
+		  ApproxSS::end_level();
+		}
+		  if( !mergeItem->lumaPredReady || !mergeItem->chromaPredReady )
           generateMergePrediction( localUnitArea, mergeItem, *cu, !mergeItem->lumaPredReady, !mergeItem->chromaPredReady, dstPredBuf, true, forceNoResidual, predBuf1, predBuf2 );
       }
 
@@ -1997,6 +2002,7 @@ void EncCu::generateMergePrediction( const UnitArea &unitArea, MergeItem *mergeI
   switch( mergeItem->mergeItemType )
   {
   case MergeItem::MergeItemType::REGULAR:
+	ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_REGULAR);
     // here predBuf1 is predBufNoCiip
     pu.mvRefine = true;
     m_cInterSearch.motionCompensation( pu, dstBuf, REF_PIC_LIST_X );
@@ -2005,9 +2011,13 @@ void EncCu::generateMergePrediction( const UnitArea &unitArea, MergeItem *mergeI
     {
       predBuf1->copyFrom( dstBuf, luma, chroma );
     }
+
+	ApproxSS::end_level();
     break;
 
   case MergeItem::MergeItemType::CIIP:
+  	ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_CIIP);
+
     m_cInterSearch.motionCompensation( pu, dstBuf, REF_PIC_LIST_X );
 
     if( luma )
@@ -2030,26 +2040,43 @@ void EncCu::generateMergePrediction( const UnitArea &unitArea, MergeItem *mergeI
       }
     }
 
+	ApproxSS::end_level();
     break;
 
   case MergeItem::MergeItemType::MMVD:
+  	ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_MMVD);
+
     pu.mcControl           |= finalRd ? 0 : ( pu.mmvdMergeIdx.pos.step > 2 || m_pcEncCfg->m_MMVD > 1 ) ? 1 : 0;
     mergeItem->noBdofRefine = pu.mccNoBdof() && pu.cs->sps->BDOF && !pu.cs->picHeader->disBdofFlag;
     m_cInterSearch.motionCompensation( pu, dstBuf, REF_PIC_LIST_X );
+
+	ApproxSS::end_level();
     break;
 
   case MergeItem::MergeItemType::SBTMVP:
+  	ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_SBTMVP);
+
     m_cInterSearch.motionCompensation( pu, dstBuf, REF_PIC_LIST_X );
+
+	ApproxSS::end_level();
     break;
 
   case MergeItem::MergeItemType::AFFINE:
+  	ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_AFFINE);
+
     m_cInterSearch.motionCompensation( pu, dstBuf, REF_PIC_LIST_X );
+
+	ApproxSS::end_level();
     break;
 
   case MergeItem::MergeItemType::GPM:
+  	ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_GPM);
+
     // here predBuf1 and predBuf2 point to geoBuffer[mergeCand0] and geoBuffer[mergeCand1], respectively
     CHECK( predBuf1 == nullptr || predBuf2 == nullptr, "Invalid input buffer to GPM" );
     m_cInterSearch.weightedGeoBlk( pu.slice->clpRngs, pu, pu.geoSplitDir, luma && chroma ? MAX_NUM_CH : luma ? CH_L : CH_C, dstBuf, *predBuf1, *predBuf2 );
+
+	ApproxSS::end_level();
     break;
 
   default:
@@ -2079,6 +2106,8 @@ void EncCu::generateMergePrediction( const UnitArea &unitArea, MergeItem *mergeI
 void EncCu::addRegularCandsToPruningList( const MergeCtx &mergeCtx, const UnitArea &localUnitArea, double sqrtLambdaForFirstPassIntra, const TempCtx &ctxStart,
                                           DistParam& distParam, CodingUnit& pu, bool* sameMv, MergeBufVector& regularPred )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::addCandsToPruningList_REGULAR);
+
   pu.geo = pu.affine
          = pu.mmvdMergeFlag = pu.mmvdSkip
          = pu.ciip
@@ -2110,10 +2139,14 @@ void EncCu::addRegularCandsToPruningList( const MergeCtx &mergeCtx, const UnitAr
     if( CU::checkDMVRCondition( pu ) ) std::copy_n( pu.mvdL0SubPu, getDmvrMvdNum( pu ), m_subPuMvOffset[uiMergeCand].data() );
     m_mergeItemList         . insertMergeItemToList( regularMerge );
   }
+
+  ApproxSS::end_level();
 }
 
 void EncCu::addCiipCandsToPruningList( const MergeCtx &mergeCtx, const UnitArea &localUnitArea, double sqrtLambdaForFirstPassIntra, const TempCtx &ctxStart, DistParam &distParam, CodingUnit &pu, bool* sameMv )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::addCandsToPruningList_CIIP);
+
   const ReshapeData& reshapeData  = pu.cs->picture->reshapeData;
   int                numCiipIntra = -1;
   PelUnitBuf         rspBuffer    = m_aTmpStorageLCU[0].getCompactBuf( pu );
@@ -2173,11 +2206,15 @@ void EncCu::addCiipCandsToPruningList( const MergeCtx &mergeCtx, const UnitArea 
       break;
     }
   }
+
+  ApproxSS::end_level();
 }
 
 void EncCu::addMmvdCandsToPruningList( const MergeCtx &mergeCtx, const UnitArea &localUnitArea, double sqrtLambdaForFirstPassIntra, const TempCtx& ctxStart,
                                        DistParam& distParam, CodingUnit& pu )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::addCandsToPruningList_MMVD);
+
   pu.mmvdSkip              = true;
   pu.affine                = pu.geo
                            = pu.ciip
@@ -2275,11 +2312,15 @@ void EncCu::addMmvdCandsToPruningList( const MergeCtx &mergeCtx, const UnitArea 
   {
     m_mergeItemList           . shrinkList( curListSize );
   }
+
+  ApproxSS::end_level();
 }
 
 void EncCu::addAffineCandsToPruningList( AffineMergeCtx &affineMergeCtx, const UnitArea &localUnitArea, double sqrtLambdaForFirstPass,
                                          const TempCtx& ctxStart, DistParam& distParam, CodingUnit& pu)
 {
+  ApproxSS::start_level(ApproxInter::LevelId::addCandsToPruningList_AFFINE);
+
   bool sameMV[AFFINE_MRG_MAX_NUM_CANDS + 1]
                       = { false, };
   size_t curListSize  = m_mergeItemList.size();
@@ -2354,11 +2395,15 @@ void EncCu::addAffineCandsToPruningList( AffineMergeCtx &affineMergeCtx, const U
   {
     m_mergeItemList        . shrinkList( curListSize );
   }
+
+  ApproxSS::end_level();
 }
 
 void EncCu::addGpmCandsToPruningList( const MergeCtx &mergeCtx, const UnitArea &localUnitArea, double sqrtLambdaForFirstPass,
                                       const TempCtx& ctxStart, const GeoComboCostList& comboList, MergeBufVector& geoBuffer, DistParam& distParam, CodingUnit& pu)
 {
+  ApproxSS::start_level(ApproxInter::LevelId::addCandsToPruningList_GPM);
+
   int geoNumMrgSadCand    = std::min( GEO_MAX_TRY_WEIGHTED_SAD, ( int ) comboList.list.size() );
   geoNumMrgSadCand        = std::min( geoNumMrgSadCand, m_pcEncCfg->m_Geo > 2 ? 10 : GEO_MAX_TRY_WEIGHTED_SAD );
   double bestGeoCost      = MAX_DOUBLE / 2.0;
@@ -2433,6 +2478,8 @@ void EncCu::addGpmCandsToPruningList( const MergeCtx &mergeCtx, const UnitArea &
     m_mergeItemList        . insertMergeItemToList( best2geo[0] );
   if( best2geo[1] )
     m_mergeItemList        . insertMergeItemToList( best2geo[1] );
+
+  ApproxSS::end_level();
 }
 
 bool EncCu::prepareGpmComboList( const MergeCtx &mergeCtx, const UnitArea &localUnitArea, double sqrtLambdaForFirstPass,

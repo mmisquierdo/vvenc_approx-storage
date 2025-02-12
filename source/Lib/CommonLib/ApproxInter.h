@@ -268,6 +268,21 @@
 					constexpr int64_t xCheckRDCostMerge_SATDCost = 47;
 					constexpr int64_t xCheckRDCostMerge_RDChecking = 48;
 					constexpr int64_t generateMergePrediction = 49;
+					constexpr int64_t generateMergePrediction_REGULAR = 80;
+					constexpr int64_t generateMergePrediction_CIIP = 81;
+					constexpr int64_t generateMergePrediction_MMVD = 82;
+					constexpr int64_t generateMergePrediction_SBTMVP = 83;
+					constexpr int64_t generateMergePrediction_AFFINE = 84;
+					constexpr int64_t generateMergePrediction_GPM = 85;
+
+					constexpr int64_t addCandsToPruningList_REGULAR = 86;
+					constexpr int64_t addCandsToPruningList_CIIP = 87;
+					constexpr int64_t addCandsToPruningList_MMVD = 88;
+					constexpr int64_t addCandsToPruningList_AFFINE = 89;
+					constexpr int64_t addCandsToPruningList_GPM = 90;
+
+					constexpr int64_t merge_RD_copyFrom = 91;
+
 				constexpr int64_t xCheckRDCostMergeGeo = 12;
 				constexpr int64_t xCheckRDCostIBCModeMerge2Nx2N = 14;
 				constexpr int64_t xCheckRDCostIBCMode = 15;
@@ -284,14 +299,17 @@
 				constexpr int64_t xCheckRDCostInter = 17;
 					constexpr int64_t xEncodeInterResidual = 20;
 					constexpr int64_t predInterSearch = 21;
+					constexpr int64_t xEstimateMvPredAMVP = 70;
+					constexpr int64_t xGetTemplateCost = 71;
 						constexpr int64_t xMotionEstimation = 22;
+							constexpr int64_t xMotionEstimation_removeHighFreq = 75; //last added
 							constexpr int64_t Full_Search_MPV = 23;
 							constexpr int64_t xPatternSearch = 24;
 							constexpr int64_t xTZSearch = 25;
 								constexpr int64_t xTZSearch_MVP = 26;
 								constexpr int64_t xTZSearch_Start_Search = 27;
 								constexpr int64_t xTZSearch_Raster = 28;
-								constexpr int64_t xTZSearch_RasterRefinement = 45; //!!!!
+								constexpr int64_t xTZSearch_RasterRefinement = 45; 
 								constexpr int64_t xTZSearch_Refinement = 29;
 							constexpr int64_t xPatternSearchFracDIF = 30;
 								constexpr int64_t xPatternSearchFracDIF_HalfPixel = 31;
@@ -302,8 +320,12 @@
 								constexpr int64_t m_fastSubPel = 63;
 
 							constexpr int64_t xPatternSearchIntRefine = 33;
+
 						constexpr int64_t xPredAffineInterSearch = 34;  //DO NOT TRUST FOR JICS 2025, WAS NOT PROPERLY MARKEK
+							constexpr int64_t AFFINEMODEL_4PARAM = 72;
+							constexpr int64_t AFFINEMODEL_6PARAM = 73;
 							constexpr int64_t xAffineMotionEstimation = 35;
+							constexpr int64_t xAffineMotionEstimation_removeHighFreq = 74;
 
 					constexpr int64_t motionCompensation = 36;
 						constexpr int64_t xPredInterUni = 37;

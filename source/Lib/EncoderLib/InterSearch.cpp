@@ -1712,7 +1712,11 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
       Mv acMvAffine4Para[2][MAX_REF_PICS][3];
       int refIdx4Para[2] = { -1, -1 };
 
+	  ApproxSS::start_level(ApproxInter::LevelId::AFFINEMODEL_4PARAM);
+
       xPredAffineInterSearch(cu, origBuf, puIdx, uiLastModeTemp, uiAffineCost, cMvHevcTemp, acMvAffine4Para, refIdx4Para, BcwIdx, enforceBcwPred, (cs.slice->sps->BCW == true) ? getWeightIdxBits(BcwIdx) : 0 );
+
+	  ApproxSS::end_level();
 
       if (cu.imv == 0)
       {
@@ -1750,7 +1754,12 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
 
           Distortion uiAffine6Cost = MAX_DISTORTION;
           cu.affineType = AFFINEMODEL_6PARAM;
+
+		  ApproxSS::start_level(ApproxInter::LevelId::AFFINEMODEL_6PARAM);
+
           xPredAffineInterSearch(cu, origBuf, puIdx, uiLastModeTemp, uiAffine6Cost, cMvHevcTemp, acMvAffine4Para, refIdx4Para, BcwIdx, enforceBcwPred, (cs.slice->sps->BCW == true) ? getWeightIdxBits(BcwIdx) : 0 );
+
+		  ApproxSS::end_level();
 
           if (cu.imv == 0)
           {
@@ -1839,6 +1848,8 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
 // AMVP
 void InterSearch::xEstimateMvPredAMVP( CodingUnit& cu, CPelUnitBuf& origBuf, RefPicList refPicList, int iRefIdx, Mv& rcMvPred, AMVPInfo& rAMVPInfo, Distortion& distBiP )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::xEstimateMvPredAMVP);
+
   Mv         cBestMv;
   int        iBestIdx   = 0;
   Distortion uiBestCost = MAX_DISTORTION;
@@ -1877,6 +1888,7 @@ void InterSearch::xEstimateMvPredAMVP( CodingUnit& cu, CPelUnitBuf& origBuf, Ref
   cu.mvpIdx[refPicList] = iBestIdx;
   cu.mvpNum[refPicList] = pcAMVPInfo->numCand;
 
+  ApproxSS::end_level();
   return;
 }
 
@@ -1995,6 +2007,8 @@ Distortion InterSearch::xGetTemplateCost( const CodingUnit& cu,
                                           int          iRefIdx
 )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::xGetTemplateCost);
+
   Distortion uiCost = MAX_DISTORTION;
 
   const Picture* picRef = cu.slice->getRefPic( refPicList, iRefIdx );
@@ -2008,6 +2022,8 @@ Distortion InterSearch::xGetTemplateCost( const CodingUnit& cu,
   uiCost = m_pcRdCost->getDistPart(origBuf.Y(), predBuf.Y(), cu.cs->sps->bitDepths[ CH_L ], COMP_Y, DF_SAD);
   uiCost += m_pcRdCost->getCost( m_auiMVPIdxCost[iMVPIdx][iMVPNum] );
 
+  ApproxSS::end_level();
+  
   return uiCost;
 }
 
@@ -2041,6 +2057,8 @@ void InterSearch::xMotionEstimation(CodingUnit& cu, CPelUnitBuf& origBuf, RefPic
 
   if(bBi) // Bi-predictive ME
   {
+	ApproxSS::start_level(ApproxInter::LevelId::xMotionEstimation_removeHighFreq);
+
     PelUnitBuf  origBufTmp = m_tmpStorageLCU.getCompactBuf( cu );
 
     #if MATHEUS_INSTRUMENTATION && APPROX_ORIG_BUFFER_INTER
@@ -2057,8 +2075,9 @@ void InterSearch::xMotionEstimation(CodingUnit& cu, CPelUnitBuf& origBuf, RefPic
     origBufTmpCnst = origBufTmp;
     pBuf           = &origBufTmpCnst;
 
-	
     fWeight        = xGetMEDistortionWeight( cu.BcwIdx, refPicList );
+
+	ApproxSS::end_level();
   }
 
   //  Search key pattern initialization
@@ -5818,6 +5837,8 @@ void InterSearch::xAffineMotionEstimation(CodingUnit& cu,
   // if Bi, set to ( 2 * Org - ListX )
   if (bBi) //MATHEUS TODO: origBufTemp
   {
+	ApproxSS::start_level(ApproxInter::LevelId::xAffineMotionEstimation_removeHighFreq);
+
     PelUnitBuf  origBufTmp = m_tmpStorageLCU.getCompactBuf(cu);
 
     #if MATHEUS_INSTRUMENTATION && APPROX_ORIG_BUFFER_INTER_AFFINE
@@ -5834,6 +5855,8 @@ void InterSearch::xAffineMotionEstimation(CodingUnit& cu,
     origBufTmpCnst = origBufTmp;
     pBuf           = &origBufTmpCnst;
     fWeight        = xGetMEDistortionWeight(cu.BcwIdx, refPicList);
+
+	ApproxSS::end_level();
   }
 
   // pred YUV
