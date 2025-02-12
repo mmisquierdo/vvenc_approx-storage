@@ -1712,7 +1712,7 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
       Mv acMvAffine4Para[2][MAX_REF_PICS][3];
       int refIdx4Para[2] = { -1, -1 };
 
-	  ApproxSS::start_level(ApproxInter::LevelId::AFFINEMODEL_4PARAM);
+	  ApproxSS::start_level(ApproxInter::LevelId::predInterSearch_AFFINEMODEL_4PARAM);
 
       xPredAffineInterSearch(cu, origBuf, puIdx, uiLastModeTemp, uiAffineCost, cMvHevcTemp, acMvAffine4Para, refIdx4Para, BcwIdx, enforceBcwPred, (cs.slice->sps->BCW == true) ? getWeightIdxBits(BcwIdx) : 0 );
 
@@ -1755,7 +1755,7 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
           Distortion uiAffine6Cost = MAX_DISTORTION;
           cu.affineType = AFFINEMODEL_6PARAM;
 
-		  ApproxSS::start_level(ApproxInter::LevelId::AFFINEMODEL_6PARAM);
+		  ApproxSS::start_level(ApproxInter::LevelId::predInterSearch_AFFINEMODEL_6PARAM);
 
           xPredAffineInterSearch(cu, origBuf, puIdx, uiLastModeTemp, uiAffine6Cost, cMvHevcTemp, acMvAffine4Para, refIdx4Para, BcwIdx, enforceBcwPred, (cs.slice->sps->BCW == true) ? getWeightIdxBits(BcwIdx) : 0 );
 

@@ -281,7 +281,7 @@
 					constexpr int64_t addCandsToPruningList_AFFINE = 89;
 					constexpr int64_t addCandsToPruningList_GPM = 90;
 
-					constexpr int64_t merge_RD_copyFrom = 91;
+					constexpr int64_t merge_RD_copyFrom = 91; //last added
 
 				constexpr int64_t xCheckRDCostMergeGeo = 12;
 				constexpr int64_t xCheckRDCostIBCModeMerge2Nx2N = 14;
@@ -302,7 +302,7 @@
 					constexpr int64_t xEstimateMvPredAMVP = 70;
 					constexpr int64_t xGetTemplateCost = 71;
 						constexpr int64_t xMotionEstimation = 22;
-							constexpr int64_t xMotionEstimation_removeHighFreq = 75; //last added
+							constexpr int64_t xMotionEstimation_removeHighFreq = 75; 
 							constexpr int64_t Full_Search_MPV = 23;
 							constexpr int64_t xPatternSearch = 24;
 							constexpr int64_t xTZSearch = 25;
@@ -322,8 +322,8 @@
 							constexpr int64_t xPatternSearchIntRefine = 33;
 
 						constexpr int64_t xPredAffineInterSearch = 34;  //DO NOT TRUST FOR JICS 2025, WAS NOT PROPERLY MARKEK
-							constexpr int64_t AFFINEMODEL_4PARAM = 72;
-							constexpr int64_t AFFINEMODEL_6PARAM = 73;
+							constexpr int64_t predInterSearch_AFFINEMODEL_4PARAM = 72;
+							constexpr int64_t predInterSearch_AFFINEMODEL_6PARAM = 73;
 							constexpr int64_t xAffineMotionEstimation = 35;
 							constexpr int64_t xAffineMotionEstimation_removeHighFreq = 74;
 
