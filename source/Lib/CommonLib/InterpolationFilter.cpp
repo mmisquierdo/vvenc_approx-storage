@@ -361,7 +361,7 @@ void InterpolationFilter::filter(const ClpRng& clpRng, Pel const *src, int srcSt
   int row, col;
 
   Pel c[8];
-  ApproxSS::add_approx((void*) &c[0], (void*) &c[8], ApproxInter::BufferId::filterC, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::MarkBuffer((void*) &c[0], (void*) &c[8], ApproxInter::BufferId::filterC, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
 
   //JICS: instrumnetar como filterC
   c[0] = coeff[0];
@@ -456,7 +456,7 @@ void InterpolationFilter::filter(const ClpRng& clpRng, Pel const *src, int srcSt
     dst += dstStride;
   }
 
-  ApproxSS::remove_approx((void*) &c[0], (void*) &c[8]);
+  ApproxInter::UnmarkBuffer((void*) &c[0], (void*) &c[8]);
 }
 
 /**
@@ -678,13 +678,13 @@ void InterpolationFilter::filterN2_2D( const ComponentID compID, const Pel* src,
 void InterpolationFilter::scalarFilterN2_2D( const ClpRng& clpRng, Pel const *src, int srcStride, Pel* dst, int dstStride, int width, int height, TFilterCoeff const *ch, TFilterCoeff const *cv )
 {
   Pel *tmp = ( Pel* ) alloca( width * ( height + 1 ) * sizeof( Pel ) );
-  ApproxSS::add_approx((void*) &tmp[0], (void*) &tmp[width * ( height + 1 )], ApproxInter::BufferId::scalarFilterN2_2D_tmp, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::MarkBuffer((void*) &tmp[0], (void*) &tmp[width * ( height + 1 )], ApproxInter::BufferId::scalarFilterN2_2D_tmp, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
   //JICS: instrumentar como scalarFilterN2_2D
 
   filter<2, false, true,  false>( clpRng, src, srcStride, tmp, width,     width, height + 1, ch );
   filter<2, true , false, false>( clpRng, tmp, width,     dst, dstStride, width, height,     cv );
 
-  ApproxSS::remove_approx((void*) &tmp[0], (void*) &tmp[width * ( height + 1 )]);
+  ApproxInter::UnmarkBuffer((void*) &tmp[0], (void*) &tmp[width * ( height + 1 )]);
 }
 
 void InterpolationFilter::filter4x4( const ComponentID compID, const Pel* src, int srcStride, Pel* dst, int dstStride, int width, int height, int fracX, int fracY, bool isLast, const ChromaFormat fmt, const ClpRng& clpRng,bool useAltHpelIf/*= false*/,int nFilterIdx /*= 0*/ )
@@ -776,12 +776,12 @@ void InterpolationFilter::filterXxY_N2( const ClpRng& clpRng, Pel const *src, in
   int row, col;
 
   Pel cH[2];
-  ApproxSS::add_approx((void*) &cH[0], (void*) &cH[2], ApproxInter::BufferId::filterXxY_N2_cH, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::MarkBuffer((void*) &cH[0], (void*) &cH[2], ApproxInter::BufferId::filterXxY_N2_cH, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
   //JICS: instrumnetar como filterXxY_N2_cH
   cH[0] = coeffH[0]; cH[1] = coeffH[1];
 
   Pel cV[2];
-  ApproxSS::add_approx((void*) &cV[0], (void*) &cV[2], ApproxInter::BufferId::filterXxY_N2_cV, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::MarkBuffer((void*) &cV[0], (void*) &cV[2], ApproxInter::BufferId::filterXxY_N2_cV, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
   //JICS: instrumnetar como filterXxY_N2_cV
   cV[0] = coeffV[0]; cV[1] = coeffV[1];
 
@@ -807,7 +807,7 @@ void InterpolationFilter::filterXxY_N2( const ClpRng& clpRng, Pel const *src, in
   }
 
   int *tmp = ( int * ) alloca( w * h * sizeof( int ) );
-  ApproxSS::add_approx((void*) &tmp[0], (void*) &tmp[w * h], ApproxInter::BufferId::filterXxY_N2_temp_int, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(int));
+  ApproxInter::MarkBuffer((void*) &tmp[0], (void*) &tmp[w * h], ApproxInter::BufferId::filterXxY_N2_temp_int, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(int));
   //JICS: instrumentar como filterXxY_N2_tmp
   memset( tmp, 0, w * h * sizeof( int ) );
 
@@ -843,9 +843,9 @@ void InterpolationFilter::filterXxY_N2( const ClpRng& clpRng, Pel const *src, in
     _dst += dstStride;
   }
   
-  ApproxSS::remove_approx((void*) &cH[0], (void*) &cH[2]);
-  ApproxSS::remove_approx((void*) &cV[0], (void*) &cV[2]);
-  ApproxSS::remove_approx((void*) &tmp[0], (void*) &tmp[w * h]);
+  ApproxInter::UnmarkBuffer((void*) &cH[0], (void*) &cH[2]);
+  ApproxInter::UnmarkBuffer((void*) &cV[0], (void*) &cV[2]);
+  ApproxInter::UnmarkBuffer((void*) &tmp[0], (void*) &tmp[w * h]);
 }
 
 template<bool isLast, int w>
@@ -854,13 +854,13 @@ void InterpolationFilter::filterXxY_N4( const ClpRng& clpRng, const Pel* src, in
   int row, col;
 
   Pel cH[4];
-  ApproxSS::add_approx((void*) &cH[0], (void*) &cH[4], ApproxInter::BufferId::filterXxY_N4_cH, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::MarkBuffer((void*) &cH[0], (void*) &cH[4], ApproxInter::BufferId::filterXxY_N4_cH, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
   //JICS: instrumentar como filterXxY_N4_cH
   cH[0] = coeffH[0]; cH[1] = coeffH[1];
   cH[2] = coeffH[2]; cH[3] = coeffH[3];
 
   Pel cV[4];
-  ApproxSS::add_approx((void*) &cV[0], (void*) &cV[4], ApproxInter::BufferId::filterXxY_N4_cV, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::MarkBuffer((void*) &cV[0], (void*) &cV[4], ApproxInter::BufferId::filterXxY_N4_cV, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
   //JICS: instrumentar como filterXxY_N4_cV
 
   cV[0] = coeffV[0]; cV[1] = coeffV[1];
@@ -890,7 +890,7 @@ void InterpolationFilter::filterXxY_N4( const ClpRng& clpRng, const Pel* src, in
   src -= 1 + srcStride;
 
   int *tmp = ( int * ) alloca( w * height * sizeof( int ) );
-  ApproxSS::add_approx((void*) &tmp[0], (void*) &tmp[w * height], ApproxInter::BufferId::filterXxY_N4_temp_int, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(int));
+  ApproxInter::MarkBuffer((void*) &tmp[0], (void*) &tmp[w * height], ApproxInter::BufferId::filterXxY_N4_temp_int, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(int));
 
   //JICS: instrumentar como filterXxY_N4
   memset( tmp, 0, w * height * sizeof( int ) );
@@ -931,9 +931,9 @@ void InterpolationFilter::filterXxY_N4( const ClpRng& clpRng, const Pel* src, in
     if( row >= 3 ) _dst += dstStride;
   }
   
-  ApproxSS::remove_approx((void*) &cH[0], (void*) &cH[4]);
-  ApproxSS::remove_approx((void*) &cV[0], (void*) &cV[4]);
-  ApproxSS::remove_approx((void*) &tmp[0], (void*) &tmp[w * height]);
+  ApproxInter::UnmarkBuffer((void*) &cH[0], (void*) &cH[4]);
+  ApproxInter::UnmarkBuffer((void*) &cV[0], (void*) &cV[4]);
+  ApproxInter::UnmarkBuffer((void*) &tmp[0], (void*) &tmp[w * height]);
 }
 
 
@@ -943,7 +943,7 @@ void InterpolationFilter::filterXxY_N8( const ClpRng& clpRng, const Pel* src, in
   int row, col;
 
   Pel cH[8];
-  ApproxSS::add_approx((void*) &cH[0], (void*) &cH[8], ApproxInter::BufferId::filterXxY_N8_cH, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::MarkBuffer((void*) &cH[0], (void*) &cH[8], ApproxInter::BufferId::filterXxY_N8_cH, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
   //JICS: instrumentar como filterXxY_N8_cH
 
   cH[0] = coeffH[0]; cH[1] = coeffH[1];
@@ -952,7 +952,7 @@ void InterpolationFilter::filterXxY_N8( const ClpRng& clpRng, const Pel* src, in
   cH[6] = coeffH[6]; cH[7] = coeffH[7];
 
   Pel cV[8];
-  ApproxSS::add_approx((void*) &cV[0], (void*) &cV[8], ApproxInter::BufferId::filterXxY_N8_cV, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::MarkBuffer((void*) &cV[0], (void*) &cV[8], ApproxInter::BufferId::filterXxY_N8_cV, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
   //JICS: instrumentar como filterXxY_N8_cV
 
   cV[0] = coeffV[0]; cV[1] = coeffV[1];
@@ -984,7 +984,7 @@ void InterpolationFilter::filterXxY_N8( const ClpRng& clpRng, const Pel* src, in
   src -= 3 * ( 1 + srcStride );
 
   int *tmp = ( int * ) alloca( w * h * sizeof( int ) );
-  ApproxSS::add_approx((void*) &tmp[0], (void*) &tmp[w * h], ApproxInter::BufferId::filterXxY_N8_temp_int, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(int));
+  ApproxInter::MarkBuffer((void*) &tmp[0], (void*) &tmp[w * h], ApproxInter::BufferId::filterXxY_N8_temp_int, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(int));
   //JICS: instrumentar filterXxY_N8
   memset( tmp, 0, w * h * sizeof( int ) );
 
@@ -1032,9 +1032,9 @@ void InterpolationFilter::filterXxY_N8( const ClpRng& clpRng, const Pel* src, in
     if( row >= 7 ) _dst += dstStride;
   }
 
-  ApproxSS::remove_approx((void*) &cH[0], (void*) &cH[8]);
-  ApproxSS::remove_approx((void*) &cV[0], (void*) &cV[8]);
-  ApproxSS::remove_approx((void*) &tmp[0], (void*) &tmp[w * h]);
+  ApproxInter::UnmarkBuffer((void*) &cH[0], (void*) &cH[8]);
+  ApproxInter::UnmarkBuffer((void*) &cV[0], (void*) &cV[8]);
+  ApproxInter::UnmarkBuffer((void*) &tmp[0], (void*) &tmp[w * h]);
 }
 
 void InterpolationFilter::weightedGeoBlk(const ClpRngs &clpRngs, const CodingUnit& cu, const uint32_t width,

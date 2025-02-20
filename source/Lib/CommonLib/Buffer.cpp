@@ -88,7 +88,7 @@ template< unsigned inputSize, unsigned outputSize >
 void mipMatrixMulCore( Pel* res, const Pel* input, const uint8_t* weight, const int maxVal, const int inputOffset, bool transpose )
 {
   Pel buffer[ outputSize*outputSize];
-  ApproxSS::add_approx((void*) &buffer[0], (void*) &buffer[outputSize*outputSize], ApproxInter::BufferId::mipMatrixMulCore_buffer, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::MarkBuffer((void*) &buffer[0], (void*) &buffer[outputSize*outputSize], ApproxInter::BufferId::mipMatrixMulCore_buffer, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
   //JICS: instrumentar como mipMatrixMulCore
 
   int sum = 0;

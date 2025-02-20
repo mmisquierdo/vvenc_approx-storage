@@ -50,13 +50,18 @@
 	class BufferRange {
 		public:
 			uint8_t * const m_initialAddress;
-			uint8_t const * const m_finalAddress;
+			uint8_t const * const m_endAddress;
+			const int64_t m_bufferId;
+			const int64_t m_configurationId;
+			const uint32_t m_dataSizeInBytes;
 
-			BufferRange(uint8_t * const initialAddress, uint8_t const * const finalAddress);
+			BufferRange(uint8_t * const initialAddress, uint8_t const * const endAddress);
+
+			BufferRange(uint8_t * const initialAddress, uint8_t const * const endAddress, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
 
 			//overlapping ranges are considered equivalent
 			friend bool operator<(const BufferRange& lhv, const BufferRange& rhv) {  
-				return lhv.m_finalAddress <= rhv.m_initialAddress;
+				return lhv.m_endAddress <= rhv.m_initialAddress;
 			}
 	};
 
@@ -396,8 +401,10 @@
 
 
 			void MarkBuffer(const BufferRange& toMark);
+			void MarkBuffer(void * const initialAddress, void const * const endAddress, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
 			void UnmarkBuffer(const BufferRange& toUnmark);
 			void UnmarkBuffer(void const * const address);
+			void UnmarkBuffer(void const * const start_address, void const * const endAddress);
 			void InstrumentIfMarked(void * const address, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
 			void ReinstrumentIfMarked(void * const address, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
 			void UninstrumentIfMarked(void * const address, const bool giveAwayRecords = true);

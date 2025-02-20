@@ -3269,11 +3269,11 @@ void EncAdaptiveLoopFilter::getPreBlkStats(AlfCovariance* alfCovariance, const A
 #endif
 
   Pel yLocal[4][4];
-  ApproxSS::add_approx((void*) &yLocal[0][0], (void*) &yLocal[4 - 1][4], ApproxInter::BufferId::EncAdaptiveLoopFilter_getPredBlkStats_yLocal, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::MarkBuffer((void*) &yLocal[0][0], (void*) &yLocal[4 - 1][4], ApproxInter::BufferId::EncAdaptiveLoopFilter_getPredBlkStats_yLocal, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
   //JICS: getPredBlkStats_yLocal
 
   Pel ELocal[MaxAlfNumClippingValues * ( MAX_NUM_ALF_LUMA_COEFF << 4 )];
-  ApproxSS::add_approx((void*) &ELocal[0], (void*) &ELocal[MaxAlfNumClippingValues * ( MAX_NUM_ALF_LUMA_COEFF << 4 )], ApproxInter::BufferId::EncAdaptiveLoopFilter_getPredBlkStats_ELocal, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::MarkBuffer((void*) &ELocal[0], (void*) &ELocal[MaxAlfNumClippingValues * ( MAX_NUM_ALF_LUMA_COEFF << 4 )], ApproxInter::BufferId::EncAdaptiveLoopFilter_getPredBlkStats_ELocal, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
   //JICS: getPredBlkStats_ELocal
 
   for( int i = 0; i < areaDst.height; i += 4 )
@@ -3711,8 +3711,8 @@ void EncAdaptiveLoopFilter::getPreBlkStats(AlfCovariance* alfCovariance, const A
     }
   }
 
-  ApproxSS::remove_approx((void*) &yLocal[0][0], (void*) &yLocal[4 - 1][4]);
-  ApproxSS::remove_approx((void*) &ELocal[0], (void*) &ELocal[MaxAlfNumClippingValues * ( MAX_NUM_ALF_LUMA_COEFF << 4 )]);
+  ApproxInter::UnmarkBuffer((void*) &yLocal[0][0], (void*) &yLocal[4 - 1][4]);
+  ApproxInter::UnmarkBuffer((void*) &ELocal[0], (void*) &ELocal[MaxAlfNumClippingValues * ( MAX_NUM_ALF_LUMA_COEFF << 4 )]);
 }
 
 template < bool clipToBdry >
@@ -6276,11 +6276,11 @@ void EncAdaptiveLoopFilter::getBlkStatsCcAlf(AlfCovariance &alfCovariance, const
 #endif
 
   Pel ELocal[MAX_NUM_CC_ALF_CHROMA_COEFF][16];
-  ApproxSS::add_approx((void*) &ELocal[0][0], (void*) &ELocal[MAX_NUM_CC_ALF_CHROMA_COEFF - 1][16], ApproxInter::BufferId::EncAdaptiveLoopFilter_getBlkStatsCcAlf_ELocal, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::MarkBuffer((void*) &ELocal[0][0], (void*) &ELocal[MAX_NUM_CC_ALF_CHROMA_COEFF - 1][16], ApproxInter::BufferId::EncAdaptiveLoopFilter_getBlkStatsCcAlf_ELocal, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
   //JICS: getBlkStatsCcAlf_ELocal
 
   Pel yLocal[4][4];
-  ApproxSS::add_approx((void*) &yLocal[0][0], (void*) &yLocal[4 - 1][4], ApproxInter::BufferId::EncAdaptiveLoopFilter_getBlkStatsCcAlf_yLocal, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::MarkBuffer((void*) &yLocal[0][0], (void*) &yLocal[4 - 1][4], ApproxInter::BufferId::EncAdaptiveLoopFilter_getBlkStatsCcAlf_yLocal, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
   //JICS: getBlkStatsCcAlf_yLocal
 
   alf_float_t weight[4][4];
@@ -6644,8 +6644,8 @@ void EncAdaptiveLoopFilter::getBlkStatsCcAlf(AlfCovariance &alfCovariance, const
     }
   }
 
-  ApproxSS::remove_approx((void*) &ELocal[0][0], (void*) &ELocal[MAX_NUM_CC_ALF_CHROMA_COEFF - 1][16]);
-  ApproxSS::remove_approx((void*) &yLocal[0][0], (void*) &yLocal[4 - 1][4]);
+  ApproxInter::UnmarkBuffer((void*) &ELocal[0][0], (void*) &ELocal[MAX_NUM_CC_ALF_CHROMA_COEFF - 1][16]);
+  ApproxInter::UnmarkBuffer((void*) &yLocal[0][0], (void*) &yLocal[4 - 1][4]);
 }
 
 void EncAdaptiveLoopFilter::calcCovariance4CcAlf(Pel ELocal[MAX_NUM_CC_ALF_CHROMA_COEFF][16], const int N, const Pel* rec, const int stride, const AlfFilterShape& shape, int vbDistance)

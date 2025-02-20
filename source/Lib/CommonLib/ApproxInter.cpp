@@ -1,6 +1,10 @@
 #include "ApproxInter.h"
 
-BufferRange::BufferRange(uint8_t * const initialAddress, uint8_t const * const finalAddress) : m_initialAddress(initialAddress), m_finalAddress(finalAddress) {}
+BufferRange::BufferRange(uint8_t * const initialAddress, uint8_t const * const endAddress) : 
+			m_initialAddress(initialAddress), m_endAddress(endAddress), m_bufferId(-1), m_configurationId(-1), m_dataSizeInBytes(2) {}
+
+BufferRange::BufferRange(uint8_t * const initialAddress, uint8_t const * const endAddress, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes) :
+			m_initialAddress(initialAddress), m_endAddress(endAddress), m_bufferId(bufferId), m_configurationId(configurationId), m_dataSizeInBytes(dataSizeInBytes) {}
 
 AllocatedBuffersSet ApproxInter::allocatedBuffers{};
 std::mutex ApproxInter::allocatedBuffersMutex;
@@ -14,6 +18,10 @@ uint32_t ApproxInter::fme_uiDirecBest = 0;
 #if PRINT_COST
 	double ApproxInter::bestTempCost = 666;
 #endif
+
+void ApproxInter::MarkBuffer(void * const initialAddress, void const * const endAddress, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes) {
+	ApproxInter::MarkBuffer(BufferRange((uint8_t*) initialAddress, (uint8_t*) endAddress, bufferId, configurationId, dataSizeInBytes));
+}
 
 void ApproxInter::MarkBuffer(const BufferRange& toMark) {
 	const std::lock_guard<std::mutex> lock(ApproxInter::allocatedBuffersMutex);
@@ -33,6 +41,11 @@ void ApproxInter::UnmarkBuffer(void const * const address) {
 	ApproxInter::UnmarkBuffer(BufferRange((uint8_t*) address, ((uint8_t*) address) + 1));
 }
 
+void ApproxInter::UnmarkBuffer(void const * const start_address, void const * const endAddress) {
+	ApproxInter::UnmarkBuffer(BufferRange((uint8_t*) start_address, (uint8_t*) endAddress));
+}
+
+
 void ApproxInter::InstrumentIfMarked(void * const address, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes) {
 	const BufferRange accessBuffer = BufferRange((uint8_t*) address, ((uint8_t*) address) + 1); //zero-sized access would be ignore in the case of a pointer to the buffer's first element
 
@@ -41,7 +54,7 @@ void ApproxInter::InstrumentIfMarked(void * const address, const int64_t bufferI
 	const AllocatedBuffersSet::const_iterator it = ApproxInter::allocatedBuffers.find(accessBuffer);
 
 	if (it != ApproxInter::allocatedBuffers.cend()) {
-		ApproxSS::add_approx(it->m_initialAddress, it->m_finalAddress, bufferId, configurationId, dataSizeInBytes);
+		ApproxSS::add_approx(it->m_initialAddress, it->m_endAddress, bufferId, configurationId, dataSizeInBytes);
 	} else {
 		std::cout << "ApproxInter WARNING: buffer not marked for add_approx." << std::endl;
 	}
@@ -57,7 +70,7 @@ void ApproxInter::ReinstrumentIfMarked(void * const address, const int64_t buffe
 	const AllocatedBuffersSet::const_iterator it = ApproxInter::allocatedBuffers.find(accessBuffer);
 
 	if (it != ApproxInter::allocatedBuffers.cend()) {
-		ApproxSS::add_approx(it->m_initialAddress, it->m_finalAddress, bufferId, configurationId, dataSizeInBytes);
+		ApproxSS::add_approx(it->m_initialAddress, it->m_endAddress, bufferId, configurationId, dataSizeInBytes);
 	} else {
 		std::cout << "ApproxInter WARNING: buffer not marked for add_approx." << std::endl;
 	}
@@ -71,7 +84,7 @@ void ApproxInter::UninstrumentIfMarked(void * const address, const bool giveAway
 	const AllocatedBuffersSet::const_iterator it = ApproxInter::allocatedBuffers.find(accessBuffer);
 
 	if (it != ApproxInter::allocatedBuffers.cend()) {
-		ApproxSS::remove_approx(it->m_initialAddress, it->m_finalAddress, giveAwayRecords);
+		ApproxSS::remove_approx(it->m_initialAddress, it->m_endAddress, giveAwayRecords);
 	} else {
 		std::cout << "ApproxInter WARNING: buffer not marked for remove_approx." << std::endl;
 	}
