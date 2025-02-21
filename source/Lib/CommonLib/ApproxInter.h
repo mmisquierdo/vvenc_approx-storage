@@ -402,6 +402,7 @@
 
 			void MarkBuffer(const BufferRange& toMark);
 			void MarkBuffer(void * const initialAddress, void const * const endAddress, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
+			void RemarkBuffer(void * const initialAddress, void const * const endAddress, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
 			void UnmarkBuffer(const BufferRange& toUnmark);
 			void UnmarkBuffer(void const * const address);
 			void UnmarkBuffer(void const * const start_address, void const * const endAddress);
