@@ -357,7 +357,11 @@
 
 				constexpr int64_t OTHER = JUST_TRACKING;
 
+				constexpr int64_t SAD_Orig = APPROXIMATE_KNOB;
+				constexpr int64_t SAD_Curr = APPROXIMATE_KNOB;
 
+				constexpr int64_t SSE_Orig = APPROXIMATE_KNOB;
+				constexpr int64_t SSE_Curr = APPROXIMATE_KNOB;
 
 
 				/*constexpr int64_t RECO_MOTION_ESTIMATION 					= JUST_TRACKING;
@@ -402,11 +406,12 @@
 
 			void MarkBuffer(const BufferRange& toMark);
 			void MarkBuffer(void * const initialAddress, void const * const endAddress, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
-			void RemarkBuffer(void * const initialAddress, void const * const endAddress, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
+			void RemarkBuffer(void * const initialAddress/*, void const * const endAddress*/, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
 			void UnmarkBuffer(const BufferRange& toUnmark);
 			void UnmarkBuffer(void const * const address);
 			void UnmarkBuffer(void const * const start_address, void const * const endAddress);
 			void InstrumentIfMarked(void * const address, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
+			void InstrumentIfMarked(void * const address, const int64_t configurationId);
 			void ReinstrumentIfMarked(void * const address, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
 			void UninstrumentIfMarked(void * const address, const bool giveAwayRecords = true);
 

@@ -1122,6 +1122,12 @@ void PelStorage::ReinstrumentBuffers(const int64_t baseBufferId) const{
 	if(m_origin[2])	{ApproxInter::ReinstrumentIfMarked((void*) m_origin[2],	baseBufferId+2, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));}
 }
 
+void PelStorage::RemarkBuffers(const int64_t baseBufferId) const{
+	if(m_origin[0]) {ApproxInter::RemarkBuffer((void*) m_origin[0],	baseBufferId+0,	ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));}
+	if(m_origin[1])	{ApproxInter::RemarkBuffer((void*) m_origin[1],	baseBufferId+1, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));}
+	if(m_origin[2])	{ApproxInter::RemarkBuffer((void*) m_origin[2],	baseBufferId+2, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));}
+}
+
 void PelStorage::createFromBuf( PelUnitBuf buf )
 {
   chromaFormat = buf.chromaFormat;

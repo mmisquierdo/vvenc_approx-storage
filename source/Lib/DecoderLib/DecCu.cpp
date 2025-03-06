@@ -81,11 +81,11 @@ void DecCu::init( TrQuant* pcTrQuant, IntraPrediction* pcIntra, InterPrediction*
   m_pcInterPred     = pcInter;
   m_TmpBuffer.destroy();
   m_TmpBuffer.create( chrFormat, Area( 0,0, MAX_TB_SIZEY, MAX_TB_SIZEY ));
-  m_TmpBuffer.ReinstrumentBuffers(ApproxInter::BufferId::DecCu_m_TmpBuffer);
+  m_TmpBuffer.RemarkBuffers(ApproxInter::BufferId::DecCu_m_TmpBuffer);
    //JICS: instrumentar aqui
   m_PredBuffer.destroy();
   m_PredBuffer.create( chrFormat, Area( 0,0, MAX_CU_SIZE, MAX_CU_SIZE ));
-  m_PredBuffer.ReinstrumentBuffers(ApproxInter::BufferId::DecCu_m_PredBuffer);
+  m_PredBuffer.RemarkBuffers(ApproxInter::BufferId::DecCu_m_PredBuffer);
   //JICS: instrumentar aqui
 }
 

@@ -521,16 +521,16 @@ void CodingStructure::createForSearch( const ChromaFormat _chromaFormat, const A
   createInternals( UnitArea( _chromaFormat, _area ), false );
 
   m_reco.create( area );
-  m_reco.ReinstrumentBuffers(ApproxInter::BufferId::CS_PIC_RECONSTRUCTION_Y);
+  m_reco.RemarkBuffers(ApproxInter::BufferId::CS_PIC_RECONSTRUCTION_Y);
 
   m_pred.create( area );
-  m_pred.ReinstrumentBuffers(ApproxInter::BufferId::CS_PIC_PREDICTION_Y);
+  m_pred.RemarkBuffers(ApproxInter::BufferId::CS_PIC_PREDICTION_Y);
 
   m_resi.create( area );
-  m_resi.ReinstrumentBuffers(ApproxInter::BufferId::CS_PIC_RESIDUAL_Y);
+  m_resi.RemarkBuffers(ApproxInter::BufferId::CS_PIC_RESIDUAL_Y);
 
   m_rspreco.create( CHROMA_400, area.Y() );
-  m_rspreco.ReinstrumentBuffers(ApproxInter::BufferId::CS_PIC_ORIGINAL_RSP_REC_Y);
+  m_rspreco.RemarkBuffers(ApproxInter::BufferId::CS_PIC_ORIGINAL_RSP_REC_Y);
   
   //JICS: instrumentar aqui
 }

@@ -322,6 +322,10 @@ Distortion RdCost::xGetSAD( const DistParam& rcDtParam )
 
   const Pel* piOrg           = rcDtParam.org.buf;
   const Pel* piCur           = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SAD_Curr);
+
   const int  iCols           = rcDtParam.org.width;
         int  iRows           = rcDtParam.org.height;
   const int  iSubShift       = rcDtParam.subShift;
@@ -348,7 +352,11 @@ Distortion RdCost::xGetSAD( const DistParam& rcDtParam )
   }
 
   uiSum <<= iSubShift;
+
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
+
   return ( uiSum >> distortionShift );
 }
 
@@ -363,6 +371,10 @@ Distortion RdCost::xGetSAD4( const DistParam& rcDtParam )
 
   const Pel* piOrg   = rcDtParam.org.buf;
   const Pel* piCur   = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SAD_Curr);
+
   int  iRows         = rcDtParam.org.height;
   int  iSubShift     = rcDtParam.subShift;
   int  iSubStep      = ( 1 << iSubShift );
@@ -383,7 +395,11 @@ Distortion RdCost::xGetSAD4( const DistParam& rcDtParam )
   }
 
   uiSum <<= iSubShift;
+
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
+
   return (uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth));
 }
 
@@ -398,6 +414,10 @@ Distortion RdCost::xGetSAD8( const DistParam& rcDtParam )
 
   const Pel* piOrg      = rcDtParam.org.buf;
   const Pel* piCur      = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SAD_Curr);
+
   int  iRows            = rcDtParam.org.height;
   int  iSubShift        = rcDtParam.subShift;
   int  iSubStep         = ( 1 << iSubShift );
@@ -422,7 +442,11 @@ Distortion RdCost::xGetSAD8( const DistParam& rcDtParam )
   }
 
   uiSum <<= iSubShift;
+
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
+
   return (uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth));
 }
 
@@ -437,6 +461,10 @@ Distortion RdCost::xGetSAD16( const DistParam& rcDtParam )
 
   const Pel* piOrg      = rcDtParam.org.buf;
   const Pel* piCur      = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SAD_Curr);
+
   int  iRows            = rcDtParam.org.height;
   int  iSubShift        = rcDtParam.subShift;
   int  iSubStep         = ( 1 << iSubShift );
@@ -469,7 +497,11 @@ Distortion RdCost::xGetSAD16( const DistParam& rcDtParam )
   }
 
   uiSum <<= iSubShift;
+
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
+
   return (uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth));
 }
 
@@ -480,6 +512,10 @@ Distortion RdCost::xGetSAD128( const DistParam &rcDtParam )
 
   const Pel* piOrg  = rcDtParam.org.buf;
   const Pel* piCur  = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SAD_Curr);
+
   int  iRows        = rcDtParam.org.height;
   int  iCols        = rcDtParam.org.width;
   int  iSubShift    = rcDtParam.subShift;
@@ -516,7 +552,10 @@ Distortion RdCost::xGetSAD128( const DistParam &rcDtParam )
 
   uiSum <<= iSubShift;
 
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
+
   return (uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth));
 }
 
@@ -531,6 +570,10 @@ Distortion RdCost::xGetSAD32( const DistParam &rcDtParam )
 
   const Pel* piOrg      = rcDtParam.org.buf;
   const Pel* piCur      = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SAD_Curr);
+
   int  iRows            = rcDtParam.org.height;
   int  iSubShift        = rcDtParam.subShift;
   int  iSubStep         = ( 1 << iSubShift );
@@ -580,8 +623,11 @@ Distortion RdCost::xGetSAD32( const DistParam &rcDtParam )
 
   uiSum <<= iSubShift;
 
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);	
   ApproxSS::end_level();
-  return (uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth));
+
+   return (uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth));
 }
 
 
@@ -596,6 +642,10 @@ Distortion RdCost::xGetSAD64( const DistParam &rcDtParam )
 
   const Pel* piOrg      = rcDtParam.org.buf;
   const Pel* piCur      = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SAD_Curr);
+ 
   int  iRows            = rcDtParam.org.height;
   int  iSubShift        = rcDtParam.subShift;
   int  iSubStep         = ( 1 << iSubShift );
@@ -677,7 +727,10 @@ Distortion RdCost::xGetSAD64( const DistParam &rcDtParam )
 
   uiSum <<= iSubShift;
 
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
+
   return (uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth));
 }
 
@@ -697,6 +750,10 @@ Distortion RdCost::xGetSSE( const DistParam &rcDtParam )
 
   const Pel* piOrg      = rcDtParam.org.buf;
   const Pel* piCur      = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SSE_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SSE_Curr);
+
   int  iRows            = rcDtParam.org.height;
   int  iCols            = rcDtParam.org.width;
   int  iStrideCur       = rcDtParam.cur.stride;
@@ -718,7 +775,10 @@ Distortion RdCost::xGetSSE( const DistParam &rcDtParam )
     piCur += iStrideCur;
   }
 
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
+
   return ( uiSum );
 }
 
@@ -734,6 +794,10 @@ Distortion RdCost::xGetSSE4( const DistParam &rcDtParam )
 
   const Pel* piOrg   = rcDtParam.org.buf;
   const Pel* piCur   = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SSE_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SSE_Curr);
+
   int  iRows         = rcDtParam.org.height;
   int  iStrideOrg    = rcDtParam.org.stride;
   int  iStrideCur    = rcDtParam.cur.stride;
@@ -755,7 +819,10 @@ Distortion RdCost::xGetSSE4( const DistParam &rcDtParam )
     piCur += iStrideCur;
   }
 
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
+
   return ( uiSum );
 }
 
@@ -771,6 +838,10 @@ Distortion RdCost::xGetSSE8( const DistParam &rcDtParam )
 
   const Pel* piOrg   = rcDtParam.org.buf;
   const Pel* piCur   = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SSE_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SSE_Curr);
+
   int  iRows         = rcDtParam.org.height;
   int  iStrideOrg    = rcDtParam.org.stride;
   int  iStrideCur    = rcDtParam.cur.stride;
@@ -795,7 +866,10 @@ Distortion RdCost::xGetSSE8( const DistParam &rcDtParam )
     piCur += iStrideCur;
   }
 
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
+
   return ( uiSum );
 }
 
@@ -811,6 +885,10 @@ Distortion RdCost::xGetSSE16( const DistParam &rcDtParam )
 
   const Pel* piOrg   = rcDtParam.org.buf;
   const Pel* piCur   = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SSE_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SSE_Curr);
+
   int  iRows         = rcDtParam.org.height;
   int  iStrideOrg    = rcDtParam.org.stride;
   int  iStrideCur    = rcDtParam.cur.stride;
@@ -844,7 +922,10 @@ Distortion RdCost::xGetSSE16( const DistParam &rcDtParam )
     piCur += iStrideCur;
   }
 
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
+
   return ( uiSum );
 }
 
@@ -858,6 +939,10 @@ Distortion RdCost::xGetSSE128( const DistParam &rcDtParam )
   }
   const Pel* piOrg   = rcDtParam.org.buf;
   const Pel* piCur   = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SSE_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SSE_Curr);
+
   int  iRows         = rcDtParam.org.height;
   int  iCols         = rcDtParam.org.width;
   int  iStrideOrg    = rcDtParam.org.stride;
@@ -895,7 +980,10 @@ Distortion RdCost::xGetSSE128( const DistParam &rcDtParam )
     piCur += iStrideCur;
   }
 
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
+
   return ( uiSum );
 }
 
@@ -910,6 +998,10 @@ Distortion RdCost::xGetSSE32( const DistParam &rcDtParam )
 
   const Pel* piOrg   = rcDtParam.org.buf;
   const Pel* piCur   = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SSE_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SSE_Curr);
+
   int  iRows         = rcDtParam.org.height;
   int  iStrideOrg    = rcDtParam.org.stride;
   int  iStrideCur    = rcDtParam.cur.stride;
@@ -959,7 +1051,10 @@ Distortion RdCost::xGetSSE32( const DistParam &rcDtParam )
     piCur += iStrideCur;
   }
 
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
+  
   return ( uiSum );
 }
 
@@ -974,6 +1069,10 @@ Distortion RdCost::xGetSSE64( const DistParam &rcDtParam )
 
   const Pel* piOrg   = rcDtParam.org.buf;
   const Pel* piCur   = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SSE_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SSE_Curr);
+
   int  iRows         = rcDtParam.org.height;
   int  iStrideOrg    = rcDtParam.org.stride;
   int  iStrideCur    = rcDtParam.cur.stride;
@@ -1054,7 +1153,10 @@ Distortion RdCost::xGetSSE64( const DistParam &rcDtParam )
     piCur += iStrideCur;
   }
 
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
+  
   return ( uiSum );
 }
 

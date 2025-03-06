@@ -2321,7 +2321,7 @@ void EncGOP::xInitLMCS( Picture& pic )
       else
       {
         pic.getFilteredOrigBuffer().create( pic.cs->pcv->chrFormat, Area( 0, 0, origBuf.get( COMP_Y ).width, origBuf.get( COMP_Y ).height) );
-		pic.getFilteredOrigBuffer().ReinstrumentBuffers(ApproxInter::BufferId::EncGOP_xInitLMCS_getFilteredOrigBuffer);
+		pic.getFilteredOrigBuffer().RemarkBuffers(ApproxInter::BufferId::EncGOP_xInitLMCS_getFilteredOrigBuffer);
 		//JICS: instrumentar aqui
         PelUnitBuf rspOrigBuf = pic.getRspOrigBuf();
         rspOrigBuf.get(COMP_Y).rspSignal( origBuf.get(COMP_Y), m_Reshaper.getFwdLUT() );

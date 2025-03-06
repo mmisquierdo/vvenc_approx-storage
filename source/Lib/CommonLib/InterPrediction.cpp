@@ -263,16 +263,16 @@ void InterPrediction::init( RdCost* pcRdCost, ChromaFormat chFormat, const int c
     for( uint32_t i = 0; i < NUM_REF_PIC_LIST_01; i++ )
     {
       m_yuvPred[i].create( chFormat, Area{ 0, 0, (int)MAX_CU_SIZE, (int)MAX_CU_SIZE }, 0, 0, 32 );
-	  m_yuvPred[i].ReinstrumentBuffers(ApproxInter::BufferId::InterPrediction_m_yuvPred);
+	  m_yuvPred[i].RemarkBuffers(ApproxInter::BufferId::InterPrediction_m_yuvPred);
 	  //JICS: instrumentar aqui
     }
 
     InterPredInterpolation::init();
     DMVR::init( pcRdCost, chFormat );
     m_geoPartBuf[0].create(UnitArea(chFormat, Area(0, 0, MAX_CU_SIZE, MAX_CU_SIZE)));
-	m_geoPartBuf[0].ReinstrumentBuffers(ApproxInter::BufferId::InterPrediction_m_geoPartBuf_0);
+	m_geoPartBuf[0].RemarkBuffers(ApproxInter::BufferId::InterPrediction_m_geoPartBuf_0);
     m_geoPartBuf[1].create(UnitArea(chFormat, Area(0, 0, MAX_CU_SIZE, MAX_CU_SIZE)));
-	m_geoPartBuf[1].ReinstrumentBuffers(ApproxInter::BufferId::InterPrediction_m_geoPartBuf_1);
+	m_geoPartBuf[1].RemarkBuffers(ApproxInter::BufferId::InterPrediction_m_geoPartBuf_1);
 	//JICS: instrumentar aqui
   }
   if (m_IBCBufferWidth != g_IBCBufferSize / ctuSize)
@@ -283,7 +283,7 @@ void InterPrediction::init( RdCost* pcRdCost, ChromaFormat chFormat, const int c
   {
     m_IBCBufferWidth = g_IBCBufferSize / ctuSize;
     m_IBCBuffer.create(UnitArea(chFormat, Area(0, 0, m_IBCBufferWidth, ctuSize)));
-	m_IBCBuffer.ReinstrumentBuffers(ApproxInter::BufferId::InterPrediction_m_IBCBuffer);
+	m_IBCBuffer.RemarkBuffers(ApproxInter::BufferId::InterPrediction_m_IBCBuffer);
 	//JICS: instrumentar aqui
   }
   InterPredInterpolation::m_ifpLines = ifpLines;
@@ -1150,13 +1150,13 @@ void DMVR::init( RdCost* pcRdCost, const ChromaFormat chFormat )
     for( int i = 0; i < NUM_REF_PIC_LIST_01; i++ )
     {
       m_yuvPred[i].create( chFormat, predArea );
-	  m_yuvPred[i].ReinstrumentBuffers(ApproxInter::BufferId::DMVR_m_yuvPred);
+	  m_yuvPred[i].RemarkBuffers(ApproxInter::BufferId::DMVR_m_yuvPred);
 	  //JICS: instrumentar aqui
       m_yuvTmp[i].create( CHROMA_400, refArea, 0, DMVR_NUM_ITERATION );
-	  m_yuvTmp[i].ReinstrumentBuffers(ApproxInter::BufferId::DMVR_m_yuvTmp);
+	  m_yuvTmp[i].RemarkBuffers(ApproxInter::BufferId::DMVR_m_yuvTmp);
 	  //JICS: instrumentar aqui
       m_yuvPad[i].create( chFormat, predArea, 0, DMVR_NUM_ITERATION + (NTAPS_LUMA>>1), 32 );
-	  m_yuvTmp[i].ReinstrumentBuffers(ApproxInter::BufferId::DMVR_m_yuvTmp);
+	  m_yuvTmp[i].RemarkBuffers(ApproxInter::BufferId::DMVR_m_yuvTmp);
 	  //JICS: instrumentar aqui
       // the buffer m_yuvPad[i].bufs[0].buf is aligned to 32
       // the actual begin of the written to buffer is m_yuvPad[i].bufs[0].buf - 3 * stride - 3 = m_yuvPad[i].bufs[0].buf - 99,

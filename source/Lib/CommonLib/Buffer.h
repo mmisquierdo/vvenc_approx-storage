@@ -1001,6 +1001,8 @@ struct PelStorage : public PelUnitBuf
 
   //<MATHEUS
   void ReinstrumentBuffers(const int64_t baseBufferId) const;
+  void RemarkBuffers(const int64_t baseBufferId) const;
+
   //MATHEUS>
 
 private:
