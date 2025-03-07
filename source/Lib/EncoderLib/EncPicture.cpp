@@ -195,6 +195,8 @@ void EncPicture::finalizePicture( Picture& pic )
 
 uint64_t findDistortionPlane( const CPelBuf& pic0, const CPelBuf& pic1, uint32_t rshift )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::MSE);
+
   uint64_t uiTotalDiff;
   const  Pel*  pSrc0 = pic0.bufAt(0, 0);
   const  Pel*  pSrc1 = pic1.bufAt(0, 0);
@@ -231,6 +233,7 @@ uint64_t findDistortionPlane( const CPelBuf& pic0, const CPelBuf& pic1, uint32_t
     }
   }
 
+  ApproxSS::end_level();
   return uiTotalDiff;
 }
 

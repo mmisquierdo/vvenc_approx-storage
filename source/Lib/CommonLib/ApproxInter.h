@@ -339,6 +339,7 @@
 					constexpr int64_t motionCompensationIBC = 44;
 
 
+				constexpr int64_t MSE = 96;
 				constexpr int64_t SSE = 97;
 				constexpr int64_t SAD = 98;
 				constexpr int64_t HAD = 99;
