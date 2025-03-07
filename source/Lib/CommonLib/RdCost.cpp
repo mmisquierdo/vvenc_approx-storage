@@ -1936,12 +1936,21 @@ Distortion RdCost::xGetHAD2SADs( const DistParam &rcDtParam )
   }
 
   Distortion distHad = xGetHADs<false>( rcDtParam );
+
+  ApproxSS::end_level();
+
   Distortion distSad = 0;
   {
+	ApproxSS::start_level(ApproxInter::LevelId::SAD);
+
     CHECKD( (rcDtParam.org.width != rcDtParam.org.stride) || (rcDtParam.cur.stride != rcDtParam.org.stride) , "this functions assumes compact, aligned buffering");
 
     const Pel* piOrg  = rcDtParam.org.buf;
     const Pel* piCur  = rcDtParam.cur.buf;
+
+	ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SAD_Orig);
+  	ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SAD_Curr);
+
     int  iRows        = rcDtParam.org.height>>2;
     int  iCols        = rcDtParam.org.width<<2;
 
@@ -1973,9 +1982,13 @@ Distortion RdCost::xGetHAD2SADs( const DistParam &rcDtParam )
     }
 
     distSad = (uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth));
+
+	ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  	ApproxInter::UninstrumentIfMarked((void*) piCur);
+	ApproxSS::end_level();
   }
   
-  ApproxSS::end_level();
+  
   return std::min( distHad, 2*distSad);
 }
 
@@ -1990,6 +2003,10 @@ Distortion RdCost::xGetHADs( const DistParam &rcDtParam )
   }
   const Pel* piOrg = rcDtParam.org.buf;
   const Pel* piCur = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::HAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::HAD_Curr);
+
   const int  iRows = rcDtParam.org.height;
   const int  iCols = rcDtParam.org.width;
   const int  iStrideCur = rcDtParam.cur.stride;
@@ -2100,7 +2117,10 @@ Distortion RdCost::xGetHADs( const DistParam &rcDtParam )
     THROW( "Invalid size" );
   }
 
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
+  
   return (uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth));
 }
 
@@ -2314,6 +2334,8 @@ Distortion RdCost::xGetSADwMask(const DistParam &rcDtParam)
   const uint32_t distortionShift = DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth);
 
   ApproxSS::start_level(ApproxInter::LevelId::SAD);
+  ApproxInter::InstrumentIfMarked((void*) org, ApproxInter::ConfigurationId::SAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) cur, ApproxInter::ConfigurationId::SAD_Curr);
 
   Distortion sum = 0;
   for (; rows != 0; rows -= subStep)
@@ -2330,6 +2352,8 @@ Distortion RdCost::xGetSADwMask(const DistParam &rcDtParam)
   }
   sum <<= subShift;
 
+  ApproxInter::UninstrumentIfMarked((void*) org);
+  ApproxInter::UninstrumentIfMarked((void*) cur);
   ApproxSS::end_level();
   return (sum >> distortionShift);
 }

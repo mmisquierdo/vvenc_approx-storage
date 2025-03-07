@@ -363,6 +363,9 @@
 				constexpr int64_t SSE_Orig = APPROXIMATE_KNOB;
 				constexpr int64_t SSE_Curr = APPROXIMATE_KNOB;
 
+				constexpr int64_t HAD_Orig = APPROXIMATE_KNOB;
+				constexpr int64_t HAD_Curr = APPROXIMATE_KNOB;
+
 
 				/*constexpr int64_t RECO_MOTION_ESTIMATION 					= JUST_TRACKING;
 				constexpr int64_t RECO_AFFINE_MOTION_ESTIMATION 			= JUST_TRACKING;
