@@ -1163,13 +1163,13 @@ Distortion RdCost::xGetSADwMask_ARMSIMD( const DistParam& rcDtParam )
   if (rcDtParam.org.width < 4 || rcDtParam.bitDepth > 10 || rcDtParam.applyWeight)
     return RdCost::xGetSADwMask(rcDtParam); //MATHEUS distortion metrics: already instrumented
 
-  ApproxSS::start_level(ApproxInter::LevelId::SAD);
+  ApproxSS::start_level(ApproxInter::LevelId::MaskedSAD);
 
   const short *src1       = (const short *) rcDtParam.org.buf;
   const short *src2       = (const short *) rcDtParam.cur.buf;
 
-  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SAD_Orig);
-  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SAD_Curr);
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::MaskedSAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::MaskedSAD_Curr);
 
   const short *weightMask = (const short *) rcDtParam.mask;
   int          rows       = rcDtParam.org.height;

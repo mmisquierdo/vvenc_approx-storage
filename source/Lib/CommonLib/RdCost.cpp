@@ -2263,12 +2263,12 @@ Distortion RdCost::xGetSSE_WTD( const DistParam &rcDtParam ) const //distorion_m
   {
     const uint32_t fixedPTweight = ( uint32_t ) ( m_chromaWeight * ( double ) ( 1 << 16 ) );
 
-	ApproxSS::end_level();
+	//ApproxSS::end_level();
     return m_fxdWtdPredPtr( rcDtParam, fixedPTweight );  //MATHEUS: distortion_metric: already instrumented
   }
   else
   { 
-	ApproxSS::end_level();
+	//ApproxSS::end_level();
     return m_wtdPredPtr[getComponentScaleX(rcDtParam.compID, m_cf)]( rcDtParam, m_cf, m_reshapeLumaLevelToWeightPLUT );  //MATHEUS: distortion_metric: already instrumented
   }
 
