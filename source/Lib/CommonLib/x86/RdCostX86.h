@@ -624,6 +624,8 @@ Distortion RdCost::xGetSAD_NxN_SIMD( const DistParam &rcDtParam )
 
 static uint32_t xCalcHAD4x4_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+
   __m128i r0 = ( sizeof( Torg ) > 1 ) ? ( _mm_loadl_epi64( ( const __m128i* )&piOrg[0] ) ) : ( _mm_unpacklo_epi8( _mm_cvtsi32_si128( *(const int*)&piOrg[0] ), _mm_setzero_si128() ) );
   __m128i r1 = ( sizeof( Torg ) > 1 ) ? ( _mm_loadl_epi64( ( const __m128i* )&piOrg[iStrideOrg] ) ) : ( _mm_unpacklo_epi8( _mm_cvtsi32_si128( *(const int*)&piOrg[iStrideOrg] ), _mm_setzero_si128() ) );
   __m128i r2 = ( sizeof( Torg ) > 1 ) ? ( _mm_loadl_epi64( ( const __m128i* )&piOrg[2 * iStrideOrg] ) ) : ( _mm_unpacklo_epi8( _mm_cvtsi32_si128( *(const int*)&piOrg[2 * iStrideOrg] ), _mm_setzero_si128() ) );
@@ -705,12 +707,15 @@ static uint32_t xCalcHAD4x4_SSE( const Torg *piOrg, const Tcur *piCur, const int
   sad += absDc >> 2;
   sad = ( ( sad + 1 ) >> 1 );
 
+  ApproxSS::end_level();
   return sad;
 }
 
 //working up to 12-bit
 static uint32_t xCalcHAD8x8_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+
   __m128i m1[2][8], m2[2][8];
 
   CHECK( iBitDepth > 10, "Only bit-depths of up to 10 bits supported!" );
@@ -851,6 +856,7 @@ static uint32_t xCalcHAD8x8_SSE( const Torg *piOrg, const Tcur *piCur, const int
   sad += absDc >> 2;
   sad = ( ( sad + 2 ) >> 2 );
 
+  ApproxSS::end_level();
   return sad;
 }
 
@@ -858,6 +864,8 @@ static uint32_t xCalcHAD8x8_SSE( const Torg *piOrg, const Tcur *piCur, const int
 //working up to 12-bit
 static uint32_t xCalcHAD16x16_fast_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+
   __m128i m1[2][8], m2[2][8];
 
   CHECK( iBitDepth > 10, "Only bit-depths of up to 10 bits supported!" );
@@ -1020,6 +1028,7 @@ static uint32_t xCalcHAD16x16_fast_SSE( const Torg *piOrg, const Tcur *piCur, co
   sad += absDc >> 2;
   sad = ( ( sad + 2 ) >> 2 );
 
+  ApproxSS::end_level();
   return ( sad << 2 );
 }
 
@@ -1027,6 +1036,8 @@ static uint32_t xCalcHAD16x16_fast_SSE( const Torg *piOrg, const Tcur *piCur, co
 //working up to 12-bit
 static uint32_t xCalcHAD16x8_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+
   __m128i m1[16][2][2], m2[16][2][2];
   __m128i iSum = _mm_setzero_si128();
 
@@ -1230,6 +1241,7 @@ static uint32_t xCalcHAD16x8_SSE( const Torg *piOrg, const Tcur *piCur, const in
   sad += absDc >> 2;
   sad = (uint32_t)(sad / sqrt(16.0 * 8) * 2);
 
+  ApproxSS::end_level();
   return sad;
 }
 
@@ -1237,6 +1249,8 @@ static uint32_t xCalcHAD16x8_SSE( const Torg *piOrg, const Tcur *piCur, const in
 //working up to 12-bit
 static uint32_t xCalcHAD8x16_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+
   __m128i m1[2][16], m2[2][16];
   __m128i iSum = _mm_setzero_si128();
 
@@ -1418,6 +1432,7 @@ static uint32_t xCalcHAD8x16_SSE( const Torg *piOrg, const Tcur *piCur, const in
   sad += absDc >> 2;
   sad = (uint32_t)(sad / sqrt(16.0 * 8) * 2);
 
+  ApproxSS::end_level();
   return sad;
 }
 
@@ -1425,6 +1440,8 @@ static uint32_t xCalcHAD8x16_SSE( const Torg *piOrg, const Tcur *piCur, const in
 template< typename Torg, typename Tcur >
 static uint32_t xCalcHAD8x4_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+
   __m128i m1[8], m2[8];
   __m128i vzero = _mm_setzero_si128();
 
@@ -1562,11 +1579,15 @@ static uint32_t xCalcHAD8x4_SSE( const Torg *piOrg, const Tcur *piCur, const int
   sad -= absDc;
   sad += absDc >> 2;
   sad = (uint32_t)(sad / sqrt(4.0 * 8) * 2);
+
+  ApproxSS::end_level();
   return sad;
 }
 
 static uint32_t xCalcHAD4x8_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+
   __m128i m1[8], m2[8];
 
   for( int k = 0; k < 8; k++ )
@@ -1699,11 +1720,14 @@ static uint32_t xCalcHAD4x8_SSE( const Torg *piOrg, const Tcur *piCur, const int
   sad += absDc >> 2;
   sad = (uint32_t)(sad / sqrt(4.0 * 8) * 2);
 
+  ApproxSS::end_level();
   return sad;
 }
 
 static uint32_t xCalcHAD32x32_fast_AVX2( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+
   uint32_t sad = 0;
 
 #ifdef USE_AVX2
@@ -1891,11 +1915,14 @@ static uint32_t xCalcHAD32x32_fast_AVX2( const Torg *piOrg, const Tcur *piCur, c
   }
 
 #endif
+
+  ApproxSS::end_level();
   return ( sad << 2 );
 }
 
 static uint32_t xCalcHAD16x16_AVX2( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
   uint32_t sad = 0;
 
 #ifdef USE_AVX2
@@ -2060,11 +2087,15 @@ static uint32_t xCalcHAD16x16_AVX2( const Torg *piOrg, const Tcur *piCur, const 
   }
 
 #endif
+  
+  ApproxSS::end_level();
   return ( sad );
 }
 
 static uint32_t xCalcHAD16x8_AVX2( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+
   uint32_t sad = 0;
 
 #ifdef USE_AVX2
@@ -2365,11 +2396,14 @@ static uint32_t xCalcHAD16x8_AVX2( const Torg *piOrg, const Tcur *piCur, const i
 
 #endif //USE_AVX2
 
+  ApproxSS::end_level();
   return (sad);
 }
 
 static uint32_t xCalcHAD8x16_AVX2( const Pel* piOrg, const Pel* piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+
   uint32_t sad = 0;
 
 #ifdef USE_AVX2
@@ -2610,6 +2644,7 @@ static uint32_t xCalcHAD8x16_AVX2( const Pel* piOrg, const Pel* piCur, const int
 
 #endif //USE_AVX2
 
+  ApproxSS::end_level();
   return (sad);
 }
 
@@ -2968,6 +3003,8 @@ inline Distortion getWeightedMSE_SIMD(const Pel org, const Pel cur, const int64_
 template<X86_VEXT vext, int csx>
 static Distortion lumaWeightedSSE_SIMD( const DistParam& rcDtParam, ChromaFormat chmFmt, const uint32_t* lumaWeights )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::SSE);
+
         int  iRows = rcDtParam.org.height;
   const Pel* piOrg = rcDtParam.org.buf;
   const Pel* piCur = rcDtParam.cur.buf;
@@ -3055,6 +3092,7 @@ static Distortion lumaWeightedSSE_SIMD( const DistParam& rcDtParam, ChromaFormat
     uiSum += _mm_extract_epi64( xsum, 0 );
     uiSum += _mm_extract_epi64( xsum, 1 );
 
+	ApproxSS::end_level();
     return uiSum;
   }
   else
@@ -3111,6 +3149,7 @@ static Distortion lumaWeightedSSE_SIMD( const DistParam& rcDtParam, ChromaFormat
     uiSum += _mm_extract_epi64( xsum, 0 );
     uiSum += _mm_extract_epi64( xsum, 1 );
 
+	ApproxSS::end_level();
     return uiSum;
   }
   else
@@ -3129,6 +3168,7 @@ static Distortion lumaWeightedSSE_SIMD( const DistParam& rcDtParam, ChromaFormat
       piOrgLuma += iStrideOrgLuma<<cShiftY;
     }
 
+	ApproxSS::end_level();
     return uiSum;
   }
   else
@@ -3145,15 +3185,19 @@ static Distortion lumaWeightedSSE_SIMD( const DistParam& rcDtParam, ChromaFormat
       piOrgLuma += iStrideOrgLuma<<cShiftY;
     }
 
+	ApproxSS::end_level();
     return uiSum;
   }
 
+  ApproxSS::end_level();
   return 0;
 }
 
 template<X86_VEXT vext>
 static Distortion fixWeightedSSE_SIMD( const DistParam& rcDtParam, uint32_t fixedPTweight )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::SSE);
+
         int  iRows = rcDtParam.org.height;
   const Pel* piOrg = rcDtParam.org.buf;
   const Pel* piCur = rcDtParam.cur.buf;
@@ -3205,6 +3249,7 @@ static Distortion fixWeightedSSE_SIMD( const DistParam& rcDtParam, uint32_t fixe
     uiSum += _mm_extract_epi64( xsum, 0 );
     uiSum += _mm_extract_epi64( xsum, 1 );
 
+	ApproxSS::end_level();
     return uiSum;
   }
   else if( iCols == 2 )
@@ -3220,6 +3265,7 @@ static Distortion fixWeightedSSE_SIMD( const DistParam& rcDtParam, uint32_t fixe
       piCur += iStrideCur;
     }
 
+	ApproxSS::end_level();
     return uiSum;
   }
   else
@@ -3234,9 +3280,11 @@ static Distortion fixWeightedSSE_SIMD( const DistParam& rcDtParam, uint32_t fixe
       piCur += iStrideCur;
     }
 
+	ApproxSS::end_level();
     return uiSum;
   }
 
+  ApproxSS::end_level();
   return 0;
 }
 

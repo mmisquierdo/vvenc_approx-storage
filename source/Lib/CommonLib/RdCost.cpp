@@ -1166,6 +1166,8 @@ Distortion RdCost::xGetSSE64( const DistParam &rcDtParam )
 
 Distortion RdCost::xCalcHADs2x2( const Pel* piOrg, const Pel* piCur, int iStrideOrg, int iStrideCur )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+
   Distortion satd = 0;
   TCoeff diff[4], m[4];
 
@@ -1183,11 +1185,14 @@ Distortion RdCost::xCalcHADs2x2( const Pel* piOrg, const Pel* piCur, int iStride
   satd += abs(m[2] + m[3]);
   satd += abs(m[2] - m[3]);
 
+  ApproxSS::end_level();
   return satd;
 }
 
 static Distortion xCalcHADs4x4( const Pel* piOrg, const Pel* piCur, int iStrideOrg, int iStrideCur )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+
   int k;
   Distortion satd = 0;
   TCoeff diff[16], m[16], d[16];
@@ -1281,11 +1286,14 @@ static Distortion xCalcHADs4x4( const Pel* piOrg, const Pel* piCur, int iStrideO
   satd += abs( d[0] ) >> 2;
   satd = ((satd+1)>>1);
 
+  ApproxSS::end_level();
   return satd;
 }
 
 static Distortion xCalcHADs16x16_fast( const Pel* piOrg, const Pel* piCur, int iStrideOrg, int iStrideCur )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+
   int k, i, j, jj;
   Distortion sad = 0;
   TCoeff diff[64], m1[8][8], m2[8][8], m3[8][8];
@@ -1380,11 +1388,14 @@ static Distortion xCalcHADs16x16_fast( const Pel* piOrg, const Pel* piCur, int i
   sad += abs( m2[0][0] ) >> 2;
   sad=((sad+2)>>2);
 
+  ApproxSS::end_level();
   return (sad << 2);
 }
 
 static Distortion xCalcHADs8x8( const Pel* piOrg, const Pel* piCur, int iStrideOrg, int iStrideCur )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+
   int k, i, j, jj;
   Distortion sad = 0;
   TCoeff diff[64], m1[8][8], m2[8][8], m3[8][8];
@@ -1479,11 +1490,14 @@ static Distortion xCalcHADs8x8( const Pel* piOrg, const Pel* piCur, int iStrideO
   sad += abs( m2[0][0] ) >> 2;
   sad=((sad+2)>>2);
 
+  ApproxSS::end_level();
   return sad;
 }
 
 static Distortion xCalcHADs16x8( const Pel* piOrg, const Pel* piCur, int iStrideOrg, int iStrideCur )
 {   //need to add SIMD implementation ,JCA
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+
   int k, i, j, jj, sad = 0;
   int diff[128], m1[8][16], m2[8][16];
   for( k = 0; k < 128; k += 16 )
@@ -1627,11 +1641,14 @@ static Distortion xCalcHADs16x8( const Pel* piOrg, const Pel* piCur, int iStride
   sad += abs( m2[0][0] ) >> 2;
   sad = ( int ) ( sad / sqrt( 16.0 * 8 ) * 2 );
 
+  ApproxSS::end_level();
   return sad;
 }
 
 static Distortion xCalcHADs8x16( const Pel* piOrg, const Pel* piCur, int iStrideOrg, int iStrideCur )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+
   int k, i, j, jj, sad = 0;
   int diff[128], m1[16][8], m2[16][8];
   for( k = 0; k < 128; k += 8 )
@@ -1766,11 +1783,14 @@ static Distortion xCalcHADs8x16( const Pel* piOrg, const Pel* piCur, int iStride
   sad += abs( m2[0][0] ) >> 2;
   sad = ( int ) ( sad / sqrt( 16.0 * 8 ) * 2 );
 
+  ApproxSS::end_level();
   return sad;
 }
 
 static Distortion xCalcHADs4x8( const Pel* piOrg, const Pel* piCur, int iStrideOrg, int iStrideCur )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+
   int k, i, j, jj, sad = 0;
   int diff[32], m1[8][4], m2[8][4];
   for( k = 0; k < 32; k += 4 )
@@ -1842,11 +1862,13 @@ static Distortion xCalcHADs4x8( const Pel* piOrg, const Pel* piCur, int iStrideO
   sad += abs( m2[0][0] ) >> 2;
   sad = ( int ) ( sad / sqrt( 4.0 * 8 ) * 2 );
 
+  ApproxSS::end_level();
   return sad;
 }
 
 static Distortion xCalcHADs8x4( const Pel* piOrg, const Pel* piCur, int iStrideOrg, int iStrideCur )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::HAD);
   int k, i, j, jj, sad = 0;
   int diff[32], m1[4][8], m2[4][8];
   for( k = 0; k < 32; k += 8 )
@@ -1923,6 +1945,7 @@ static Distortion xCalcHADs8x4( const Pel* piOrg, const Pel* piCur, int iStrideO
   sad += abs( m2[0][0] ) >> 2;
   sad = ( int ) ( sad / sqrt( 4.0 * 8 ) * 2 );
 
+  ApproxSS::end_level();
   return sad;
 }
 
@@ -2141,6 +2164,8 @@ inline Distortion getWeightedMSE(const Pel org, const Pel cur, const int64_t fix
 template<int csx>
 static Distortion lumaWeightedSSE_Core( const DistParam& rcDtParam, ChromaFormat chmFmt, const uint32_t* lumaWeights )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::SSE);
+
         int  iRows = rcDtParam.org.height;
   const Pel* piOrg = rcDtParam.org.buf;
   const Pel* piCur = rcDtParam.cur.buf;
@@ -2172,11 +2197,14 @@ static Distortion lumaWeightedSSE_Core( const DistParam& rcDtParam, ChromaFormat
     piOrgLuma += iStrideOrgLuma<<cShiftY;
   }
 
+  ApproxSS::end_level();
   return ( uiSum >> ( 1 - cf ) );
 }
 
 static Distortion fixWeightedSSE_Core( const DistParam& rcDtParam, uint32_t fixedPTweight )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::SSE);
+  
         int  iRows = rcDtParam.org.height;
   const Pel* piOrg = rcDtParam.org.buf;
   const Pel* piCur = rcDtParam.cur.buf;
@@ -2202,6 +2230,7 @@ static Distortion fixWeightedSSE_Core( const DistParam& rcDtParam, uint32_t fixe
     piCur += iStrideCur;
   }
 
+  ApproxSS::end_level();
   return ( uiSum >> ( 1 - cf ) );
 }
 
