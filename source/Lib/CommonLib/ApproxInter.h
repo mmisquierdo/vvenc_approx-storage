@@ -346,9 +346,11 @@
 
 				constexpr int64_t MSE = 96;
 				constexpr int64_t SSE = 97;
+				constexpr int64_t WeightedSSE = 101;
 				constexpr int64_t SAD = 98;
+				constexpr int64_t MaskedSAD = 100; 
 				constexpr int64_t HAD = 99;
-						
+				constexpr int64_t FastHAD = 102;
 			}
 
 			namespace ConfigurationId {
@@ -358,14 +360,23 @@
 
 				constexpr int64_t OTHER = JUST_TRACKING;
 
+				constexpr int64_t MaskedSAD_Orig = APPROXIMATE_KNOB;
+				constexpr int64_t MaskedSAD_Curr = APPROXIMATE_KNOB;
+
 				constexpr int64_t SAD_Orig = APPROXIMATE_KNOB;
 				constexpr int64_t SAD_Curr = APPROXIMATE_KNOB;
 
 				constexpr int64_t SSE_Orig = APPROXIMATE_KNOB;
 				constexpr int64_t SSE_Curr = APPROXIMATE_KNOB;
 
+				constexpr int64_t WeightedSSE_Orig = APPROXIMATE_KNOB;
+				constexpr int64_t WeightedSSE_Curr = APPROXIMATE_KNOB;
+
 				constexpr int64_t HAD_Orig = APPROXIMATE_KNOB;
 				constexpr int64_t HAD_Curr = APPROXIMATE_KNOB;
+
+				constexpr int64_t FastHAD_Orig = APPROXIMATE_KNOB;
+				constexpr int64_t FastHAD_Curr = APPROXIMATE_KNOB;
 
 
 				/*constexpr int64_t RECO_MOTION_ESTIMATION 					= JUST_TRACKING;

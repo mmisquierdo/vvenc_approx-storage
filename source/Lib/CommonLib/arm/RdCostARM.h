@@ -85,7 +85,7 @@ static inline int32x4_t neon_madd_16( int16x8_t a, int16x8_t b )
 //working up to 12-bit
 static uint32_t xCalcHAD16x16_fast_Neon( const Pel *piOrg, const Pel *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth ) //MATHEUS: distortion metrics: already super instrumented
 {
-  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+  //ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
   int16x8x2_t m1[8], m2[8];
   int32x4x2_t m3[8], m4[8];
@@ -518,13 +518,13 @@ static uint32_t xCalcHAD16x16_fast_Neon( const Pel *piOrg, const Pel *piCur, con
   sad += absDc >> 2;
   sad = ( ( sad + 2 ) >> 2 );
 
-  ApproxSS::end_level();
+  //ApproxSS::end_level();
   return ( sad << 2 );
 }
 
 static uint32_t xCalcHAD8x8_Neon( const Pel *piOrg, const Pel *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth ) //MATHEUS: distortion metrics: already super instrumented
 {
-  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+  //ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
   CHECK( iBitDepth > 10, "Only bit-depths of up to 10 bits supported!" );
 
@@ -764,20 +764,20 @@ static uint32_t xCalcHAD8x8_Neon( const Pel *piOrg, const Pel *piCur, const int 
   sad += absDc >> 2;
   sad = ( ( sad + 2 ) >> 2 );
 
-  ApproxSS::end_level();
+  //ApproxSS::end_level();
   return sad;
 }
 
 template<ARM_VEXT vext, bool fastHad>
 Distortion RdCost::xGetHADs_ARMSIMD( const DistParam &rcDtParam )
 {
-  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+  ApproxSS::start_level(fastHad ? ApproxInter::LevelId::FastHAD : ApproxInter::LevelId::HAD);
 
   const Pel*  piOrg = rcDtParam.org.buf;
   const Pel*  piCur = rcDtParam.cur.buf;
 
-  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::HAD_Orig);
-  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::HAD_Curr);
+  ApproxInter::InstrumentIfMarked((void*) piOrg, fastHad ? ApproxInter::ConfigurationId::FastHAD_Orig : ApproxInter::ConfigurationId::HAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, fastHad ? ApproxInter::ConfigurationId::FastHAD_Curr : ApproxInter::ConfigurationId::HAD_Curr);
 
   const int iRows = rcDtParam.org.height;
   const int iCols = rcDtParam.org.width;

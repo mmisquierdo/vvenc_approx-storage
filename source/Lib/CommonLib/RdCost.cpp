@@ -1167,9 +1167,9 @@ Distortion RdCost::xGetSSE64( const DistParam &rcDtParam )
 // HADAMARD with step (used in fractional search)
 // --------------------------------------------------------------------------------------------------------------------
 
-Distortion RdCost::xCalcHADs2x2( const Pel* piOrg, const Pel* piCur, int iStrideOrg, int iStrideCur )  //distorion_metrics_instrumentation_recheck
+Distortion RdCost::xCalcHADs2x2( const Pel* piOrg, const Pel* piCur, int iStrideOrg, int iStrideCur )  //MATHEUS distortion metrics: already super instrumented
 {
-  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+  //ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
   Distortion satd = 0;
   TCoeff diff[4], m[4];
@@ -1188,13 +1188,13 @@ Distortion RdCost::xCalcHADs2x2( const Pel* piOrg, const Pel* piCur, int iStride
   satd += abs(m[2] + m[3]);
   satd += abs(m[2] - m[3]);
 
-  ApproxSS::end_level();
+  //ApproxSS::end_level();
   return satd;
 }
 
 static Distortion xCalcHADs4x4( const Pel* piOrg, const Pel* piCur, int iStrideOrg, int iStrideCur ) //MATHEUS distortion metrics: already super instrumented
 {
-  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+  //ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
   int k;
   Distortion satd = 0;
@@ -1289,13 +1289,13 @@ static Distortion xCalcHADs4x4( const Pel* piOrg, const Pel* piCur, int iStrideO
   satd += abs( d[0] ) >> 2;
   satd = ((satd+1)>>1);
 
-  ApproxSS::end_level();
+  //ApproxSS::end_level();
   return satd;
 }
 
 static Distortion xCalcHADs16x16_fast( const Pel* piOrg, const Pel* piCur, int iStrideOrg, int iStrideCur ) //MATHEUS distortion metrics: already super instrumented
 {
-  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+  //ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
   int k, i, j, jj;
   Distortion sad = 0;
@@ -1391,13 +1391,13 @@ static Distortion xCalcHADs16x16_fast( const Pel* piOrg, const Pel* piCur, int i
   sad += abs( m2[0][0] ) >> 2;
   sad=((sad+2)>>2);
 
-  ApproxSS::end_level();
+  //ApproxSS::end_level();
   return (sad << 2);
 }
 
 static Distortion xCalcHADs8x8( const Pel* piOrg, const Pel* piCur, int iStrideOrg, int iStrideCur ) //MATHEUS distortion metrics: already super instrumented
 {
-  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+  //ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
   int k, i, j, jj;
   Distortion sad = 0;
@@ -1493,13 +1493,13 @@ static Distortion xCalcHADs8x8( const Pel* piOrg, const Pel* piCur, int iStrideO
   sad += abs( m2[0][0] ) >> 2;
   sad=((sad+2)>>2);
 
-  ApproxSS::end_level();
+  //ApproxSS::end_level();
   return sad;
 }
 
 static Distortion xCalcHADs16x8( const Pel* piOrg, const Pel* piCur, int iStrideOrg, int iStrideCur ) //MATHEUS distortion metrics: already super instrumented
 {   //need to add SIMD implementation ,JCA
-  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+  //ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
   int k, i, j, jj, sad = 0;
   int diff[128], m1[8][16], m2[8][16];
@@ -1644,13 +1644,13 @@ static Distortion xCalcHADs16x8( const Pel* piOrg, const Pel* piCur, int iStride
   sad += abs( m2[0][0] ) >> 2;
   sad = ( int ) ( sad / sqrt( 16.0 * 8 ) * 2 );
 
-  ApproxSS::end_level();
+  //ApproxSS::end_level();
   return sad;
 }
 
 static Distortion xCalcHADs8x16( const Pel* piOrg, const Pel* piCur, int iStrideOrg, int iStrideCur ) //MATHEUS distortion metrics: already super instrumented
 {
-  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+  //ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
   int k, i, j, jj, sad = 0;
   int diff[128], m1[16][8], m2[16][8];
@@ -1786,13 +1786,13 @@ static Distortion xCalcHADs8x16( const Pel* piOrg, const Pel* piCur, int iStride
   sad += abs( m2[0][0] ) >> 2;
   sad = ( int ) ( sad / sqrt( 16.0 * 8 ) * 2 );
 
-  ApproxSS::end_level();
+  //ApproxSS::end_level();
   return sad;
 }
 
 static Distortion xCalcHADs4x8( const Pel* piOrg, const Pel* piCur, int iStrideOrg, int iStrideCur ) //MATHEUS distortion metrics: already super instrumented
 {
-  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+  //ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
   int k, i, j, jj, sad = 0;
   int diff[32], m1[8][4], m2[8][4];
@@ -1865,13 +1865,13 @@ static Distortion xCalcHADs4x8( const Pel* piOrg, const Pel* piCur, int iStrideO
   sad += abs( m2[0][0] ) >> 2;
   sad = ( int ) ( sad / sqrt( 4.0 * 8 ) * 2 );
 
-  ApproxSS::end_level();
+  //ApproxSS::end_level();
   return sad;
 }
 
 static Distortion xCalcHADs8x4( const Pel* piOrg, const Pel* piCur, int iStrideOrg, int iStrideCur ) //MATHEUS distortion metrics: already super instrumented
 {
-  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+  //ApproxSS::start_level(ApproxInter::LevelId::HAD);
   int k, i, j, jj, sad = 0;
   int diff[32], m1[4][8], m2[4][8];
   for( k = 0; k < 32; k += 8 )
@@ -1948,13 +1948,13 @@ static Distortion xCalcHADs8x4( const Pel* piOrg, const Pel* piCur, int iStrideO
   sad += abs( m2[0][0] ) >> 2;
   sad = ( int ) ( sad / sqrt( 4.0 * 8 ) * 2 );
 
-  ApproxSS::end_level();
+  //ApproxSS::end_level();
   return sad;
 }
 
 Distortion RdCost::xGetHAD2SADs( const DistParam &rcDtParam )
 {
-  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+  //ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
   if( rcDtParam.applyWeight )
   {
@@ -1963,7 +1963,7 @@ Distortion RdCost::xGetHAD2SADs( const DistParam &rcDtParam )
 
   Distortion distHad = xGetHADs<false>( rcDtParam );
 
-  ApproxSS::end_level();
+  //ApproxSS::end_level();
 
   Distortion distSad = 0;
   {
@@ -2020,7 +2020,7 @@ Distortion RdCost::xGetHAD2SADs( const DistParam &rcDtParam )
 template<bool fastHad>
 Distortion RdCost::xGetHADs( const DistParam &rcDtParam )
 {  
-  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+  ApproxSS::start_level(fastHad ? ApproxInter::LevelId::FastHAD : ApproxInter::LevelId::HAD);
 
   if( rcDtParam.applyWeight )
   {
@@ -2029,8 +2029,8 @@ Distortion RdCost::xGetHADs( const DistParam &rcDtParam )
   const Pel* piOrg = rcDtParam.org.buf;
   const Pel* piCur = rcDtParam.cur.buf;
 
-  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::HAD_Orig);
-  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::HAD_Curr);
+  ApproxInter::InstrumentIfMarked((void*) piOrg, fastHad ? ApproxInter::ConfigurationId::FastHAD_Orig : ApproxInter::ConfigurationId::HAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, fastHad ? ApproxInter::ConfigurationId::FastHAD_Curr : ApproxInter::ConfigurationId::HAD_Curr);
 
   const int  iRows = rcDtParam.org.height;
   const int  iCols = rcDtParam.org.width;
@@ -2166,14 +2166,14 @@ inline Distortion getWeightedMSE(const Pel org, const Pel cur, const int64_t fix
 template<int csx>
 static Distortion lumaWeightedSSE_Core( const DistParam& rcDtParam, ChromaFormat chmFmt, const uint32_t* lumaWeights )
 {
-  ApproxSS::start_level(ApproxInter::LevelId::SSE);
+  ApproxSS::start_level(ApproxInter::LevelId::WeightedSSE);
 
         int  iRows = rcDtParam.org.height;
   const Pel* piOrg = rcDtParam.org.buf;
   const Pel* piCur = rcDtParam.cur.buf;
 
-  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SSE_Orig);
-  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SEE_Curr);
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::WeightedSSE_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::WeightedSSE_Curr);
 
   const int  iCols = rcDtParam.org.width;
   const int  iStrideCur = rcDtParam.cur.stride;
@@ -2212,14 +2212,14 @@ static Distortion lumaWeightedSSE_Core( const DistParam& rcDtParam, ChromaFormat
 
 static Distortion fixWeightedSSE_Core( const DistParam& rcDtParam, uint32_t fixedPTweight )
 {
-  ApproxSS::start_level(ApproxInter::LevelId::SSE);
+  ApproxSS::start_level(ApproxInter::LevelId::WeightedSSE);
   
         int  iRows = rcDtParam.org.height;
   const Pel* piOrg = rcDtParam.org.buf;
   const Pel* piCur = rcDtParam.cur.buf;
 
-  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SSE_Orig);
-  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SSE_Curr);
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::WeightedSSE_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::WeightedSSE_Curr);
 
   const int  iCols = rcDtParam.org.width;
   const int  iStrideCur = rcDtParam.cur.stride;
@@ -2252,7 +2252,7 @@ static Distortion fixWeightedSSE_Core( const DistParam& rcDtParam, uint32_t fixe
 
 Distortion RdCost::xGetSSE_WTD( const DistParam &rcDtParam ) const //distorion_metrics_instrumentation_recheck
 {
-  ApproxSS::start_level(ApproxInter::LevelId::SSE);
+  //ApproxSS::start_level(ApproxInter::LevelId::SSE);
 
   if( rcDtParam.applyWeight )
   {
@@ -2272,12 +2272,12 @@ Distortion RdCost::xGetSSE_WTD( const DistParam &rcDtParam ) const //distorion_m
     return m_wtdPredPtr[getComponentScaleX(rcDtParam.compID, m_cf)]( rcDtParam, m_cf, m_reshapeLumaLevelToWeightPLUT );  //MATHEUS: distortion_metric: already instrumented
   }
 
-  ApproxSS::end_level();
+  //ApproxSS::end_level();
   return 0;
 }
 
 void RdCost::xGetSAD8X5(const DistParam& rcDtParam, Distortion* cost, bool isCalCentrePos) { //MATHEUS: distortion_metrics: already sub instrumented
-  ApproxSS::start_level(ApproxInter::LevelId::SAD);
+  //ApproxSS::start_level(ApproxInter::LevelId::SAD);
 
   DistParam rcDtParamTmp0 = rcDtParam;
 
@@ -2303,11 +2303,11 @@ void RdCost::xGetSAD8X5(const DistParam& rcDtParam, Distortion* cost, bool isCal
   cost[3] = (RdCost::xGetSAD8(rcDtParamTmp3)) >> 1;
   cost[4] = (RdCost::xGetSAD8(rcDtParamTmp4)) >> 1;
 
-  ApproxSS::end_level();
+  //ApproxSS::end_level();
 }
 
 void RdCost::xGetSAD16X5(const DistParam& rcDtParam, Distortion* cost, bool isCalCentrePos) { //MATHEUS: distortion_metrics: already sub instrumented
-  ApproxSS::start_level(ApproxInter::LevelId::SAD);
+  //ApproxSS::start_level(ApproxInter::LevelId::SAD);
 
   DistParam rcDtParamTmp0 = rcDtParam;
 
@@ -2333,7 +2333,7 @@ void RdCost::xGetSAD16X5(const DistParam& rcDtParam, Distortion* cost, bool isCa
   cost[3] = (RdCost::xGetSAD16(rcDtParamTmp3)) >> 1;
   cost[4] = (RdCost::xGetSAD16(rcDtParamTmp4)) >> 1;
 
-  ApproxSS::end_level();
+  //ApproxSS::end_level();
 }
 
 void RdCost::setDistParamGeo(DistParam &rcDP, const CPelBuf &org, const Pel *piRefY, int iRefStride, const Pel *mask,
@@ -2378,9 +2378,9 @@ Distortion RdCost::xGetSADwMask(const DistParam &rcDtParam) //MATHEUS:
   const int      strideMask2     = rcDtParam.maskStride2;
   const uint32_t distortionShift = DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth);
 
-  ApproxSS::start_level(ApproxInter::LevelId::SAD);
-  ApproxInter::InstrumentIfMarked((void*) org, ApproxInter::ConfigurationId::SAD_Orig);
-  ApproxInter::InstrumentIfMarked((void*) cur, ApproxInter::ConfigurationId::SAD_Curr);
+  ApproxSS::start_level(ApproxInter::LevelId::MaskedSAD);
+  ApproxInter::InstrumentIfMarked((void*) org, ApproxInter::ConfigurationId::MaskedSAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) cur, ApproxInter::ConfigurationId::MaskedSAD_Curr);
 
   Distortion sum = 0;
   for (; rows != 0; rows -= subStep)
