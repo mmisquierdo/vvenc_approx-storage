@@ -245,7 +245,7 @@ template< X86_VEXT vext >
 Distortion RdCost::xGetSAD_SIMD( const DistParam &rcDtParam )
 {
   if( rcDtParam.org.width < 4 )
-    return RdCost::xGetSAD( rcDtParam );
+    return RdCost::xGetSAD( rcDtParam ); //MATHEUS: distortion metrics: already instrumented
 
   ApproxSS::start_level(ApproxInter::LevelId::SAD);
 
@@ -622,7 +622,7 @@ Distortion RdCost::xGetSAD_NxN_SIMD( const DistParam &rcDtParam )
   return uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth);
 }
 
-static uint32_t xCalcHAD4x4_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur )
+static uint32_t xCalcHAD4x4_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur ) //distorion_metrics_instrumentation_recheck
 {
   ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
@@ -712,7 +712,7 @@ static uint32_t xCalcHAD4x4_SSE( const Torg *piOrg, const Tcur *piCur, const int
 }
 
 //working up to 12-bit
-static uint32_t xCalcHAD8x8_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
+static uint32_t xCalcHAD8x8_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth ) //distorion_metrics_instrumentation_recheck
 {
   ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
@@ -862,7 +862,7 @@ static uint32_t xCalcHAD8x8_SSE( const Torg *piOrg, const Tcur *piCur, const int
 
 
 //working up to 12-bit
-static uint32_t xCalcHAD16x16_fast_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
+static uint32_t xCalcHAD16x16_fast_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth ) //distorion_metrics_instrumentation_recheck
 {
   ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
@@ -1034,7 +1034,7 @@ static uint32_t xCalcHAD16x16_fast_SSE( const Torg *piOrg, const Tcur *piCur, co
 
 
 //working up to 12-bit
-static uint32_t xCalcHAD16x8_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
+static uint32_t xCalcHAD16x8_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth ) //distorion_metrics_instrumentation_recheck
 {
   ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
@@ -1247,7 +1247,7 @@ static uint32_t xCalcHAD16x8_SSE( const Torg *piOrg, const Tcur *piCur, const in
 
 
 //working up to 12-bit
-static uint32_t xCalcHAD8x16_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
+static uint32_t xCalcHAD8x16_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth ) //distorion_metrics_instrumentation_recheck
 {
   ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
@@ -1438,7 +1438,7 @@ static uint32_t xCalcHAD8x16_SSE( const Torg *piOrg, const Tcur *piCur, const in
 
 
 template< typename Torg, typename Tcur >
-static uint32_t xCalcHAD8x4_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
+static uint32_t xCalcHAD8x4_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth ) //distorion_metrics_instrumentation_recheck
 {
   ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
@@ -1584,7 +1584,7 @@ static uint32_t xCalcHAD8x4_SSE( const Torg *piOrg, const Tcur *piCur, const int
   return sad;
 }
 
-static uint32_t xCalcHAD4x8_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
+static uint32_t xCalcHAD4x8_SSE( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth ) //distorion_metrics_instrumentation_recheck
 {
   ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
@@ -1724,7 +1724,7 @@ static uint32_t xCalcHAD4x8_SSE( const Torg *piOrg, const Tcur *piCur, const int
   return sad;
 }
 
-static uint32_t xCalcHAD32x32_fast_AVX2( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
+static uint32_t xCalcHAD32x32_fast_AVX2( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth ) //distorion_metrics_instrumentation_recheck
 {
   ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
@@ -1920,7 +1920,7 @@ static uint32_t xCalcHAD32x32_fast_AVX2( const Torg *piOrg, const Tcur *piCur, c
   return ( sad << 2 );
 }
 
-static uint32_t xCalcHAD16x16_AVX2( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
+static uint32_t xCalcHAD16x16_AVX2( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth ) //distorion_metrics_instrumentation_recheck
 {
   ApproxSS::start_level(ApproxInter::LevelId::HAD);
   uint32_t sad = 0;
@@ -2092,7 +2092,7 @@ static uint32_t xCalcHAD16x16_AVX2( const Torg *piOrg, const Tcur *piCur, const 
   return ( sad );
 }
 
-static uint32_t xCalcHAD16x8_AVX2( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
+static uint32_t xCalcHAD16x8_AVX2( const Torg *piOrg, const Tcur *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth ) //distorion_metrics_instrumentation_recheck
 {
   ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
@@ -2400,7 +2400,7 @@ static uint32_t xCalcHAD16x8_AVX2( const Torg *piOrg, const Tcur *piCur, const i
   return (sad);
 }
 
-static uint32_t xCalcHAD8x16_AVX2( const Pel* piOrg, const Pel* piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
+static uint32_t xCalcHAD8x16_AVX2( const Pel* piOrg, const Pel* piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth ) //distorion_metrics_instrumentation_recheck
 {
   ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
@@ -2736,7 +2736,7 @@ template<X86_VEXT vext>
 Distortion RdCost::xGetSADwMask_SIMD(const DistParam &rcDtParam)
 {
   if (rcDtParam.org.width < 4 || rcDtParam.bitDepth > 10 || rcDtParam.applyWeight)
-    return RdCost::xGetSADwMask(rcDtParam);
+    return RdCost::xGetSADwMask(rcDtParam); //MATHEUS: distortion metrics: already instrumented
 
   ApproxSS::start_level(ApproxInter::LevelId::SAD);	
 
@@ -3008,6 +3008,10 @@ static Distortion lumaWeightedSSE_SIMD( const DistParam& rcDtParam, ChromaFormat
         int  iRows = rcDtParam.org.height;
   const Pel* piOrg = rcDtParam.org.buf;
   const Pel* piCur = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SSE_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SSE_Curr);
+
   const int  iCols = rcDtParam.org.width;
   const int  iStrideCur = rcDtParam.cur.stride;
   const int  iStrideOrg = rcDtParam.org.stride;
@@ -3092,6 +3096,8 @@ static Distortion lumaWeightedSSE_SIMD( const DistParam& rcDtParam, ChromaFormat
     uiSum += _mm_extract_epi64( xsum, 0 );
     uiSum += _mm_extract_epi64( xsum, 1 );
 
+	ApproxInter::UninstrumentIfMarked((void*) piOrg);
+	ApproxInter::UninstrumentIfMarked((void*) piCur);
 	ApproxSS::end_level();
     return uiSum;
   }
@@ -3149,6 +3155,8 @@ static Distortion lumaWeightedSSE_SIMD( const DistParam& rcDtParam, ChromaFormat
     uiSum += _mm_extract_epi64( xsum, 0 );
     uiSum += _mm_extract_epi64( xsum, 1 );
 
+	ApproxInter::UninstrumentIfMarked((void*) piOrg);
+	ApproxInter::UninstrumentIfMarked((void*) piCur);
 	ApproxSS::end_level();
     return uiSum;
   }
@@ -3168,6 +3176,8 @@ static Distortion lumaWeightedSSE_SIMD( const DistParam& rcDtParam, ChromaFormat
       piOrgLuma += iStrideOrgLuma<<cShiftY;
     }
 
+	ApproxInter::UninstrumentIfMarked((void*) piOrg);
+	ApproxInter::UninstrumentIfMarked((void*) piCur);
 	ApproxSS::end_level();
     return uiSum;
   }
@@ -3185,10 +3195,14 @@ static Distortion lumaWeightedSSE_SIMD( const DistParam& rcDtParam, ChromaFormat
       piOrgLuma += iStrideOrgLuma<<cShiftY;
     }
 
+	ApproxInter::UninstrumentIfMarked((void*) piOrg);
+	ApproxInter::UninstrumentIfMarked((void*) piCur);
 	ApproxSS::end_level();
     return uiSum;
   }
 
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
   return 0;
 }
@@ -3201,6 +3215,10 @@ static Distortion fixWeightedSSE_SIMD( const DistParam& rcDtParam, uint32_t fixe
         int  iRows = rcDtParam.org.height;
   const Pel* piOrg = rcDtParam.org.buf;
   const Pel* piCur = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SSE_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SSE_Curr);
+
   const int  iCols = rcDtParam.org.width;
   const int  iStrideCur = rcDtParam.cur.stride;
   const int  iStrideOrg = rcDtParam.org.stride;
@@ -3249,6 +3267,8 @@ static Distortion fixWeightedSSE_SIMD( const DistParam& rcDtParam, uint32_t fixe
     uiSum += _mm_extract_epi64( xsum, 0 );
     uiSum += _mm_extract_epi64( xsum, 1 );
 
+	ApproxInter::UninstrumentIfMarked((void*) piOrg);
+	ApproxInter::UninstrumentIfMarked((void*) piCur);
 	ApproxSS::end_level();
     return uiSum;
   }
@@ -3265,6 +3285,8 @@ static Distortion fixWeightedSSE_SIMD( const DistParam& rcDtParam, uint32_t fixe
       piCur += iStrideCur;
     }
 
+	ApproxInter::UninstrumentIfMarked((void*) piOrg);
+	ApproxInter::UninstrumentIfMarked((void*) piCur);
 	ApproxSS::end_level();
     return uiSum;
   }
@@ -3280,10 +3302,14 @@ static Distortion fixWeightedSSE_SIMD( const DistParam& rcDtParam, uint32_t fixe
       piCur += iStrideCur;
     }
 
+	ApproxInter::UninstrumentIfMarked((void*) piOrg);
+	ApproxInter::UninstrumentIfMarked((void*) piCur);
 	ApproxSS::end_level();
     return uiSum;
   }
 
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
   return 0;
 }
@@ -3297,7 +3323,8 @@ void xGetSADX5_8xN_SIMDImp(const DistParam& rcDtParam, Distortion* cost) {
   const Pel* piOrg = rcDtParam.org.buf;
   const Pel* piCur = rcDtParam.cur.buf - 4;
 
-  
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SAD_Curr);
 
   int height = rcDtParam.org.height;
   int iSubShift = rcDtParam.subShift;
@@ -3379,20 +3406,22 @@ void xGetSADX5_8xN_SIMDImp(const DistParam& rcDtParam, Distortion* cost) {
   if (isCalCentrePos) cost[2] = (_mm_cvtsi128_si32(sum2));
   _mm_storeu_si128( ( __m128i* ) &cost[3], _mm_unpackhi_epi32( sum0, _mm_setzero_si128() ) );
 
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
 }
 
 template <X86_VEXT vext>
 void RdCost::xGetSADX5_8xN_SIMD(const DistParam& rcDtParam, Distortion* cost, bool isCalCentrePos) {
   if( rcDtParam.bitDepth > 10 ){
-    RdCost::xGetSAD8X5( rcDtParam, cost, isCalCentrePos );
+    RdCost::xGetSAD8X5( rcDtParam, cost, isCalCentrePos ); //MATHEUS: distortion_metrics: already instrumented
     return;
   }
   
   if (isCalCentrePos)
-    xGetSADX5_8xN_SIMDImp<vext, true>(rcDtParam, cost);
+    xGetSADX5_8xN_SIMDImp<vext, true>(rcDtParam, cost); //MATHEUS: distortion_metrics: already instrumented
   else
-    xGetSADX5_8xN_SIMDImp<vext, false>(rcDtParam, cost);
+    xGetSADX5_8xN_SIMDImp<vext, false>(rcDtParam, cost);//MATHEUS: distortion_metrics: already instrumented
 }
 
 template <X86_VEXT vext, bool isCalCentrePos>
@@ -3402,6 +3431,10 @@ void xGetSADX5_16xN_SIMDImp_X86(const DistParam& rcDtParam, Distortion* cost) {
   int i, j;
   const Pel* piOrg = rcDtParam.org.buf;
   const Pel* piCur = rcDtParam.cur.buf - 4;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SAD_Curr);
+
   int height = rcDtParam.org.height;
   int iSubShift = rcDtParam.subShift;
   int iSubStep = (1 << iSubShift);
@@ -3695,20 +3728,22 @@ void xGetSADX5_16xN_SIMDImp_X86(const DistParam& rcDtParam, Distortion* cost) {
     _mm_storeu_si128( ( __m128i* ) &cost[3], _mm_unpackhi_epi32( sum0, _mm_setzero_si128() ) );
   }
 
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
 }
 
 template <X86_VEXT vext>
 void RdCost::xGetSADX5_16xN_SIMD_X86(const DistParam& rcDtParam, Distortion* cost, bool isCalCentrePos) {
   if( rcDtParam.bitDepth > 10 ){
-    RdCost::xGetSAD16X5( rcDtParam, cost, isCalCentrePos );
+    RdCost::xGetSAD16X5( rcDtParam, cost, isCalCentrePos ); //MATHEUS: distortion_metrics: already instrumented
     return;
   }
   
   if (isCalCentrePos)
-    xGetSADX5_16xN_SIMDImp_X86<vext, true>(rcDtParam, cost);
+    xGetSADX5_16xN_SIMDImp_X86<vext, true>(rcDtParam, cost); //MATHEUS: distortion_metrics: already instrumented
   else
-    xGetSADX5_16xN_SIMDImp_X86<vext, false>(rcDtParam, cost);
+    xGetSADX5_16xN_SIMDImp_X86<vext, false>(rcDtParam, cost); //MATHEUS: distortion_metrics: already instrumented
 }
 
 template <X86_VEXT vext>

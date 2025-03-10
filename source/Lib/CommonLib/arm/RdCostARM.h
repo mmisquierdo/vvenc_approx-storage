@@ -83,7 +83,7 @@ static inline int32x4_t neon_madd_16( int16x8_t a, int16x8_t b )
 #if defined( TARGET_SIMD_X86 )
 
 //working up to 12-bit
-static uint32_t xCalcHAD16x16_fast_Neon( const Pel *piOrg, const Pel *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
+static uint32_t xCalcHAD16x16_fast_Neon( const Pel *piOrg, const Pel *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth ) //MATHEUS: distortion metrics: already super instrumented
 {
   ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
@@ -522,7 +522,7 @@ static uint32_t xCalcHAD16x16_fast_Neon( const Pel *piOrg, const Pel *piCur, con
   return ( sad << 2 );
 }
 
-static uint32_t xCalcHAD8x8_Neon( const Pel *piOrg, const Pel *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
+static uint32_t xCalcHAD8x8_Neon( const Pel *piOrg, const Pel *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth ) //MATHEUS: distortion metrics: already super instrumented
 {
   ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
@@ -775,6 +775,10 @@ Distortion RdCost::xGetHADs_ARMSIMD( const DistParam &rcDtParam )
 
   const Pel*  piOrg = rcDtParam.org.buf;
   const Pel*  piCur = rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::HAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::HAD_Curr);
+
   const int iRows = rcDtParam.org.height;
   const int iCols = rcDtParam.org.width;
   const int iStrideCur = rcDtParam.cur.stride;
@@ -909,12 +913,15 @@ Distortion RdCost::xGetHADs_ARMSIMD( const DistParam &rcDtParam )
     THROW( "Unsupported size" );
   }
 
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
+
   return uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth);
 }
 
 template<ARM_VEXT vext>
-Distortion RdCost::xGetHAD2SADs_ARMSIMD( const DistParam &rcDtParam )
+Distortion RdCost::xGetHAD2SADs_ARMSIMD( const DistParam &rcDtParam )  //MATHEUS distortion metrics: already sub instrumented
 { 
   Distortion distHad = xGetHADs_ARMSIMD<vext, false>( rcDtParam );
   Distortion distSad = RdCost::xGetSAD_SIMD<SIMD_EVERYWHERE_EXTENSION_LEVEL>( rcDtParam );
@@ -931,6 +938,10 @@ void xGetSADX5_16xN_SIMDImp_ARM( const DistParam& rcDtParam, Distortion* cost )
   int        i, j;
   const Pel* piOrg      = rcDtParam.org.buf;
   const Pel* piCur      = rcDtParam.cur.buf - 4;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SAD_Curr);
+
   int        height     = rcDtParam.org.height;
   int        iSubShift  = rcDtParam.subShift;
   int        iSubStep   = ( 1 << iSubShift );
@@ -999,11 +1010,13 @@ void xGetSADX5_16xN_SIMDImp_ARM( const DistParam& rcDtParam, Distortion* cost )
   if (isCalCentrePos) cost[2] = (vgetq_lane_s32(sumTwo,0));
   vst1q_s32( (int32_t*) &cost[3], vzipq_s32( sum, vdupq_n_s32(0) ).val[1] );
 
+  ApproxInter::UninstrumentIfMarked((void*) piOrg);
+  ApproxInter::UninstrumentIfMarked((void*) piCur);
   ApproxSS::end_level();
 }
 
 template <ARM_VEXT vext>
-void RdCost::xGetSADX5_16xN_SIMD_ARM(const DistParam& rcDtParam, Distortion* cost, bool isCalCentrePos)
+void RdCost::xGetSADX5_16xN_SIMD_ARM(const DistParam& rcDtParam, Distortion* cost, bool isCalCentrePos) //MATHEUS: distortion_metrics: already sub instrumented
 {
   if( rcDtParam.bitDepth > 10 )
   {
@@ -1024,6 +1037,10 @@ Distortion RdCost::xGetSAD_NxN_ARMSIMD( const DistParam &rcDtParam )
 
   const short* pSrc1   = (const short*)rcDtParam.org.buf;
   const short* pSrc2   = (const short*)rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) pSrc1, ApproxInter::ConfigurationId::SAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) pSrc2, ApproxInter::ConfigurationId::SAD_Curr);
+
   int  iRows           = rcDtParam.org.height;
   int  iSubShift       = rcDtParam.subShift;
   int  iSubStep        = ( 1 << iSubShift );
@@ -1105,7 +1122,11 @@ Distortion RdCost::xGetSAD_NxN_ARMSIMD( const DistParam &rcDtParam )
         Distortion distTemp = vgetq_lane_s32(vsum32, 0); 
         distTemp <<= iSubShift;
         distTemp >>= DISTORTION_PRECISION_ADJUSTMENT( rcDtParam.bitDepth );
-        if( distTemp > rcDtParam.maximumDistortionForEarlyExit ) { ApproxSS::end_level(); return distTemp;}
+        if( distTemp > rcDtParam.maximumDistortionForEarlyExit ) { 
+			ApproxInter::UninstrumentIfMarked((void*) pSrc1);
+			ApproxInter::UninstrumentIfMarked((void*) pSrc2);
+			ApproxSS::end_level(); 
+			return distTemp;}
         checkExit = 3;
       }
       else if( earlyExitAllowed )
@@ -1118,6 +1139,8 @@ Distortion RdCost::xGetSAD_NxN_ARMSIMD( const DistParam &rcDtParam )
 
   uiSum <<= iSubShift;
 
+  ApproxInter::UninstrumentIfMarked((void*) pSrc1);
+  ApproxInter::UninstrumentIfMarked((void*) pSrc2);
   ApproxSS::end_level();
   return uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth);
 }
@@ -1138,12 +1161,16 @@ template<ARM_VEXT vext>
 Distortion RdCost::xGetSADwMask_ARMSIMD( const DistParam& rcDtParam )
 {
   if (rcDtParam.org.width < 4 || rcDtParam.bitDepth > 10 || rcDtParam.applyWeight)
-    return RdCost::xGetSADwMask(rcDtParam);
+    return RdCost::xGetSADwMask(rcDtParam); //MATHEUS distortion metrics: already instrumented
 
   ApproxSS::start_level(ApproxInter::LevelId::SAD);
 
   const short *src1       = (const short *) rcDtParam.org.buf;
   const short *src2       = (const short *) rcDtParam.cur.buf;
+
+  ApproxInter::InstrumentIfMarked((void*) piOrg, ApproxInter::ConfigurationId::SAD_Orig);
+  ApproxInter::InstrumentIfMarked((void*) piCur, ApproxInter::ConfigurationId::SAD_Curr);
+
   const short *weightMask = (const short *) rcDtParam.mask;
   int          rows       = rcDtParam.org.height;
   int          cols       = rcDtParam.org.width;
@@ -1182,6 +1209,8 @@ Distortion RdCost::xGetSADwMask_ARMSIMD( const DistParam& rcDtParam )
   sum = horizontal_add_s32x4( vsum32 );
   sum <<= subShift;
 
+  ApproxInter::UninstrumentIfMarked((void*) src1);
+  ApproxInter::UninstrumentIfMarked((void*) src2);
   ApproxSS::end_level();
   return sum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth);
 }
