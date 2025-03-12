@@ -70,6 +70,7 @@
 	namespace ApproxInter {
 		//private:
 			extern AllocatedBuffersSet allocatedBuffers; //use methods to manipulate
+			//extern AllocatedBuffersSet unmarkedBuffers;
 			extern std::mutex allocatedBuffersMutex;
 
 			//FME_BEST_MV_COST_RECALC

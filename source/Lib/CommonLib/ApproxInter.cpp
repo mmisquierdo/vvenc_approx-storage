@@ -7,6 +7,7 @@ BufferRange::BufferRange(uint8_t * const initialAddress, uint8_t const * const e
 			m_initialAddress(initialAddress), m_endAddress(endAddress), m_bufferId(bufferId), m_configurationId(configurationId), m_dataSizeInBytes(dataSizeInBytes) {}
 
 AllocatedBuffersSet ApproxInter::allocatedBuffers{};
+//AllocatedBuffersSet ApproxInter::unmarkedBuffers{};
 std::mutex ApproxInter::allocatedBuffersMutex;
 
 //FME_BEST_MV_COST_RECALC
@@ -43,6 +44,12 @@ void ApproxInter::MarkBuffer(const BufferRange& toMark) {
 
 void ApproxInter::UnmarkBuffer(const BufferRange& toUnmark) {
 	const std::lock_guard<std::mutex> lock(ApproxInter::allocatedBuffersMutex);
+
+	/*const auto& it = ApproxInter::allocatedBuffers.find(toUnmark);
+	if (it != ApproxInter::allocatedBuffers.cend()) {
+		ApproxInter::unmarkedBuffers.insert(*it);
+		//std::cout << "Unmarked Buffers: " << ApproxInter::unmarkedBuffers.size() << std::endl;
+	}*/
 
 	ApproxInter::allocatedBuffers.erase(toUnmark);
 }
@@ -99,6 +106,12 @@ void ApproxInter::UninstrumentIfMarked(void * const address, const bool giveAway
 		ApproxSS::remove_approx(it->m_initialAddress, it->m_endAddress, giveAwayRecords);
 	} else {
 		std::cout << "ApproxInter WARNING: buffer not marked for remove_approx." << std::endl;
+		/*std::cout << "ApproxInter WARNING: buffer not marked for remove_approx." << " Unmarked Buffers: " << ApproxInter::unmarkedBuffers.size() << "."; // << std::endl;
+		const bool alreadyUnmarked = ApproxInter::unmarkedBuffers.find(accessBuffer) != ApproxInter::unmarkedBuffers.cend();
+		if (alreadyUnmarked) {
+			std::cout << " ALREADY UNMARKED."; 
+		}
+		std::cout << std::endl;*/
 	}
 }
 
