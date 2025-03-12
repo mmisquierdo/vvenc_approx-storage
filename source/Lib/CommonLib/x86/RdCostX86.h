@@ -2726,6 +2726,8 @@ Distortion RdCost::xGetHAD2SADs_SIMD( const DistParam &rcDtParam )
     }
     distSad = uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth);
 
+	ApproxInter::UninstrumentIfMarked((void*) pSrc1);
+	ApproxInter::UninstrumentIfMarked((void*) pSrc2);
 	ApproxSS::end_level();
   }
 

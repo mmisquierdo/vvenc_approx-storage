@@ -271,20 +271,20 @@ void InterSearch::init( const VVEncCfg& encCfg, TrQuant* pTrQuant, RdCost* pRdCo
   m_tmpStorageLCU.RemarkBuffers(ApproxInter::BufferId::InterSearch_m_tmpStorageLCU);
   //JICS: instrumentar aqui
   m_pTempPel = xMalloc(Pel, encCfg.m_CTUSize * encCfg.m_CTUSize); //new Pel[ encCfg.m_CTUSize * encCfg.m_CTUSize ];
-  ApproxInter::ReinstrumentIfMarked((void*) m_pTempPel, ApproxInter::BufferId::InterSearch_m_pTempPel, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::RemarkBuffer((void*) m_pTempPel, ApproxInter::BufferId::InterSearch_m_pTempPel, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
 
   m_tmpAffiStorage.create(UnitArea(cform, Area(0, 0, MAX_CU_SIZE, MAX_CU_SIZE + 2)));  // allow overread by 2 samples
   m_tmpAffiStorage.RemarkBuffers(ApproxInter::BufferId::InterSearch_m_tmpAffiStorage);
   //JICS: instrumentar aqui
   
   m_tmpAffiError = xMalloc(Pel, MAX_CU_SIZE * MAX_CU_SIZE); //new Pel[MAX_CU_SIZE * MAX_CU_SIZE];
-  ApproxInter::ReinstrumentIfMarked((void*) m_tmpAffiError, ApproxInter::BufferId::InterSearch_m_tmpAffiError, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::RemarkBuffer((void*) m_tmpAffiError, ApproxInter::BufferId::InterSearch_m_tmpAffiError, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
 
   m_tmpAffiDeri[0] = xMalloc(Pel, MAX_CU_SIZE * MAX_CU_SIZE); //new Pel[MAX_CU_SIZE * MAX_CU_SIZE];
-  ApproxInter::ReinstrumentIfMarked((void*) m_tmpAffiDeri[0], ApproxInter::BufferId::InterSearch_m_tmpAffiDeri0, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::RemarkBuffer((void*) m_tmpAffiDeri[0], ApproxInter::BufferId::InterSearch_m_tmpAffiDeri0, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
 
   m_tmpAffiDeri[1] = xMalloc(Pel, MAX_CU_SIZE * MAX_CU_SIZE); //new Pel[MAX_CU_SIZE * MAX_CU_SIZE];
-  ApproxInter::ReinstrumentIfMarked((void*) m_tmpAffiDeri[1], ApproxInter::BufferId::InterSearch_m_tmpAffiDeri1, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::RemarkBuffer((void*) m_tmpAffiDeri[1], ApproxInter::BufferId::InterSearch_m_tmpAffiDeri1, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
   //JICS: intrumentar como Affine...
 
   CompArea chromaArea( COMP_Cb, cform, Area( 0, 0, encCfg.m_CTUSize, encCfg.m_CTUSize ), true );
@@ -3091,11 +3091,11 @@ void InterSearch::xPatternSearchFracDIF(
 
   #if APPROX_FME_BEST_MV_COST_RECALC
     #if APPROX_FME_RECO
-      ApproxInter::InstrumentIfMarked((void*) cPatternRoi.buf, ApproxInter::BufferId::FME_RECO, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+      ApproxInter::InstrumentIfMarked((void*) cPatternRoi.buf, ApproxInter::BufferId::FME_RECO, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
     #endif
 
     #if APPROX_FME_ORIG
-      ApproxInter::InstrumentIfMarked((void*) cStruct.pcPatternKey->buf, ApproxInter::BufferId::FME_ORIG, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+      ApproxInter::InstrumentIfMarked((void*) cStruct.pcPatternKey->buf, ApproxInter::BufferId::FME_ORIG, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
     #endif
 
     const Mv* pcMvRefine = (iFrac == 2 ? s_acMvRefineH : s_acMvRefineQ); //if quarter or half

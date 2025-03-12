@@ -73,7 +73,7 @@ EncReshape::EncReshape()
   , m_srcSeqStats   ()
   , m_rspSeqStats   ()
 {
-  ApproxInter::MarkBuffer((void*) &m_cwLumaWeight[0], (void*) &m_cwLumaWeight[PIC_CODE_CW_BINS], ApproxInter::BufferId::EncReshape_m_cwLumaWeight, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::MarkBuffer((void*) &m_cwLumaWeight[0], (void*) &m_cwLumaWeight[PIC_CODE_CW_BINS], ApproxInter::BufferId::EncReshape_m_cwLumaWeight, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
 
   m_CTUFlag      = false;
   m_reshape      = true;

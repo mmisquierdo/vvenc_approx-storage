@@ -88,7 +88,7 @@ template< unsigned inputSize, unsigned outputSize >
 void mipMatrixMulCore( Pel* res, const Pel* input, const uint8_t* weight, const int maxVal, const int inputOffset, bool transpose )
 {
   Pel buffer[ outputSize*outputSize];
-  ApproxInter::MarkBuffer((void*) &buffer[0], (void*) &buffer[outputSize*outputSize], ApproxInter::BufferId::mipMatrixMulCore_buffer, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::MarkBuffer((void*) &buffer[0], (void*) &buffer[outputSize*outputSize], ApproxInter::BufferId::mipMatrixMulCore_buffer, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
   //JICS: instrumentar como mipMatrixMulCore
 
   int sum = 0;
@@ -1116,16 +1116,16 @@ void PelStorage::create( const ChromaFormat &_chromaFormat, const Area& _area, c
   m_maxArea = UnitArea( _chromaFormat, _area );
 }
 
-void PelStorage::ReinstrumentBuffers(const int64_t baseBufferId) const{
-	if(m_origin[0]) {ApproxInter::ReinstrumentIfMarked((void*) m_origin[0],	baseBufferId+0,	ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));}
-	if(m_origin[1])	{ApproxInter::ReinstrumentIfMarked((void*) m_origin[1],	baseBufferId+1, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));}
-	if(m_origin[2])	{ApproxInter::ReinstrumentIfMarked((void*) m_origin[2],	baseBufferId+2, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));}
-}
+/*void PelStorage::ReinstrumentBuffers(const int64_t baseBufferId) const{
+	if(m_origin[0]) {ApproxInter::ReinstrumentIfMarked((void*) m_origin[0],	baseBufferId+0,	ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
+	if(m_origin[1])	{ApproxInter::ReinstrumentIfMarked((void*) m_origin[1],	baseBufferId+1, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
+	if(m_origin[2])	{ApproxInter::ReinstrumentIfMarked((void*) m_origin[2],	baseBufferId+2, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
+}*/
 
 void PelStorage::RemarkBuffers(const int64_t baseBufferId) const{
-	if(m_origin[0]) {ApproxInter::RemarkBuffer((void*) m_origin[0],	baseBufferId+0,	ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));}
-	if(m_origin[1])	{ApproxInter::RemarkBuffer((void*) m_origin[1],	baseBufferId+1, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));}
-	if(m_origin[2])	{ApproxInter::RemarkBuffer((void*) m_origin[2],	baseBufferId+2, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));}
+	if(m_origin[0]) {ApproxInter::RemarkBuffer((void*) m_origin[0],	baseBufferId+0,	ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
+	if(m_origin[1])	{ApproxInter::RemarkBuffer((void*) m_origin[1],	baseBufferId+1, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
+	if(m_origin[2])	{ApproxInter::RemarkBuffer((void*) m_origin[2],	baseBufferId+2, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
 }
 
 void PelStorage::createFromBuf( PelUnitBuf buf )
@@ -1179,6 +1179,8 @@ void PelStorage::takeOwnership( PelStorage& other )
 
 void PelStorage::swap( PelStorage& other )
 {
+  std::cout << "!!!PelStorage::swap!!!" << std::endl;
+
   const uint32_t numCh = getNumberValidComponents( chromaFormat );
 
   for( uint32_t i = 0; i < numCh; i++ )

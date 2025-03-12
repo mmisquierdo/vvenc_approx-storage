@@ -113,7 +113,7 @@ VVENC_DECL void vvenc_YUVBuffer_alloc_buffer( vvencYUVBuffer *yuvBuffer, const v
     const int size  = yuvPlane.stride * yuvPlane.height;
     yuvPlane.ptr    = ( size > 0 ) ? new int16_t[ size ] : nullptr;
 
-	if(yuvPlane.ptr) {ApproxInter::MarkBuffer((void*) yuvPlane.ptr, (void*) &yuvPlane.ptr[size], ApproxInter::BufferId::vvenc_YUVBuffer_alloc_buffer_yuvPlane_int16, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(int16_t));}
+	if(yuvPlane.ptr) {ApproxInter::MarkBuffer((void*) yuvPlane.ptr, (void*) &yuvPlane.ptr[size], ApproxInter::BufferId::vvenc_YUVBuffer_alloc_buffer_yuvPlane_int16, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(int16_t));}
 	//JICS: yuvPlane_i
   }
 }

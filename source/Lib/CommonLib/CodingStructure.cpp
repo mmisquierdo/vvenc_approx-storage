@@ -589,7 +589,7 @@ void CodingStructure::createTempBuffers( const bool isTopLayer )
     m_lfParam[i] = ( isTopLayer && m_mapSize[0].area() > 0 ) ? ( LoopFilterParam* ) xMalloc( LoopFilterParam, m_mapSize[0].area() ) : nullptr;
 	//<MATHEUS
 	if (m_lfParam[i]) {
-		ApproxInter::UninstrumentIfMarked(m_lfParam[i], false);
+		ApproxInter::UnmarkBuffer((void*) m_lfParam[i]);
 	}
 	//MATHEUS>
   }
@@ -664,7 +664,7 @@ void CodingStructure::createCoeffs()
     m_coeffs[i] = _area > 0 ? ( TCoeffSig* ) xMalloc( TCoeffSig, _area ) : nullptr;
 	//<MATHEUS
 	if (m_coeffs[i]) {
-		ApproxInter::UninstrumentIfMarked(m_coeffs[i], false);
+		ApproxInter::UnmarkBuffer((void*) m_coeffs[i]);
 	}
 	//MATHEUS>
   }

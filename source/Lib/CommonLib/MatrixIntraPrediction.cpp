@@ -72,10 +72,10 @@ MatrixIntraPrediction::MatrixIntraPrediction()
   , m_upsmpFactorVer        ( 0 )
 {
   m_reducedBoundary       = (Pel*)xMalloc( Pel, MIP_MAX_INPUT_SIZE );
-  ApproxInter::ReinstrumentIfMarked((void*) m_reducedBoundary, ApproxInter::BufferId::MatrixIntraPrediction_m_reducedBoundary, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::RemarkBuffer((void*) m_reducedBoundary, ApproxInter::BufferId::MatrixIntraPrediction_m_reducedBoundary, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
 
   m_reducedBoundaryTransp = (Pel*)xMalloc( Pel, MIP_MAX_INPUT_SIZE );
-  ApproxInter::ReinstrumentIfMarked((void*) m_reducedBoundaryTransp, ApproxInter::BufferId::MatrixIntraPrediction_m_reducedBoundaryTransp, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::RemarkBuffer((void*) m_reducedBoundaryTransp, ApproxInter::BufferId::MatrixIntraPrediction_m_reducedBoundaryTransp, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
 
   //JICS: instrumenar como MIP_Bound e MIB_BoundTrans
 }
@@ -131,7 +131,7 @@ void MatrixIntraPrediction::prepareInputForPred(const CPelBuf &pSrc, const Area&
 void MatrixIntraPrediction::predBlock(Pel* const result, const int modeIdx, const bool transpose, const int bitDepth)
 {
   ALIGN_DATA( MEMORY_ALIGN_DEF_SIZE, Pel bufReducedPred[MIP_MAX_REDUCED_OUTPUT_SAMPLES] );
-  ApproxInter::MarkBuffer((void*) &bufReducedPred[0], (void*) &bufReducedPred[MIP_MAX_REDUCED_OUTPUT_SAMPLES], ApproxInter::BufferId::MatrixIntraPrediction_predBlock_bufReducedPred, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::MarkBuffer((void*) &bufReducedPred[0], (void*) &bufReducedPred[MIP_MAX_REDUCED_OUTPUT_SAMPLES], ApproxInter::BufferId::MatrixIntraPrediction_predBlock_bufReducedPred, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
   //JICS: instrumentar como predBlock_bufReducedPred
 
   const bool       needUpsampling  = ( m_upsmpFactorHor > 1 ) || ( m_upsmpFactorVer > 1 );

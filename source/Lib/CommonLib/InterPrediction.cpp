@@ -627,7 +627,7 @@ InterPredInterpolation::InterPredInterpolation()
   , m_isBi(false)
   , m_ifpLines(0)
 {
-  ApproxInter::MarkBuffer((void*) &m_gradBuf[0], (void*) &m_gradBuf[2-1][(AFFINE_MIN_BLOCK_SIZE + 2) * (AFFINE_MIN_BLOCK_SIZE + 2)], ApproxInter::BufferId::InterPredInterpolation_m_gradBuf, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+  ApproxInter::MarkBuffer((void*) &m_gradBuf[0], (void*) &m_gradBuf[2-1][(AFFINE_MIN_BLOCK_SIZE + 2) * (AFFINE_MIN_BLOCK_SIZE + 2)], ApproxInter::BufferId::InterPredInterpolation_m_gradBuf, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
 }
 
 InterPredInterpolation::~InterPredInterpolation()
@@ -703,7 +703,7 @@ void InterPredInterpolation::init()
     for( uint32_t i = 0; i < LUMA_INTERPOLATION_FILTER_SUB_SAMPLE_POSITIONS_SIGNAL; i++ )
     {
       m_filteredBlockTmp[i][c] = ( Pel* ) xMalloc( Pel, ( extWidth + 4 ) * ( extHeight + 7 + 4 ) );
-	  ApproxInter::ReinstrumentIfMarked((void*) m_filteredBlockTmp[i][c], ApproxInter::BufferId::InterPredInterpolation_m_filteredBlockTmp, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel)); 
+	  ApproxInter::RemarkBuffer((void*) m_filteredBlockTmp[i][c], ApproxInter::BufferId::InterPredInterpolation_m_filteredBlockTmp, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
 	   //JICS: instrumentar como FILT_TEMP
       VALGRIND_MEMCLEAR( m_filteredBlockTmp[i][c], sizeof( Pel ) * (extWidth + 4) * (extHeight + 7 + 4) );
 
@@ -718,7 +718,7 @@ void InterPredInterpolation::init()
       for( uint32_t j = 0; j < LUMA_INTERPOLATION_FILTER_SUB_SAMPLE_POSITIONS_SIGNAL; j++ )
       {
         m_filteredBlock[i][j][c] = ( Pel* ) xMalloc( Pel, extWidth * extHeight );
-		ApproxInter::ReinstrumentIfMarked((void*) m_filteredBlock[i][j][c], ApproxInter::BufferId::InterPredInterpolation_m_filteredBlock, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel)); 
+		ApproxInter::RemarkBuffer((void*) m_filteredBlock[i][j][c], ApproxInter::BufferId::InterPredInterpolation_m_filteredBlock, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
 		//JICS: instrumentar como FILT
         VALGRIND_MEMCLEAR( m_filteredBlock[i][j][c], sizeof( Pel ) * extWidth * extHeight );
 
@@ -738,10 +738,10 @@ void InterPredInterpolation::init()
   m_gradX1 = (Pel*)xMalloc(Pel, BDOF_TEMP_BUFFER_SIZE);
   m_gradY1 = (Pel*)xMalloc(Pel, BDOF_TEMP_BUFFER_SIZE);
 
-  ApproxInter::ReinstrumentIfMarked((void*) m_gradX0, ApproxInter::BufferId::InterPredInterpolation_m_gradX0, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel)); 
-  ApproxInter::ReinstrumentIfMarked((void*) m_gradY0, ApproxInter::BufferId::InterPredInterpolation_m_gradY0, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel)); 
-  ApproxInter::ReinstrumentIfMarked((void*) m_gradX1, ApproxInter::BufferId::InterPredInterpolation_m_gradX1, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel)); 
-  ApproxInter::ReinstrumentIfMarked((void*) m_gradY1, ApproxInter::BufferId::InterPredInterpolation_m_gradY1, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel)); 
+  ApproxInter::RemarkBuffer((void*) m_gradX0, ApproxInter::BufferId::InterPredInterpolation_m_gradX0, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
+  ApproxInter::RemarkBuffer((void*) m_gradY0, ApproxInter::BufferId::InterPredInterpolation_m_gradY0, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
+  ApproxInter::RemarkBuffer((void*) m_gradX1, ApproxInter::BufferId::InterPredInterpolation_m_gradX1, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
+  ApproxInter::RemarkBuffer((void*) m_gradY1, ApproxInter::BufferId::InterPredInterpolation_m_gradY1, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
   //JICS: Iinstrumentar como BDOF...
 
   VALGRIND_MEMCLEAR( m_gradX0, sizeof( Pel ) * BDOF_TEMP_BUFFER_SIZE );
@@ -1156,7 +1156,7 @@ void DMVR::init( RdCost* pcRdCost, const ChromaFormat chFormat )
 	  m_yuvTmp[i].RemarkBuffers(ApproxInter::BufferId::DMVR_m_yuvTmp);
 	  //JICS: instrumentar aqui
       m_yuvPad[i].create( chFormat, predArea, 0, DMVR_NUM_ITERATION + (NTAPS_LUMA>>1), 32 );
-	  m_yuvTmp[i].RemarkBuffers(ApproxInter::BufferId::DMVR_m_yuvTmp);
+	  m_yuvPad[i].RemarkBuffers(ApproxInter::BufferId::DMVR_m_yuvPad);
 	  //JICS: instrumentar aqui
       // the buffer m_yuvPad[i].bufs[0].buf is aligned to 32
       // the actual begin of the written to buffer is m_yuvPad[i].bufs[0].buf - 3 * stride - 3 = m_yuvPad[i].bufs[0].buf - 99,

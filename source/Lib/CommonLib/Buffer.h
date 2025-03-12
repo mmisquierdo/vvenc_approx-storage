@@ -1000,7 +1000,7 @@ struct PelStorage : public PelUnitBuf
   const CPelBuf     getCompactBuf(const CompArea& blk) const;
 
   //<MATHEUS
-  void ReinstrumentBuffers(const int64_t baseBufferId) const;
+  //void ReinstrumentBuffers(const int64_t baseBufferId) const;
   void RemarkBuffers(const int64_t baseBufferId) const;
 
   //MATHEUS>
@@ -1026,7 +1026,7 @@ struct CompStorage : public PelBuf
     CHECK( m_memory, "Trying to re-create an already initialized buffer" );
     m_allocSize = size.area();
     m_memory = xMalloc(Pel, m_allocSize); /*new Pel[m_allocSize];*/ //<Matheus> </Matheus>
-	ApproxInter::ReinstrumentIfMarked((void*) m_memory, ApproxInter::BufferId::CompStorage_mMemory, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+	ApproxInter::RemarkBuffer((void*) m_memory, ApproxInter::BufferId::CompStorage_mMemory, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
 	//JICS: instrumentar genericamente
     PelBuf::operator=( PelBuf( m_memory, size ) );
   }
