@@ -1156,7 +1156,7 @@ void DMVR::init( RdCost* pcRdCost, const ChromaFormat chFormat )
 	  m_yuvTmp[i].ReinstrumentBuffers(ApproxInter::BufferId::DMVR_m_yuvTmp);
 	  //JICS: instrumentar aqui
       m_yuvPad[i].create( chFormat, predArea, 0, DMVR_NUM_ITERATION + (NTAPS_LUMA>>1), 32 );
-	  m_yuvTmp[i].ReinstrumentBuffers(ApproxInter::BufferId::DMVR_m_yuvTmp);
+	  m_yuvPad[i].ReinstrumentBuffers(ApproxInter::BufferId::DMVR_m_yuvPad);
 	  //JICS: instrumentar aqui
       // the buffer m_yuvPad[i].bufs[0].buf is aligned to 32
       // the actual begin of the written to buffer is m_yuvPad[i].bufs[0].buf - 3 * stride - 3 = m_yuvPad[i].bufs[0].buf - 99,
