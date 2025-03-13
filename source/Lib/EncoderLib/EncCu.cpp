@@ -229,10 +229,10 @@ void EncCu::init( const VVEncCfg& encCfg, const SPS& sps, std::vector<int>* cons
     m_pBestCS[i]->createForSearch( chromaFormat, area );
 
     m_pOrgBuffer[i].create( chromaFormat, area );
-	m_pOrgBuffer[i].RemarkBuffers(ApproxInter::BufferId::EncCu_m_pOrgBuffer);
+	  m_pOrgBuffer[i].RemarkBuffers(ApproxInter::BufferId::EncCu_m_pOrgBuffer);
 	//JICS: instrumentar aqui
     m_pRspBuffer[i].create( CHROMA_400, area );
-	m_pOrgBuffer[i].RemarkBuffers(ApproxInter::BufferId::EncCu_m_pRspBuffer);
+	  m_pRspBuffer[i].RemarkBuffers(ApproxInter::BufferId::EncCu_m_pRspBuffer);
 	//JICS: instrumentar aqui
   }
 
@@ -251,13 +251,13 @@ void EncCu::init( const VVEncCfg& encCfg, const SPS& sps, std::vector<int>* cons
   for( uint8_t i = 0; i < MAX_TMP_BUFS; i++)
   {
     m_aTmpStorageLCU[i].create(chromaFormat, Area(0, 0, uiMaxSize, uiMaxSize));
-	m_aTmpStorageLCU[i].RemarkBuffers(ApproxInter::BufferId::EncCu_m_aTmpStorageLCU);
+	  m_aTmpStorageLCU[i].RemarkBuffers(ApproxInter::BufferId::EncCu_m_aTmpStorageLCU);
 	//JICS: instrumentar aqui
   }
   for (unsigned ui = 0; ui < MRG_MAX_NUM_CANDS; ui++)
   {
     m_acMergeTmpBuffer[ui].create(chromaFormat, Area(0, 0, uiMaxSize, uiMaxSize));
-	m_acMergeTmpBuffer[ui].RemarkBuffers(ApproxInter::BufferId::EncCu_m_acMergeTmpBuffer);
+	  m_acMergeTmpBuffer[ui].RemarkBuffers(ApproxInter::BufferId::EncCu_m_acMergeTmpBuffer);
 	//JICS: instrumentar aqui
   }
 
@@ -4164,6 +4164,8 @@ void MergeItem::create( ChromaFormat chromaFormat, const Area &area )
   if( m_pelStorage.bufs.empty() )
   {
     m_pelStorage.create( chromaFormat, area );
+	  m_pelStorage.RemarkBuffers(ApproxInter::BufferId::MergeItem_m_pelStorage);
+
     m_mvStorage .resize( area.area() >> ( MIN_CU_LOG2 << 1 ) );
   }
 

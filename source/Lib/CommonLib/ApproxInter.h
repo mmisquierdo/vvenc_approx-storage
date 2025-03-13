@@ -220,7 +220,25 @@
 
 				constexpr int64_t EncReshape_m_cwLumaWeight = 870;
 
-				
+				constexpr int64_t MergeItem_m_pelStorage = 880;
+
+				constexpr int64_t Canny_m_orientationBuf = 1000;
+				constexpr int64_t Canny_m_gradientBufX = 1010;
+				constexpr int64_t Canny_m_gradientBufY = 1020;
+
+				constexpr int64_t Morph_m_dilationBuf = 1030;
+				constexpr int64_t Morph_m_dilationBuf2 = 1040;
+				constexpr int64_t Morph_m_dilationBuf4 = 1050;
+
+				constexpr int64_t FGAnalyzer_m_maskBuf = 1060;
+				constexpr int64_t FGAnalyzer_m_grainEstimateBuf = 1070;
+				constexpr int64_t FGAnalyzer_m_workingBufSubsampled2 = 1080;
+				constexpr int64_t FGAnalyzer_m_maskSubsampled2 = 1100;
+				constexpr int64_t FGAnalyzer_m_workingBufSubsampled4 = 1110;
+				constexpr int64_t FGAnalyzer_m_maskSubsampled4 = 1120;
+				constexpr int64_t FGAnalyzer_m_maskUpsampled = 1130;
+
+				constexpr int64_t SortedPelUnitBufs_m_acStorage = 1140;
 
 
 

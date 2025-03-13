@@ -986,6 +986,9 @@ void PelStorage::create( const UnitArea& _UnitArea )
 {
   create( _UnitArea.chromaFormat, _UnitArea.blocks[0] );
   m_maxArea = _UnitArea;
+
+  //DEBUG!!!!!!!
+  this->RemarkBuffers(-2);
 }
 
 void PelStorage::create( const ChromaFormat &_chromaFormat, const Area& _area )
@@ -1045,6 +1048,9 @@ void PelStorage::create( const ChromaFormat &_chromaFormat, const Area& _area )
   }
 
   m_maxArea = UnitArea( _chromaFormat, _area );
+
+  //DEBUG!!!!!!!
+  this->RemarkBuffers(-3);
 }
 
 void PelStorage::create( const ChromaFormat &_chromaFormat, const Area& _area, const unsigned _maxCUSize, const unsigned _margin, const unsigned _alignment, const bool _scaleChromaMargin )
@@ -1114,6 +1120,9 @@ void PelStorage::create( const ChromaFormat &_chromaFormat, const Area& _area, c
   }
 
   m_maxArea = UnitArea( _chromaFormat, _area );
+
+  //DEBUG!!!!!!!
+  this->RemarkBuffers(-4);
 }
 
 /*void PelStorage::ReinstrumentBuffers(const int64_t baseBufferId) const{

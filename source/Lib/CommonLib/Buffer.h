@@ -1052,6 +1052,7 @@ struct SortedPelUnitBufs
     for (size_t i = 0; i <= NumEntries; i++)
     {
       m_acStorage[i].create(cform, Area(0, 0, maxWidth, maxHeight));
+      m_acStorage[i].RemarkBuffers(ApproxInter::BufferId::SortedPelUnitBufs_m_acStorage);
     }
   }
 

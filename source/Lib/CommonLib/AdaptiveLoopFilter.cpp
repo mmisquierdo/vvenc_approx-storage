@@ -435,7 +435,7 @@ void AdaptiveLoopFilter::create( const int picWidth, const int picHeight, const 
   //JICS: instrumentar aqui
   m_tempBuf2.destroy();
   m_tempBuf2.create( format, Area( 0, 0, maxCUWidth + (MAX_ALF_PADDING_SIZE << 1), maxCUHeight + (MAX_ALF_PADDING_SIZE << 1) ), maxCUWidth, MAX_ALF_PADDING_SIZE, 0, false );
-  m_tempBuf.RemarkBuffers(ApproxInter::BufferId::AdaptiveLoopFilter_tempBuf2);
+  m_tempBuf2.RemarkBuffers(ApproxInter::BufferId::AdaptiveLoopFilter_tempBuf2);
 
   //JICS: instrumentar aqui
 

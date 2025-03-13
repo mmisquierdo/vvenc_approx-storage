@@ -139,9 +139,16 @@ static bool check_one_fastInvCore( TCoeffOps* ref, TCoeffOps* opt, unsigned idx,
   sstm << "fastInvCore trSize=" << trSize << " lines=" << lines << " reducedLines=" << reducedLines << " cutoff=" << cutoff;
 
   TMatrixCoeff *it   = ( TMatrixCoeff* ) xMalloc( TMatrixCoeff, trSize * trSize );
+  ApproxInter::UnmarkBuffer((void*) it);
+
   TCoeff       *src  = ( TCoeff* )       xMalloc( TCoeff,       trSize * lines );
+  ApproxInter::UnmarkBuffer((void*) src);
+
   TCoeff       *dst0 = ( TCoeff* )       xMalloc( TCoeff,       trSize * lines );
+  ApproxInter::UnmarkBuffer((void*) dst0);
+
   TCoeff       *dst1 = ( TCoeff* )       xMalloc( TCoeff,       trSize * lines );
+  ApproxInter::UnmarkBuffer((void*) dst1);
 
   // Initialize source buffers.
   std::generate( it, it + trSize * trSize, trafo_generator );
@@ -178,9 +185,16 @@ static bool check_one_fastFwdCore_2D( TCoeffOps* ref, TCoeffOps* opt, unsigned i
        << " cutoff=" << cutoff << " shift=" << shift;
 
   TMatrixCoeff *tc   = ( TMatrixCoeff* ) xMalloc( TMatrixCoeff, trSize * trSize );
+  ApproxInter::UnmarkBuffer((void*) tc);
+
   TCoeff       *src  = ( TCoeff* )       xMalloc( TCoeff,       trSize * line );
+  ApproxInter::UnmarkBuffer((void*) src);
+
   TCoeff       *dst0 = ( TCoeff* )       xMalloc( TCoeff,       trSize * line );
+  ApproxInter::UnmarkBuffer((void*) dst0);
+
   TCoeff       *dst1 = ( TCoeff* )       xMalloc( TCoeff,       trSize * line );
+  ApproxInter::UnmarkBuffer((void*) dst1);
 
   // Initialize source and destination buffers, make sure that destination
   // buffers match in elements that are not written to by the kernel being
