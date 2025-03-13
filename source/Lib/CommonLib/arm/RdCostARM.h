@@ -85,7 +85,7 @@ static inline int32x4_t neon_madd_16( int16x8_t a, int16x8_t b )
 //working up to 12-bit
 static uint32_t xCalcHAD16x16_fast_Neon( const Pel *piOrg, const Pel *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
 {
-  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+  //ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
   int16x8x2_t m1[8], m2[8];
   int32x4x2_t m3[8], m4[8];
@@ -518,13 +518,13 @@ static uint32_t xCalcHAD16x16_fast_Neon( const Pel *piOrg, const Pel *piCur, con
   sad += absDc >> 2;
   sad = ( ( sad + 2 ) >> 2 );
 
-  ApproxSS::end_level();
+  //ApproxSS::end_level();
   return ( sad << 2 );
 }
 
 static uint32_t xCalcHAD8x8_Neon( const Pel *piOrg, const Pel *piCur, const int iStrideOrg, const int iStrideCur, const int iBitDepth )
 {
-  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+  //ApproxSS::start_level(ApproxInter::LevelId::HAD);
 
   CHECK( iBitDepth > 10, "Only bit-depths of up to 10 bits supported!" );
 
@@ -764,14 +764,14 @@ static uint32_t xCalcHAD8x8_Neon( const Pel *piOrg, const Pel *piCur, const int 
   sad += absDc >> 2;
   sad = ( ( sad + 2 ) >> 2 );
 
-  ApproxSS::end_level();
+  //ApproxSS::end_level();
   return sad;
 }
 
 template<ARM_VEXT vext, bool fastHad>
 Distortion RdCost::xGetHADs_ARMSIMD( const DistParam &rcDtParam )
 {
-  ApproxSS::start_level(ApproxInter::LevelId::HAD);
+  ApproxSS::start_level(fastHad ? ApproxInter::LevelId::FastHAD : ApproxInter::LevelId::HAD);
 
   const Pel*  piOrg = rcDtParam.org.buf;
   const Pel*  piCur = rcDtParam.cur.buf;
@@ -1140,7 +1140,7 @@ Distortion RdCost::xGetSADwMask_ARMSIMD( const DistParam& rcDtParam )
   if (rcDtParam.org.width < 4 || rcDtParam.bitDepth > 10 || rcDtParam.applyWeight)
     return RdCost::xGetSADwMask(rcDtParam);
 
-  ApproxSS::start_level(ApproxInter::LevelId::SAD);
+  ApproxSS::start_level(ApproxInter::LevelId::MaskedSAD);
 
   const short *src1       = (const short *) rcDtParam.org.buf;
   const short *src2       = (const short *) rcDtParam.cur.buf;
