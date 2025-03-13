@@ -1225,8 +1225,10 @@ void EncAdaptiveLoopFilter::init( const VVEncCfg& encCfg, const PPS& pps, CABACW
   m_filterControl         = new uint8_t[m_numCTUsInPic];
   m_bestFilterControl     = new uint8_t[m_numCTUsInPic];
   uint32_t area           = (encCfg.m_PadSourceWidth >> getComponentScaleX(COMP_Cb,encCfg.m_internChromaFormat))*(encCfg.m_PadSourceHeight >> getComponentScaleY(COMP_Cb,encCfg.m_internChromaFormat));
+  
   m_bufOrigin             = ( Pel* ) xMalloc( Pel, area );
   ApproxInter::ReinstrumentIfMarked((void*) m_bufOrigin, ApproxInter::BufferId::EncAdaptiveLoopFilter_m_bufOrigin, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
+
   //JICS: instrumentar como ALF_BUF
   m_buf                   = new PelBuf( m_bufOrigin, encCfg.m_PadSourceWidth >> getComponentScaleX(COMP_Cb,encCfg.m_internChromaFormat), encCfg.m_PadSourceWidth >> getComponentScaleX(COMP_Cb,encCfg.m_internChromaFormat), encCfg.m_PadSourceHeight >> getComponentScaleY(COMP_Cb,encCfg.m_internChromaFormat) );
   m_lumaSwingGreaterThanThresholdCount = new uint64_t[m_numCTUsInPic];

@@ -271,6 +271,7 @@ void InterPrediction::init( RdCost* pcRdCost, ChromaFormat chFormat, const int c
     DMVR::init( pcRdCost, chFormat );
     m_geoPartBuf[0].create(UnitArea(chFormat, Area(0, 0, MAX_CU_SIZE, MAX_CU_SIZE)));
 	m_geoPartBuf[0].ReinstrumentBuffers(ApproxInter::BufferId::InterPrediction_m_geoPartBuf_0);
+	
     m_geoPartBuf[1].create(UnitArea(chFormat, Area(0, 0, MAX_CU_SIZE, MAX_CU_SIZE)));
 	m_geoPartBuf[1].ReinstrumentBuffers(ApproxInter::BufferId::InterPrediction_m_geoPartBuf_1);
 	//JICS: instrumentar aqui
