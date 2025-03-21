@@ -85,6 +85,7 @@ int main(int argc, char* argv[])
   ApproxInter::PrintMacrosStates();
   ApproxInter::PrintBuffersInfo();
   ApproxSS::start_level(ApproxInter::LevelId::OTHER);
+  ApproxSS::disable_global_injection();
   //</Matheus>
 
   vvenc_set_logging_callback( nullptr, msgFnc ); // register global log callback ( deprecated, will be removed)

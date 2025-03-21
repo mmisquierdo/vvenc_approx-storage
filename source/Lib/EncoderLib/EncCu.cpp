@@ -778,7 +778,11 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
           if (m_modeCtrl.tryMode(encTestModeSkip, cs, partitioner))
           {
 			ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostMerge);
+			ApproxSS::enable_global_injection();
+
             xCheckRDCostUnifiedMerge(tempCS, bestCS, partitioner, encTestModeSkip);
+
+			ApproxSS::disable_global_injection();
 			ApproxSS::end_level();
 
             CodingUnit* cu = bestCS->getCU(partitioner.chType, partitioner.treeType);
@@ -789,7 +793,11 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
           if (m_modeCtrl.tryMode(encTestMode, cs, partitioner))
           {
 			ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostInter);
+			ApproxSS::enable_global_injection();
+
             xCheckRDCostInter(tempCS, bestCS, partitioner, encTestMode); //MATHEUS NOTE: important
+
+			ApproxSS::disable_global_injection();
 			ApproxSS::end_level();
           }
 
@@ -804,7 +812,11 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
               if (!skipAltHpelIF)
               {
 				ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostInterIMV);
+				ApproxSS::enable_global_injection();
+
                 xCheckRDCostInterIMV(tempCS, bestCS, partitioner, encTestMode ); //MATHEUS NOTE: important
+
+				ApproxSS::disable_global_injection();
 				ApproxSS::end_level();
               }
             }
@@ -817,7 +829,11 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
           if ((m_pcEncCfg->m_IBCFastMethod < 4) && (partitioner.chType == CH_L) && m_modeCtrl.tryMode(encTestModeIBCMerge, cs, partitioner))
           {
 			ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostIBCModeMerge2Nx2N);
+			ApproxSS::enable_global_injection();
+
             xCheckRDCostIBCModeMerge2Nx2N(tempCS, bestCS, partitioner, encTestModeIBCMerge);
+
+			ApproxSS::disable_global_injection();
 			ApproxSS::end_level();
           }
 
@@ -825,7 +841,11 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
           if (m_modeCtrl.tryMode(encTestModeIBC, cs, partitioner))
           {
 			ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostIBCMode);
+			ApproxSS::enable_global_injection();
+
             xCheckRDCostIBCMode(tempCS, bestCS, partitioner, encTestModeIBC);
+
+			ApproxSS::disable_global_injection();
 			ApproxSS::end_level();
           }
         }
@@ -839,7 +859,11 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
         if( !partitioner.isConsInter() && m_modeCtrl.tryMode( encTestMode, cs, partitioner ) )
         {
 		  ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostIntra);
+		  ApproxSS::enable_global_injection();
+
           xCheckRDCostIntra( tempCS, bestCS, partitioner, encTestMode ); //MATHEUS NOTE: important
+
+		  ApproxSS::disable_global_injection();
 		  ApproxSS::end_level();
         }
       } // reusing cu
