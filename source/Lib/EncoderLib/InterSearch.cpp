@@ -2019,8 +2019,10 @@ Distortion InterSearch::xGetTemplateCost( const CodingUnit& cu,
 
   // calc distortion
 
+  //ApproxSS::disable_global_injection();
   uiCost = m_pcRdCost->getDistPart(origBuf.Y(), predBuf.Y(), cu.cs->sps->bitDepths[ CH_L ], COMP_Y, DF_SAD);
   uiCost += m_pcRdCost->getCost( m_auiMVPIdxCost[iMVPIdx][iMVPNum] );
+  //ApproxSS::enable_global_injection();
 
   ApproxSS::end_level();
   
