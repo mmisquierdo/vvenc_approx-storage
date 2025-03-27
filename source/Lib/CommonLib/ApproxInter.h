@@ -68,6 +68,7 @@
 	typedef std::set<BufferRange> AllocatedBuffersSet;
 
 	namespace ApproxInter {
+			constexpr int64_t bufferIdPrefixFactor = 1000000; 
 		//private:
 			extern AllocatedBuffersSet allocatedBuffers; //use methods to manipulate
 			//extern AllocatedBuffersSet unmarkedBuffers;
@@ -241,10 +242,24 @@
 				constexpr int64_t SortedPelUnitBufs_m_acStorage = 1140;
 
 
+				//PREFIXES
+				constexpr int64_t SAD_Orig = 11;
+				constexpr int64_t SAD_Curr = 12;
 
+				constexpr int64_t MaskedSAD_Orig = -11;
+				constexpr int64_t MaskedSAD_Curr = -12;
 
+				constexpr int64_t SSE_Orig = 21;
+				constexpr int64_t SSE_Curr = 22;
 
+				constexpr int64_t WeightedSSE_Orig = -21;
+				constexpr int64_t WeightedSSE_Curr = -22;
 
+				constexpr int64_t HAD_Orig = 31;
+				constexpr int64_t HAD_Curr = 32;
+
+				constexpr int64_t FastHAD_Orig = -31;
+				constexpr int64_t FastHAD_Curr = -32;
 
 
 				/*constexpr int64_t RECO_MOTION_ESTIMATION 					= 0;
@@ -379,11 +394,11 @@
 
 				constexpr int64_t OTHER = JUST_TRACKING;
 
-				constexpr int64_t MaskedSAD_Orig = APPROXIMATE_KNOB;
-				constexpr int64_t MaskedSAD_Curr = APPROXIMATE_KNOB;
-
 				constexpr int64_t SAD_Orig = APPROXIMATE_KNOB;
 				constexpr int64_t SAD_Curr = APPROXIMATE_KNOB;
+
+				constexpr int64_t MaskedSAD_Orig = APPROXIMATE_KNOB;
+				constexpr int64_t MaskedSAD_Curr = APPROXIMATE_KNOB;
 
 				constexpr int64_t SSE_Orig = APPROXIMATE_KNOB;
 				constexpr int64_t SSE_Curr = APPROXIMATE_KNOB;
@@ -445,7 +460,7 @@
 			void UnmarkBuffer(void const * const address);
 			void UnmarkBuffer(void const * const start_address, void const * const endAddress);
 			void InstrumentIfMarked(void * const address, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
-			void InstrumentIfMarked(void * const address, const int64_t configurationId);
+			void InstrumentIfMarked(void * const address, const int64_t bufferIdPrefix, const int64_t configurationId);
 			void ReinstrumentIfMarked(void * const address, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
 			void UninstrumentIfMarked(void * const address, const bool giveAwayRecords = true);
 

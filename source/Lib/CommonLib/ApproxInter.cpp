@@ -76,7 +76,7 @@ void ApproxInter::InstrumentIfMarked(void * const address, const int64_t bufferI
 	}
 }
 
-void ApproxInter::InstrumentIfMarked(void * const address, const int64_t configurationId) {
+void ApproxInter::InstrumentIfMarked(void * const address, const int64_t bufferIdPrefix, const int64_t configurationId) {
 	const BufferRange accessBuffer = BufferRange((uint8_t*) address, ((uint8_t*) address) + 1); //zero-sized access would be ignore in the case of a pointer to the buffer's first element
 
 	const std::lock_guard<std::mutex> lock(ApproxInter::allocatedBuffersMutex);
@@ -84,7 +84,7 @@ void ApproxInter::InstrumentIfMarked(void * const address, const int64_t configu
 	const AllocatedBuffersSet::const_iterator it = ApproxInter::allocatedBuffers.find(accessBuffer);
 
 	if (it != ApproxInter::allocatedBuffers.cend()) {
-		ApproxSS::add_approx(it->m_initialAddress, it->m_endAddress, it->m_bufferId, configurationId, it->m_dataSizeInBytes);
+		ApproxSS::add_approx(it->m_initialAddress, it->m_endAddress, (bufferIdPrefix * ApproxInter::bufferIdPrefixFactor) + (bufferIdPrefix < 0 ? -it->m_bufferId : it->m_bufferId), configurationId, it->m_dataSizeInBytes);
 	} else {
 		std::cout << "ApproxInter WARNING: buffer not marked for add_approx." << std::endl;
 	}
