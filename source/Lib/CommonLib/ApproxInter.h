@@ -284,7 +284,7 @@
 			namespace LevelId {
 				constexpr int64_t OTHER = 10;
 				constexpr int64_t xCheckRDCostMerge = 11;
-					constexpr int64_t xCheckRDCostMerge_start = 46;
+					constexpr int64_t xCheckRDCostMerge_start = 46; //effecitevly prepareGpmComboList
 					constexpr int64_t xCheckRDCostMerge_SATDCost = 47;
 					constexpr int64_t xCheckRDCostMerge_RDChecking = 48;
 					constexpr int64_t generateMergePrediction = 49;
