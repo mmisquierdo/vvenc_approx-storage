@@ -789,6 +789,7 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
             if (cu)
               cu->mmvdSkip = cu->skip == false ? false : cu->mmvdSkip;
           }
+
           EncTestMode encTestMode = { ETM_INTER_ME, ETO_STANDARD, qp, lossless };
           if (m_modeCtrl.tryMode(encTestMode, cs, partitioner))
           {
@@ -3314,6 +3315,7 @@ void EncCu::xCheckRDCostInterIMV(CodingStructure *&tempCS, CodingStructure *&bes
 
           cu.initPuData();
 
+		  //MATHEUS NOTE: imv definido aqui
           cu.imv = i;
 
           cu.BcwIdx = g_BcwSearchOrder[bcwLoopIdx];

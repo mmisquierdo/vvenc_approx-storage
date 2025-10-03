@@ -1109,6 +1109,11 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
         }
         xEstimateMvPredAMVP( cu, origBuf, refPicList, iRefIdxTemp, cMvPred[iRefList][iRefIdxTemp], amvp[refPicList], biPDistTemp);
 
+		//<Matheus> inside xEstimateMvPredAMVP
+		//{const Mv& rcMv = cMvPred[iRefList][iRefIdxTemp];
+		//DTRACE( g_trace_ctx, D_DEEP_ME, "%d %d %d :AMVP<L%d,%d>: %d,%d,%dx%d, MV:%d,%d : %d\n", DTRACE_GET_COUNTER( g_trace_ctx, D_ME ), cu.slice->poc, 0, ( int ) refPicList, ( int ) 0, cu.Y().x, cu.Y().y, cu.Y().width, cu.Y().height, rcMv.hor << 2, rcMv.ver << 2, ruiCost );}
+		//</Matheus>
+
         aaiMvpIdx[iRefList][iRefIdxTemp] = cu.mvpIdx[refPicList];
         aaiMvpNum[iRefList][iRefIdxTemp] = cu.mvpNum[refPicList];
 
@@ -1181,6 +1186,12 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
       }
     }
 
+	//<Matheus>
+	//DTRACE(g_trace_ctx, D_DEEP_ME, "   MECost<L%d,%d>: %6d (%d)  MV:%d,%d\n", (int)refPicList, (int)bBi, ruiCost, ruiBits, rcMv.hor << 2, rcMv.ver << 2);
+	//DTRACE(g_trace_ctx, D_DEEP_ME, "Uni");
+	//</Matheus>
+
+
     ::memcpy(cMvHevcTemp, cMvTemp, sizeof(cMvTemp));
     if (cu.imv == 0 && (!cu.slice->sps->BCW || BcwIdx == BCW_DEFAULT))
     {
@@ -1208,6 +1219,7 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
         return true;
       }
     }
+
     //  Bi-predictive Motion estimation
     if( cs.slice->isInterB() && !CU::isBipredRestriction( cu ) && (cu.slice->checkLDC || BcwIdx == BCW_DEFAULT  || !m_affineModeSelected || m_pcEncCfg->m_BCW != 2 ) )
     {
@@ -1273,6 +1285,7 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
         uiMotBits[1] = uiBits[1] - uiMbBits[1];
         uiBits[2] = uiMbBits[2] + uiMotBits[0] + uiMotBits[1];
       }
+
 
       if( doBiPred )
       {
@@ -1507,7 +1520,9 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
 
           Distortion bestCost = costStart;
           xSymMvdCheckBestMvp(cu, origBuf, mvStart, (RefPicList)curRefList, aacAMVPInfo, BcwIdx, cMvPredSym, mvpIdxSym, costStart, false);
-          if (costStart < bestCost)
+          //MATHEUS NOTE: DISTORTION CALCULATION 
+		 
+		  if (costStart < bestCost)
           {
             cCurMvField.setMvField(mvStart, refIdxCur);
             cTarMvField.setMvField(mvStart.getSymmvdMv(cMvPredSym[curRefList], cMvPredSym[tarRefList]), refIdxTar);
@@ -1523,7 +1538,8 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
         if( testSME )
         {
           xSymMotionEstimation( cu, origBuf, cMvPredSym[ curRefList ], cMvPredSym[ tarRefList ], eCurRefList, cCurMvField, cTarMvField, symCost, BcwIdx );
-        }
+          //MATHEUS NOTE: DISTORTION CALCULATION
+		}
 
         symCost += mvpCost;
 
@@ -1557,7 +1573,12 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
           iRefIdxBi[tarRefList] = cTarMvField.refIdx;
           aaiMvpIdxBi[tarRefList][cTarMvField.refIdx] = mvpIdxSym[tarRefList];
           cMvPredBi[tarRefList][iRefIdxBi[tarRefList]] = cMvPredSym[tarRefList];
-        }
+
+		  //<Matheus>
+		  {const Mv& rcMv = cCurMvField.mv;
+		  DTRACE( g_trace_ctx, D_DEEP_ME, "%d %d %d :SMVD<L%d,%d>: %d,%d,%dx%d, MV:%d,%d : %d\n", DTRACE_GET_COUNTER( g_trace_ctx, D_DEEP_ME ), cu.slice->poc, 0, ( int ) curRefList, ( int ) true, cu.Y().x, cu.Y().y, cu.Y().width, cu.Y().height, rcMv.hor << 2, rcMv.ver << 2, uiCostBi );}
+		  //</Matheus>
+          }
       }
     } // if (B_SLICE)
 
@@ -1887,6 +1908,11 @@ void InterSearch::xEstimateMvPredAMVP( CodingUnit& cu, CPelUnitBuf& origBuf, Ref
   rcMvPred = cBestMv;
   cu.mvpIdx[refPicList] = iBestIdx;
   cu.mvpNum[refPicList] = pcAMVPInfo->numCand;
+
+  //<Matheus>
+  {const Mv& rcMv = rcMvPred;
+  DTRACE( g_trace_ctx, D_DEEP_ME, "%d %d %d :AMVP<L%d,%d>: %d,%d,%dx%d, MV:%d,%d : %d\n", DTRACE_GET_COUNTER( g_trace_ctx, D_DEEP_ME ), cu.slice->poc, 0, ( int ) refPicList, ( int ) 0, cu.Y().x, cu.Y().y, cu.Y().width, cu.Y().height, rcMv.hor << 2, rcMv.ver << 2, uiBestCost );}
+  //</Matheus>
 
   ApproxSS::end_level();
   return;
@@ -2300,7 +2326,12 @@ void InterSearch::xMotionEstimation(CodingUnit& cu, CPelUnitBuf& origBuf, RefPic
   #endif
 
 
-  DTRACE( g_trace_ctx, D_ME, "%d %d %d :MECostFPel<L%d,%d>: %d,%d,%dx%d, %d", DTRACE_GET_COUNTER( g_trace_ctx, D_ME ), cu.slice->poc, 0, ( int ) refPicList, ( int ) bBi, cu.Y().x, cu.Y().y, cu.Y().width, cu.Y().height, ruiCost );
+  DTRACE( g_trace_ctx, D_ME,      "%d %d %d :MECostFPel<L%d,%d>: %d,%d,%dx%d, %d",     DTRACE_GET_COUNTER( g_trace_ctx, D_ME ), cu.slice->poc, 0, ( int ) refPicList, ( int ) bBi, cu.Y().x, cu.Y().y, cu.Y().width, cu.Y().height, ruiCost );
+
+  //<Matheus>
+  DTRACE( g_trace_ctx, D_DEEP_ME, "%d %d %d :IME<L%d,%d>: %d,%d,%dx%d, MV:%d,%d : %d", DTRACE_GET_COUNTER( g_trace_ctx, D_DEEP_ME ), cu.slice->poc, 0, ( int ) refPicList, ( int ) bBi, cu.Y().x, cu.Y().y, cu.Y().width, cu.Y().height, rcMv.hor << 2, rcMv.ver << 2, ruiCost );
+  //</Matheus>
+
   // sub-pel refinement for sub-pel resolution
   if ( cu.imv == 0 || cu.imv == IMV_HPEL )
   {
@@ -2342,6 +2373,10 @@ void InterSearch::xMotionEstimation(CodingUnit& cu, CPelUnitBuf& origBuf, RefPic
         ApproxSS::end_level();
       #endif
     #endif
+
+	//<Matheus>
+	DTRACE(g_trace_ctx, D_DEEP_ME, "   FME: %6d (%d)  MV:%d,%d\n", ruiCost, ruiBits, rcMv.hor << 2, rcMv.ver << 2);
+	//</Matheus>
   }
   else // integer refinement for integer-pel and 4-pel resolution
   {
@@ -2373,7 +2408,12 @@ void InterSearch::xMotionEstimation(CodingUnit& cu, CPelUnitBuf& origBuf, RefPic
         ApproxSS::end_level();
       #endif
     #endif
+
+	//</Matheus>
+	DTRACE(g_trace_ctx, D_DEEP_ME, "   REF: %6d (%d)  MV:%d,%d\n", ruiCost, ruiBits, rcMv.hor << 2, rcMv.ver << 2);
+	//</Matheus>
   }
+
   DTRACE(g_trace_ctx, D_ME, "   MECost<L%d,%d>: %6d (%d)  MV:%d,%d\n", (int)refPicList, (int)bBi, ruiCost, ruiBits, rcMv.hor << 2, rcMv.ver << 2);
 
   //<Felipe>
@@ -3057,6 +3097,10 @@ void InterSearch::xPatternSearchFracDIF(
   ruiCost = xPatternRefinement( cStruct.pcPatternKey, baseRefMv, 2, rcMvHalf, uiDistBest, patternId, &cPatternRoi, cStruct.useAltHpelIf );
   patternId -= ( m_pcEncCfg->m_fastSubPel == 1 ? 41 : 0 );
 
+  //<Matheus> //TODO CHECK MV OFFSET AND WHICH COST
+  DTRACE( g_trace_ctx, D_DEEP_ME, "%d %d %d :FHPel<L%d,%d>: %d,%d,%dx%d, MV:%d,%d : %d\n", DTRACE_GET_COUNTER( g_trace_ctx, D_DEEP_ME ), cu.slice->poc, 0, ( int ) refPicList, ( int ) -1, cu.Y().x, cu.Y().y, cu.Y().width, cu.Y().height, rcMvHalf.hor << 2, rcMvHalf.ver << 2, ruiCost );
+  //</Matheus>
+
   ApproxSS::end_level();
 
   ApproxSS::start_level(ApproxInter::LevelId::xPatternSearchFracDIF_QuarterPixel);
@@ -3079,6 +3123,10 @@ void InterSearch::xPatternSearchFracDIF(
     #endif
 
     ruiCost = xPatternRefinement( cStruct.pcPatternKey, baseRefMv, 1, rcMvQter, uiDistBest, patternId, &cPatternRoi, cStruct.useAltHpelIf );
+
+	//<Matheus> //TODO CHECK MV OFFSET AND WHICH COST
+	DTRACE( g_trace_ctx, D_DEEP_ME, "%d %d %d :FQPel<L%d,%d>: %d,%d,%dx%d, MV:%d,%d : %d\n", DTRACE_GET_COUNTER( g_trace_ctx, D_DEEP_ME ), cu.slice->poc, 0, ( int ) refPicList, ( int ) -1, cu.Y().x, cu.Y().y, cu.Y().width, cu.Y().height, rcMvQter.hor << 2, rcMvQter.ver << 2, ruiCost );
+	//</Matheus>
   }
 
   ApproxSS::end_level();

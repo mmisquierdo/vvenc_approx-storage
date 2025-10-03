@@ -90,7 +90,7 @@ namespace vvenc {
 #endif
 
 #ifndef ENABLE_TRACING
-#define ENABLE_TRACING                                    0 // DISABLED by default (enable only when debugging, requires additional runtime)
+#define ENABLE_TRACING                                    1 // DISABLED by default (enable only when debugging, requires additional runtime)
 #endif
 
 #ifndef ENABLE_TIME_PROFILING
