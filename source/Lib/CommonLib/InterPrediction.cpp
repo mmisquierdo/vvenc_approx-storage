@@ -1416,9 +1416,9 @@ void DMVR::xProcessDMVR( const CodingUnit& cu, PelUnitBuf& pcYuvDst, const ClpRn
         distParam.org.buf = addrL0;
         distParam.cur.buf = addrL1;
 
-		ApproxSS::disable_global_injection();
+		    ApproxSS::disable_global_injection();
         minCost  = distParam.distFunc( distParam ) >> 1;
-		ApproxSS::enable_global_injection();
+		    ApproxSS::enable_global_injection();
 
         minCost -= ( minCost >> 2 );
 

@@ -70,6 +70,31 @@ class DistParam;
 typedef Distortion( *FpDistFunc   )( const DistParam& );
 typedef void      ( *FpDistFuncX5 )( const DistParam&, Distortion*, bool );
 
+//<Matheus>
+#if COST_DOUBLETAKE
+  class CostDoubleTaker {
+    FpDistFunc m_distFunc;
+    int m_funcId;
+
+    public:
+      CostDoubleTaker() : m_distFunc(nullptr), m_funcId(0) {}
+      CostDoubleTaker(FpDistFunc distFunc, const int& funcId) : m_distFunc(distFunc), m_funcId(funcId) {}
+
+      Distortion operator () (const DistParam& distParam) const {
+        ApproxInter::ProcessTake(ApproxInter::Take::Approximate, m_funcId, m_distFunc(distParam));
+
+        ApproxSS::disable_global_injection();
+        const Distortion dist = m_distFunc(distParam);
+        ApproxSS::enable_global_injection();
+
+        ApproxInter::ProcessTake(ApproxInter::Take::Precise, m_funcId, dist);
+
+        return dist;
+      }
+  };
+#endif
+//</Matheus>
+
 // ====================================================================================================================
 // Class definition
 // ====================================================================================================================
@@ -80,8 +105,14 @@ class DistParam
 public:
   CPelBuf               org;
   CPelBuf               cur;
+
+  #if COST_DOUBLETAKE //<Matheus>
+  CostDoubleTaker       distFunc;
+  #else
   FpDistFunc            distFunc  = nullptr;
+  #endif
   FpDistFuncX5          dmvrSadX5 = nullptr;
+
 #if ENABLE_MEASURE_SEARCH_SPACE
   FpDistFunc            xDistFunc = nullptr;
 #endif
@@ -100,10 +131,19 @@ public:
 
   DistParam() = default;
 
-  DistParam( const CPelBuf& _org, const CPelBuf& _cur,  FpDistFunc _distFunc, int _bitDepth, int _subShift, ComponentID _compID )
+  #if COST_DOUBLETAKE //<Matheus>
+    DistParam( const CPelBuf& _org, const CPelBuf& _cur,  CostDoubleTaker _distFunc, int _bitDepth, int _subShift, ComponentID _compID )
     : org(_org), cur(_cur), distFunc(_distFunc), bitDepth(_bitDepth), subShift(_subShift), compID(_compID)
-  {
-  }
+    {
+    }
+  #else
+    DistParam( const CPelBuf& _org, const CPelBuf& _cur,  FpDistFunc _distFunc, int _bitDepth, int _subShift, ComponentID _compID )
+    : org(_org), cur(_cur), distFunc(_distFunc), bitDepth(_bitDepth), subShift(_subShift), compID(_compID)
+    {
+    }
+  #endif
+
+
 };
 
 /// RD cost computation class
