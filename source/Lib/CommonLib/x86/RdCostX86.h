@@ -69,10 +69,12 @@ Distortion RdCost::xGetSSE_SIMD( const DistParam &rcDtParam )
   const Torg* pSrc1     = (const Torg*)rcDtParam.org.buf;
   const Tcur* pSrc2     = (const Tcur*)rcDtParam.cur.buf;
 
+  #if INSTRUMENT_METRICS
   Pel const * const approxOrig = pSrc1;
   Pel const * const approxCurr = pSrc2;
   ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::SSE_Orig, ApproxInter::ConfigurationId::SSE_Orig);
   ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::SSE_Curr, ApproxInter::ConfigurationId::SSE_Curr);
+  #endif
 
   int  iRows            = rcDtParam.org.height;
   int  iCols            = rcDtParam.org.width;
@@ -144,8 +146,10 @@ Distortion RdCost::xGetSSE_SIMD( const DistParam &rcDtParam )
     uiRet = _mm_cvtsi128_si32( Sum )>>uiShift;
   }
 
+  #if INSTRUMENT_METRICS
   ApproxInter::UninstrumentIfMarked((void*) approxOrig);
   ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+  #endif
   ApproxSS::end_level();
 
   return uiRet;
@@ -160,10 +164,12 @@ Distortion RdCost::xGetSSE_NxN_SIMD( const DistParam &rcDtParam )
   const Torg* pSrc1     = (const Torg*)rcDtParam.org.buf;
   const Tcur* pSrc2     = (const Tcur*)rcDtParam.cur.buf;
 
+  #if INSTRUMENT_METRICS
   Pel const * const approxOrig = pSrc1;
   Pel const * const approxCurr = pSrc2;
   ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::SSE_Orig, ApproxInter::ConfigurationId::SSE_Orig);
   ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::SSE_Curr, ApproxInter::ConfigurationId::SSE_Curr);
+  #endif
 
   int  iRows            = rcDtParam.org.height;
   const int iStrideSrc1 = rcDtParam.org.stride;
@@ -238,8 +244,10 @@ Distortion RdCost::xGetSSE_NxN_SIMD( const DistParam &rcDtParam )
     }
   }
 
+  #if INSTRUMENT_METRICS
   ApproxInter::UninstrumentIfMarked((void*) approxOrig);
   ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+  #endif
   ApproxSS::end_level();
 
   return uiRet;
@@ -256,10 +264,12 @@ Distortion RdCost::xGetSAD_SIMD( const DistParam &rcDtParam )
   const short* pSrc1   = (const short*)rcDtParam.org.buf;
   const short* pSrc2   = (const short*)rcDtParam.cur.buf;
 
+  #if INSTRUMENT_METRICS
   Pel const * const approxOrig = pSrc1;
   Pel const * const approxCurr = pSrc2;
   ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::SAD_Orig, ApproxInter::ConfigurationId::SAD_Orig);
   ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::SAD_Curr, ApproxInter::ConfigurationId::SAD_Curr);
+  #endif
 
   int  iRows           = rcDtParam.org.height;
   int  iCols           = rcDtParam.org.width;
@@ -344,8 +354,10 @@ Distortion RdCost::xGetSAD_SIMD( const DistParam &rcDtParam )
 
   uiSum <<= iSubShift;
 
+  #if INSTRUMENT_METRICS
   ApproxInter::UninstrumentIfMarked((void*) approxOrig);
   ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+  #endif
   ApproxSS::end_level();
 
   return uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth);
@@ -361,10 +373,12 @@ Distortion RdCost::xGetSAD_NxN_SIMD( const DistParam &rcDtParam )
   const short* pSrc1   = (const short*)rcDtParam.org.buf;
   const short* pSrc2   = (const short*)rcDtParam.cur.buf;
 
+  #if INSTRUMENT_METRICS
   Pel const * const approxOrig = pSrc1;
   Pel const * const approxCurr = pSrc2;
   ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::SAD_Orig, ApproxInter::ConfigurationId::SAD_Orig);
   ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::SAD_Curr, ApproxInter::ConfigurationId::SAD_Curr);
+  #endif
 
   int  iRows           = rcDtParam.org.height;
   int  iSubShift       = rcDtParam.subShift;
@@ -447,11 +461,13 @@ Distortion RdCost::xGetSAD_NxN_SIMD( const DistParam &rcDtParam )
           distTemp <<= iSubShift;
           distTemp >>= DISTORTION_PRECISION_ADJUSTMENT( rcDtParam.bitDepth );
           if( distTemp > rcDtParam.maximumDistortionForEarlyExit ) {
-			ApproxInter::UninstrumentIfMarked((void*) approxOrig);
-			ApproxInter::UninstrumentIfMarked((void*) approxCurr);
-			ApproxSS::end_level(); 
+            #if INSTRUMENT_METRICS
+            ApproxInter::UninstrumentIfMarked((void*) approxOrig);
+            ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+            #endif
+            ApproxSS::end_level(); 
 	
-			return distTemp;}
+            return distTemp;}
           checkExit = 3;
         }
         else if( earlyExitAllowed )
@@ -550,9 +566,11 @@ Distortion RdCost::xGetSAD_NxN_SIMD( const DistParam &rcDtParam )
 
       uiSum <<= 1;
 
-	  ApproxInter::UninstrumentIfMarked((void*) approxOrig);
-	  ApproxInter::UninstrumentIfMarked((void*) approxCurr);
-	  ApproxSS::end_level();
+      #if INSTRUMENT_METRICS
+      ApproxInter::UninstrumentIfMarked((void*) approxOrig);
+      ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+      #endif
+      ApproxSS::end_level();
 
       return uiSum >> DISTORTION_PRECISION_ADJUSTMENT( rcDtParam.bitDepth );
     }
@@ -603,11 +621,13 @@ Distortion RdCost::xGetSAD_NxN_SIMD( const DistParam &rcDtParam )
           distTemp <<= iSubShift;
           distTemp >>= DISTORTION_PRECISION_ADJUSTMENT( rcDtParam.bitDepth );
           if( distTemp > rcDtParam.maximumDistortionForEarlyExit ) { 
-			ApproxInter::UninstrumentIfMarked((void*) approxOrig);
-			ApproxInter::UninstrumentIfMarked((void*) approxCurr);
-			ApproxSS::end_level(); 
+            #if INSTRUMENT_METRICS
+            ApproxInter::UninstrumentIfMarked((void*) approxOrig);
+            ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+            #endif
+            ApproxSS::end_level(); 
 
-			return distTemp;}
+            return distTemp;}
           checkExit = 3;
         }
         else if( earlyExitAllowed )
@@ -623,8 +643,10 @@ Distortion RdCost::xGetSAD_NxN_SIMD( const DistParam &rcDtParam )
 
   uiSum <<= iSubShift;
 
+  #if INSTRUMENT_METRICS
   ApproxInter::UninstrumentIfMarked((void*) approxOrig);
   ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+  #endif
   ApproxSS::end_level();
 
   return uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth);
@@ -2673,10 +2695,12 @@ Distortion RdCost::xGetHAD2SADs_SIMD( const DistParam &rcDtParam )
     const short* pSrc1   = (const short*)rcDtParam.org.buf;
     const short* pSrc2   = (const short*)rcDtParam.cur.buf;
 
-	Pel const * const approxOrig = pSrc1;
- 	Pel const * const approxCurr = pSrc2;
-	ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::SAD_Orig, ApproxInter::ConfigurationId::SAD_Orig);
-	ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::SAD_Curr, ApproxInter::ConfigurationId::SAD_Curr);
+    #if INSTRUMENT_METRICS
+    Pel const * const approxOrig = pSrc1;
+    Pel const * const approxCurr = pSrc2;
+    ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::SAD_Orig, ApproxInter::ConfigurationId::SAD_Orig);
+    ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::SAD_Curr, ApproxInter::ConfigurationId::SAD_Curr);
+    #endif
 
     const int iStrideSrc1 = rcDtParam.org.stride<<2;
     const int iStrideSrc2 = rcDtParam.cur.stride<<2;
@@ -2736,9 +2760,11 @@ Distortion RdCost::xGetHAD2SADs_SIMD( const DistParam &rcDtParam )
     }
     distSad = uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth);
 
-	ApproxInter::UninstrumentIfMarked((void*) approxOrig);
-	ApproxInter::UninstrumentIfMarked((void*) approxCurr);
-	ApproxSS::end_level();
+    #if INSTRUMENT_METRICS
+    ApproxInter::UninstrumentIfMarked((void*) approxOrig);
+    ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+    #endif
+    ApproxSS::end_level();
   }
 
   return std::min( distHad, 2*distSad);
@@ -2755,10 +2781,12 @@ Distortion RdCost::xGetSADwMask_SIMD(const DistParam &rcDtParam)
   const short *src1       = (const short *) rcDtParam.org.buf;
   const short *src2       = (const short *) rcDtParam.cur.buf;
 
+  #if INSTRUMENT_METRICS
   Pel const * const approxOrig = src1;
   Pel const * const approxCurr = src2;
   ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::MaskedSAD_Orig, ApproxInter::ConfigurationId::MaskedSAD_Orig);
   ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::MaskedSAD_Curr, ApproxInter::ConfigurationId::MaskedSAD_Curr);
+  #endif
 
   const short *weightMask = (const short *) rcDtParam.mask;
   int          rows       = rcDtParam.org.height;
@@ -2843,8 +2871,10 @@ Distortion RdCost::xGetSADwMask_SIMD(const DistParam &rcDtParam)
   }
   sum <<= subShift;
 
+  #if INSTRUMENT_METRICS
   ApproxInter::UninstrumentIfMarked((void*) approxOrig);
   ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+  #endif
   ApproxSS::end_level();
 
   return sum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth);
@@ -2858,10 +2888,12 @@ Distortion RdCost::xGetHADs_SIMD( const DistParam &rcDtParam )
   const Pel*  piOrg = rcDtParam.org.buf;
   const Pel*  piCur = rcDtParam.cur.buf;
 
+  #if INSTRUMENT_METRICS
   Pel const * const approxOrig = piOrg;
   Pel const * const approxCurr = piCur;
   ApproxInter::InstrumentIfMarked((void*) approxOrig, fastHad ? ApproxInter::BufferId::FastHAD_Orig : ApproxInter::BufferId::HAD_Orig, fastHad ? ApproxInter::ConfigurationId::FastHAD_Orig : ApproxInter::ConfigurationId::HAD_Orig);
   ApproxInter::InstrumentIfMarked((void*) approxCurr, fastHad ? ApproxInter::BufferId::FastHAD_Curr : ApproxInter::BufferId::HAD_Curr, fastHad ? ApproxInter::ConfigurationId::FastHAD_Curr : ApproxInter::ConfigurationId::HAD_Curr);
+  #endif
 
   const int iRows = rcDtParam.org.height;
   const int iCols = rcDtParam.org.width;
@@ -3003,8 +3035,10 @@ Distortion RdCost::xGetHADs_SIMD( const DistParam &rcDtParam )
     THROW( "Unsupported size" );
   }
 
+  #if INSTRUMENT_METRICS
   ApproxInter::UninstrumentIfMarked((void*) approxOrig);
   ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+  #endif
   ApproxSS::end_level();
 
   return uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth);
@@ -3025,10 +3059,12 @@ static Distortion lumaWeightedSSE_SIMD( const DistParam& rcDtParam, ChromaFormat
   const Pel* piOrg = rcDtParam.org.buf;
   const Pel* piCur = rcDtParam.cur.buf;
 
+  #if INSTRUMENT_METRICS
   Pel const * const approxOrig = piOrg;
   Pel const * const approxCurr = piCur;
   ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::WeightedSSE_Orig, ApproxInter::ConfigurationId::WeightedSSE_Orig);
   ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::WeightedSSE_Curr, ApproxInter::ConfigurationId::WeightedSSE_Curr);
+  #endif
 
   const int  iCols = rcDtParam.org.width;
   const int  iStrideCur = rcDtParam.cur.stride;
@@ -3114,9 +3150,12 @@ static Distortion lumaWeightedSSE_SIMD( const DistParam& rcDtParam, ChromaFormat
     uiSum += _mm_extract_epi64( xsum, 0 );
     uiSum += _mm_extract_epi64( xsum, 1 );
 
-	ApproxInter::UninstrumentIfMarked((void*) approxOrig);
-	ApproxInter::UninstrumentIfMarked((void*) approxCurr);
-	ApproxSS::end_level();
+    #if INSTRUMENT_METRICS
+    ApproxInter::UninstrumentIfMarked((void*) approxOrig);
+    ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+    #endif
+    ApproxSS::end_level();
+
     return uiSum;
   }
   else
@@ -3173,9 +3212,12 @@ static Distortion lumaWeightedSSE_SIMD( const DistParam& rcDtParam, ChromaFormat
     uiSum += _mm_extract_epi64( xsum, 0 );
     uiSum += _mm_extract_epi64( xsum, 1 );
 
-	ApproxInter::UninstrumentIfMarked((void*) approxOrig);
-	ApproxInter::UninstrumentIfMarked((void*) approxCurr);
-	ApproxSS::end_level();
+    #if INSTRUMENT_METRICS
+    ApproxInter::UninstrumentIfMarked((void*) approxOrig);
+    ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+    #endif
+    ApproxSS::end_level();
+
     return uiSum;
   }
   else
@@ -3194,9 +3236,12 @@ static Distortion lumaWeightedSSE_SIMD( const DistParam& rcDtParam, ChromaFormat
       piOrgLuma += iStrideOrgLuma<<cShiftY;
     }
 
-	ApproxInter::UninstrumentIfMarked((void*) approxOrig);
-	ApproxInter::UninstrumentIfMarked((void*) approxCurr);
-	ApproxSS::end_level();
+    #if INSTRUMENT_METRICS
+    ApproxInter::UninstrumentIfMarked((void*) approxOrig);
+    ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+    #endif
+    ApproxSS::end_level();
+
     return uiSum;
   }
   else
@@ -3213,15 +3258,21 @@ static Distortion lumaWeightedSSE_SIMD( const DistParam& rcDtParam, ChromaFormat
       piOrgLuma += iStrideOrgLuma<<cShiftY;
     }
 
-	ApproxInter::UninstrumentIfMarked((void*) approxOrig);
-	ApproxInter::UninstrumentIfMarked((void*) approxCurr);
-	ApproxSS::end_level();
+    #if INSTRUMENT_METRICS
+    ApproxInter::UninstrumentIfMarked((void*) approxOrig);
+    ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+    #endif
+    ApproxSS::end_level();
+
     return uiSum;
   }
 
+  #if INSTRUMENT_METRICS
   ApproxInter::UninstrumentIfMarked((void*) approxOrig);
   ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+  #endif
   ApproxSS::end_level();
+
   return 0;
 }
 
@@ -3230,14 +3281,16 @@ static Distortion fixWeightedSSE_SIMD( const DistParam& rcDtParam, uint32_t fixe
 {
   ApproxSS::start_level(ApproxInter::LevelId::WeightedSSE);
 
-        int  iRows = rcDtParam.org.height;
+  int  iRows = rcDtParam.org.height;
   const Pel* piOrg = rcDtParam.org.buf;
   const Pel* piCur = rcDtParam.cur.buf;
 
+  #if INSTRUMENT_METRICS
   Pel const * const approxOrig = piOrg;
   Pel const * const approxCurr = piCur;
   ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::WeightedSSE_Orig, ApproxInter::ConfigurationId::WeightedSSE_Orig);
   ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::WeightedSSE_Curr, ApproxInter::ConfigurationId::WeightedSSE_Curr);
+  #endif
 
   const int  iCols = rcDtParam.org.width;
   const int  iStrideCur = rcDtParam.cur.stride;
@@ -3287,9 +3340,12 @@ static Distortion fixWeightedSSE_SIMD( const DistParam& rcDtParam, uint32_t fixe
     uiSum += _mm_extract_epi64( xsum, 0 );
     uiSum += _mm_extract_epi64( xsum, 1 );
 
-	ApproxInter::UninstrumentIfMarked((void*) approxOrig);
-	ApproxInter::UninstrumentIfMarked((void*) approxCurr);
-	ApproxSS::end_level();
+    #if INSTRUMENT_METRICS
+    ApproxInter::UninstrumentIfMarked((void*) approxOrig);
+    ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+    #endif
+    ApproxSS::end_level();
+    
     return uiSum;
   }
   else if( iCols == 2 )
@@ -3305,9 +3361,12 @@ static Distortion fixWeightedSSE_SIMD( const DistParam& rcDtParam, uint32_t fixe
       piCur += iStrideCur;
     }
 
-	ApproxInter::UninstrumentIfMarked((void*) approxOrig);
-	ApproxInter::UninstrumentIfMarked((void*) approxCurr);
-	ApproxSS::end_level();
+    #if INSTRUMENT_METRICS
+    ApproxInter::UninstrumentIfMarked((void*) approxOrig);
+    ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+    #endif
+    ApproxSS::end_level();
+
     return uiSum;
   }
   else
@@ -3322,15 +3381,21 @@ static Distortion fixWeightedSSE_SIMD( const DistParam& rcDtParam, uint32_t fixe
       piCur += iStrideCur;
     }
 
-	ApproxInter::UninstrumentIfMarked((void*) approxOrig);
-	ApproxInter::UninstrumentIfMarked((void*) approxCurr);
-	ApproxSS::end_level();
+    #if INSTRUMENT_METRICS
+    ApproxInter::UninstrumentIfMarked((void*) approxOrig);
+    ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+    #endif
+    ApproxSS::end_level();
+
     return uiSum;
   }
 
+  #if INSTRUMENT_METRICS
   ApproxInter::UninstrumentIfMarked((void*) approxOrig);
   ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+  #endif
   ApproxSS::end_level();
+
   return 0;
 }
 
@@ -3343,10 +3408,12 @@ void xGetSADX5_8xN_SIMDImp(const DistParam& rcDtParam, Distortion* cost) {
   const Pel* piOrg = rcDtParam.org.buf;
   const Pel* piCur = rcDtParam.cur.buf - 4;
 
+  #if INSTRUMENT_METRICS
   Pel const * const approxOrig = piOrg;
   Pel const * const approxCurr = piCur;
   ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::SAD_Orig, ApproxInter::ConfigurationId::SAD_Orig);
   ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::SAD_Curr, ApproxInter::ConfigurationId::SAD_Curr);
+  #endif
 
   int height = rcDtParam.org.height;
   int iSubShift = rcDtParam.subShift;
@@ -3428,8 +3495,11 @@ void xGetSADX5_8xN_SIMDImp(const DistParam& rcDtParam, Distortion* cost) {
   if (isCalCentrePos) cost[2] = (_mm_cvtsi128_si32(sum2));
   _mm_storeu_si128( ( __m128i* ) &cost[3], _mm_unpackhi_epi32( sum0, _mm_setzero_si128() ) );
 
+  #if INSTRUMENT_METRICS
   ApproxInter::UninstrumentIfMarked((void*) approxOrig);
   ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+  #endif
+
   ApproxSS::end_level();
 }
 
@@ -3448,16 +3518,18 @@ void RdCost::xGetSADX5_8xN_SIMD(const DistParam& rcDtParam, Distortion* cost, bo
 
 template <X86_VEXT vext, bool isCalCentrePos>
 void xGetSADX5_16xN_SIMDImp_X86(const DistParam& rcDtParam, Distortion* cost) {
-   ApproxSS::start_level(ApproxInter::LevelId::SAD);
+  ApproxSS::start_level(ApproxInter::LevelId::SAD);
   
   int i, j;
   const Pel* piOrg = rcDtParam.org.buf;
   const Pel* piCur = rcDtParam.cur.buf - 4;
 
+  #if INSTRUMENT_METRICS
   Pel const * const approxOrig = piOrg;
   Pel const * const approxCurr = piCur;
   ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::SAD_Orig, ApproxInter::ConfigurationId::SAD_Orig);
   ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::SAD_Curr, ApproxInter::ConfigurationId::SAD_Curr);
+  #endif
 
   int height = rcDtParam.org.height;
   int iSubShift = rcDtParam.subShift;
@@ -3752,8 +3824,10 @@ void xGetSADX5_16xN_SIMDImp_X86(const DistParam& rcDtParam, Distortion* cost) {
     _mm_storeu_si128( ( __m128i* ) &cost[3], _mm_unpackhi_epi32( sum0, _mm_setzero_si128() ) );
   }
 
+  #if INSTRUMENT_METRICS
   ApproxInter::UninstrumentIfMarked((void*) approxOrig);
   ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+  #endif
   ApproxSS::end_level();
 }
 

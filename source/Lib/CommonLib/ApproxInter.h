@@ -47,6 +47,8 @@
 
 	#define COST_DOUBLETAKE								true //i'm iffy if it's corretly implemented on ARM (RdCostARM.h)
 
+	#define INSTRUMENT_METRICS							true
+
 	/*#define APPROX_FME_HP_RECO							true
 	#define APPROX_FME_HP_ORIG							true
 	#define APPROX_FME_QP_RECO							true
