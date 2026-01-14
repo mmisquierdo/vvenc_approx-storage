@@ -81,15 +81,26 @@ typedef void      ( *FpDistFuncX5 )( const DistParam&, Distortion*, bool );
       CostDoubleTaker(FpDistFunc distFunc, const int& funcId) : m_distFunc(distFunc), m_funcId(funcId) {}
 
       Distortion operator () (const DistParam& distParam) const {
+        #if LONG_DOUBLELOG
         ApproxInter::ProcessTake(ApproxInter::Take::Approximate, m_funcId, m_distFunc(distParam));
 
         ApproxSS::disable_global_injection();
-        const Distortion dist = m_distFunc(distParam);
+        const Distortion precDist = m_distFunc(distParam);
         ApproxSS::enable_global_injection();
 
-        ApproxInter::ProcessTake(ApproxInter::Take::Precise, m_funcId, dist);
+        ApproxInter::ProcessTake(ApproxInter::Take::Precise, m_funcId, precDist);
+        #else
+        const Distortion approxDist = m_distFunc(distParam);
 
-        return dist;
+        ApproxSS::disable_global_injection();
+        const Distortion precDist = m_distFunc(distParam);
+        ApproxSS::enable_global_injection();
+
+        const double rel = ((static_cast<double>(approxDist)/static_cast<double>(precDist)-1.0)*100.0);
+        std::cout << "DF_" << ApproxInter::Take::DFuncNames.at(m_funcId) << ":" << (rel > 0? "+" : "") << rel << "%" << std::endl;
+        #endif
+
+        return precDist;
       }
   };
 #endif

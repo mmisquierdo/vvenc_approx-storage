@@ -46,6 +46,7 @@
 	#define APPROX_FME_FILT								false
 
 	#define COST_DOUBLETAKE								true //i'm iffy if it's corretly implemented on ARM (RdCostARM.h)
+	#define LONG_DOUBLELOG								false
 
 	#define INSTRUMENT_METRICS							true
 
