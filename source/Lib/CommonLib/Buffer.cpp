@@ -1122,9 +1122,10 @@ void PelStorage::create( const ChromaFormat &_chromaFormat, const Area& _area, c
   m_maxArea = UnitArea( _chromaFormat, _area );
 
   //DEBUG!!!!!!!
-  this->RemarkBuffers(-4);
+  this->RemarkBuffers(-4); //<Matheus>
 }
 
+//<Matheus>
 /*void PelStorage::ReinstrumentBuffers(const int64_t baseBufferId) const{
 	if(m_origin[0]) {ApproxInter::ReinstrumentIfMarked((void*) m_origin[0],	baseBufferId+0,	ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
 	if(m_origin[1])	{ApproxInter::ReinstrumentIfMarked((void*) m_origin[1],	baseBufferId+1, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
@@ -1136,6 +1137,7 @@ void PelStorage::RemarkBuffers(const int64_t baseBufferId) const{
 	if(m_origin[1])	{ApproxInter::RemarkBuffer((void*) m_origin[1],	baseBufferId+1, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
 	if(m_origin[2])	{ApproxInter::RemarkBuffer((void*) m_origin[2],	baseBufferId+2, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
 }
+//<//Matheus>
 
 void PelStorage::createFromBuf( PelUnitBuf buf )
 {

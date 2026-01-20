@@ -71,37 +71,16 @@ typedef Distortion( *FpDistFunc   )( const DistParam& );
 typedef void      ( *FpDistFuncX5 )( const DistParam&, Distortion*, bool );
 
 //<Matheus>
-#if COST_DOUBLETAKE
-  class CostDoubleTaker {
+#if COST_CAPTURE
+  class CostCapture {
     FpDistFunc m_distFunc;
     int m_funcId;
 
     public:
-      CostDoubleTaker() : m_distFunc(nullptr), m_funcId(0) {}
-      CostDoubleTaker(FpDistFunc distFunc, const int& funcId) : m_distFunc(distFunc), m_funcId(funcId) {}
+      CostCapture() : m_distFunc(nullptr), m_funcId(0) {}
+      CostCapture(FpDistFunc distFunc, const int& funcId) : m_distFunc(distFunc), m_funcId(funcId) {}
 
-      Distortion operator () (const DistParam& distParam) const {
-        #if LONG_DOUBLELOG
-        ApproxInter::ProcessTake(ApproxInter::Take::Approximate, m_funcId, m_distFunc(distParam));
-
-        ApproxSS::disable_global_injection();
-        const Distortion precDist = m_distFunc(distParam);
-        ApproxSS::enable_global_injection();
-
-        ApproxInter::ProcessTake(ApproxInter::Take::Precise, m_funcId, precDist);
-        #else
-        const Distortion approxDist = m_distFunc(distParam);
-
-        ApproxSS::disable_global_injection();
-        const Distortion precDist = m_distFunc(distParam);
-        ApproxSS::enable_global_injection();
-
-        const double rel = ((static_cast<double>(approxDist)/static_cast<double>(precDist)-1.0)*100.0);
-        std::cout << "DF_" << ApproxInter::Take::DFuncNames.at(m_funcId) << ":" << (rel > 0? "+" : "") << rel << "%" << std::endl;
-        #endif
-
-        return precDist;
-      }
+      Distortion operator () (const DistParam& distParam) const;
   };
 #endif
 //</Matheus>
@@ -117,8 +96,8 @@ public:
   CPelBuf               org;
   CPelBuf               cur;
 
-  #if COST_DOUBLETAKE //<Matheus>
-  CostDoubleTaker       distFunc;
+  #if COST_CAPTURE //<Matheus>
+  CostCapture       distFunc;
   #else
   FpDistFunc            distFunc  = nullptr;
   #endif
@@ -142,8 +121,8 @@ public:
 
   DistParam() = default;
 
-  #if COST_DOUBLETAKE //<Matheus>
-    DistParam( const CPelBuf& _org, const CPelBuf& _cur,  CostDoubleTaker _distFunc, int _bitDepth, int _subShift, ComponentID _compID )
+  #if COST_CAPTURE //<Matheus>
+    DistParam( const CPelBuf& _org, const CPelBuf& _cur,  CostCapture _distFunc, int _bitDepth, int _subShift, ComponentID _compID )
     : org(_org), cur(_cur), distFunc(_distFunc), bitDepth(_bitDepth), subShift(_subShift), compID(_compID)
     {
     }

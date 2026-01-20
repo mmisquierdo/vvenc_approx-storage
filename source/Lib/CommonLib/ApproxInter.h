@@ -45,10 +45,12 @@
 	#define APPROX_FME_ORIG 							false
 	#define APPROX_FME_FILT								false
 
-	#define COST_DOUBLETAKE								true //i'm iffy if it's corretly implemented on ARM (RdCostARM.h)
+	#define COST_CAPTURE								true //i'm iffy if it's corretly implemented on ARM (RdCostARM.h)
 	#define LONG_DOUBLELOG								false
 
-	#define INSTRUMENT_METRICS							true
+	#define INSTRUMENT_METRICS							false
+
+	#define CAPTURED_METRIC_INSTRUMENTATION				true
 
 	/*#define APPROX_FME_HP_RECO							true
 	#define APPROX_FME_HP_ORIG							true
@@ -87,9 +89,113 @@
 			//FME_BEST_MV_COST_RECALC
 			extern uint32_t fme_uiDirecBest;
 
-
+			extern int lastFuncId;
 
 		//public:
+			#if COST_CAPTURE
+			namespace Take {
+				constexpr uint64_t Approximate = 0;
+				constexpr uint64_t Precise = 1;
+				constexpr uint64_t Size = 2;
+
+				constexpr std::array<char const*const, Size> Names = {"~", "="};
+
+				enum DFunc : uint8_t //gambiarra feia pra nao dar um include quebrado
+				{
+				DF_SSE             = 0,             ///< general size SSE
+				DF_SSE2            = DF_SSE+1,      ///<   2xM SSE
+				DF_SSE4            = DF_SSE+2,      ///<   4xM SSE
+				DF_SSE8            = DF_SSE+3,      ///<   8xM SSE
+				DF_SSE16           = DF_SSE+4,      ///<  16xM SSE
+				DF_SSE32           = DF_SSE+5,      ///<  32xM SSE
+				DF_SSE64           = DF_SSE+6,      ///<  64xM SSE
+				DF_SSE128          = DF_SSE+7,      ///< 16NxM SSE
+
+				DF_SAD             = 8,             ///< general size SAD
+				DF_SAD2            = DF_SAD+1,      ///<   2xM SAD
+				DF_SAD4            = DF_SAD+2,      ///<   4xM SAD
+				DF_SAD8            = DF_SAD+3,      ///<   8xM SAD
+				DF_SAD16           = DF_SAD+4,      ///<  16xM SAD
+				DF_SAD32           = DF_SAD+5,      ///<  32xM SAD
+				DF_SAD64           = DF_SAD+6,      ///<  64xM SAD
+				DF_SAD128          = DF_SAD+7,      ///< 16NxM SAD
+
+				DF_HAD             = 16,            ///< general size Hadamard
+				DF_HAD2            = DF_HAD+1,      ///<   2xM HAD
+				DF_HAD4            = DF_HAD+2,      ///<   4xM HAD
+				DF_HAD8            = DF_HAD+3,      ///<   8xM HAD
+				DF_HAD16           = DF_HAD+4,      ///<  16xM HAD
+				DF_HAD32           = DF_HAD+5,      ///<  32xM HAD
+				DF_HAD64           = DF_HAD+6,      ///<  64xM HAD
+				DF_HAD128          = DF_HAD+7,      ///< 16NxM HAD
+
+				DF_HAD_2SAD        = 24,            //tbd th remove
+
+				DF_SAD_WITH_MASK   = 25,
+				
+				DF_HAD_fast        = 26,            ///< general size Hadamard
+				DF_HAD2_fast       = DF_HAD_fast+1,      ///<   2xM fast HAD
+				DF_HAD4_fast       = DF_HAD_fast+2,      ///<   4xM fast HAD
+				DF_HAD8_fast       = DF_HAD_fast+3,      ///<   8xM fast HAD
+				DF_HAD16_fast      = DF_HAD_fast+4,      ///<  16xM fast HAD
+				DF_HAD32_fast      = DF_HAD_fast+5,      ///<  32xM fast HAD
+				DF_HAD64_fast      = DF_HAD_fast+6,      ///<  64xM fast HAD
+				DF_HAD128_fast     = DF_HAD_fast+7,      ///< 16NxM fast HAD
+
+				DF_TOTAL_FUNCTIONS = 34,
+
+				DF_SSE_WTD         = 35,          // out of func scope
+				DF_TOTAL_FUNCTIONS_ACTUAL = 36,
+				DF_OUT_OF_RANGE    = 37
+				};
+
+				const std::unordered_map<const uint8_t, char const * const, std::hash<uint8_t>> DFuncNames = {
+					{ DF_SSE,             "SSE" },
+					{ DF_SSE2,            "SSE2" },
+					{ DF_SSE4,            "SSE4" },
+					{ DF_SSE8,            "SSE8" },
+					{ DF_SSE16,           "SSE16" },
+					{ DF_SSE32,           "SSE32" },
+					{ DF_SSE64,           "SSE64" },
+					{ DF_SSE128,          "SSE128" },
+
+					{ DF_SAD,             "SAD" },
+					{ DF_SAD2,            "SAD2" },
+					{ DF_SAD4,            "SAD4" },
+					{ DF_SAD8,            "SAD8" },
+					{ DF_SAD16,           "SAD16" },
+					{ DF_SAD32,           "SAD32" },
+					{ DF_SAD64,           "SAD64" },
+					{ DF_SAD128,          "SAD128" },
+
+					{ DF_HAD,             "HAD" },
+					{ DF_HAD2,            "HAD2" },
+					{ DF_HAD4,            "HAD4" },
+					{ DF_HAD8,            "HAD8" },
+					{ DF_HAD16,           "HAD16" },
+					{ DF_HAD32,           "HAD32" },
+					{ DF_HAD64,           "HAD64" },
+					{ DF_HAD128,          "HAD128" },
+
+					{ DF_HAD_2SAD,        "HAD_2SAD" },
+					{ DF_SAD_WITH_MASK,   "SAD_WITH_MASK" },
+
+					{ DF_HAD_fast,        "HAD_fast" },
+					{ DF_HAD2_fast,       "HAD2_fast" },
+					{ DF_HAD4_fast,       "HAD4_fast" },
+					{ DF_HAD8_fast,       "HAD8_fast" },
+					{ DF_HAD16_fast,      "HAD16_fast" },
+					{ DF_HAD32_fast,      "HAD32_fast" },
+					{ DF_HAD64_fast,      "HAD64_fast" },
+					{ DF_HAD128_fast,     "HAD128_fast" },
+
+					{ DF_TOTAL_FUNCTIONS, "TOTAL_FUNCTIONS" },
+					{ DF_SSE_WTD,         "SSE_WTD" },
+					{ DF_OUT_OF_RANGE,    "OUT_OF_RANGE"}
+				};
+			}
+			#endif
+
 		
 			namespace BufferId {
 				constexpr int64_t OTHERS = 0;
@@ -272,6 +378,94 @@
 				constexpr int64_t FastHAD_Orig = -31;
 				constexpr int64_t FastHAD_Curr = -32;
 
+				constexpr std::array<const int64_t, Take::DF_TOTAL_FUNCTIONS_ACTUAL> DFunc_Orig = {
+					SSE_Orig, 	//{ Take::DF_SSE,             "SSE" },
+					SSE_Orig, 	//{ Take::DF_SSE2,            "SSE2" },
+					SSE_Orig, 	//{ Take::DF_SSE4,            "SSE4" },
+					SSE_Orig, 	//{ Take::DF_SSE8,            "SSE8" },
+					SSE_Orig, 	//{ Take::DF_SSE16,           "SSE16" },
+					SSE_Orig, 	//{ Take::DF_SSE32,           "SSE32" },
+					SSE_Orig, 	//{ Take::DF_SSE64,           "SSE64" },
+					SSE_Orig, 	//{ Take::DF_SSE128,          "SSE128" },
+
+					SAD_Orig, 	//{ Take::DF_SAD,             "SAD" },
+					SAD_Orig, 	//{ Take::DF_SAD2,            "SAD2" },
+					SAD_Orig, 	//{ Take::DF_SAD4,            "SAD4" },
+					SAD_Orig, 	//{ Take::DF_SAD8,            "SAD8" },
+					SAD_Orig, 	//{ Take::DF_SAD16,           "SAD16" },
+					SAD_Orig, 	//{ Take::DF_SAD32,           "SAD32" },
+					SAD_Orig, 	//{ Take::DF_SAD64,           "SAD64" },
+					SAD_Orig, 	//{ Take::DF_SAD128,          "SAD128" },
+
+					HAD_Orig,	//{ Take::DF_HAD,             "HAD" },
+					HAD_Orig,	//{ Take::DF_HAD2,            "HAD2" },
+					HAD_Orig,	//{ Take::DF_HAD4,            "HAD4" },
+					HAD_Orig,	//{ Take::DF_HAD8,            "HAD8" },
+					HAD_Orig,	//{ Take::DF_HAD16,           "HAD16" },
+					HAD_Orig,	//{ Take::DF_HAD32,           "HAD32" },
+					HAD_Orig,	//{ Take::DF_HAD64,           "HAD64" },
+					HAD_Orig,	//{ Take::DF_HAD128,          "HAD128" },
+
+					-1,			//{ Take::DF_HAD_2SAD,        "HAD_2SAD" },
+					MaskedSAD_Orig, //{ Take::DF_SAD_WITH_MASK,   "SAD_WITH_MASK" },
+
+					FastHAD_Orig, //{ Take::DF_HAD_fast,        "HAD_fast" },
+					FastHAD_Orig, //{ Take::DF_HAD2_fast,       "HAD2_fast" },
+					FastHAD_Orig, //{ Take::DF_HAD4_fast,       "HAD4_fast" },
+					FastHAD_Orig, //{ Take::DF_HAD8_fast,       "HAD8_fast" },
+					FastHAD_Orig, //{ Take::DF_HAD16_fast,      "HAD16_fast" },
+					FastHAD_Orig, //{ Take::DF_HAD32_fast,      "HAD32_fast" },
+					FastHAD_Orig, //{ Take::DF_HAD64_fast,      "HAD64_fast" },
+					FastHAD_Orig, //{ Take::DF_HAD128_fast,     "HAD128_fast" },
+
+					-1,				//{ Take::DF_TOTAL_FUNCTIONS, "TOTAL_FUNCTIONS" },
+					WeightedSSE_Orig	//{ Take::DF_SSE_WTD,         "SSE_WTD" }
+				};
+
+				constexpr std::array<const int64_t, Take::DF_TOTAL_FUNCTIONS_ACTUAL> DFunc_Curr = {
+					SSE_Curr, 	//{ Take::DF_SSE,             "SSE" },
+					SSE_Curr, 	//{ Take::DF_SSE2,            "SSE2" },
+					SSE_Curr, 	//{ Take::DF_SSE4,            "SSE4" },
+					SSE_Curr, 	//{ Take::DF_SSE8,            "SSE8" },
+					SSE_Curr, 	//{ Take::DF_SSE16,           "SSE16" },
+					SSE_Curr, 	//{ Take::DF_SSE32,           "SSE32" },
+					SSE_Curr, 	//{ Take::DF_SSE64,           "SSE64" },
+					SSE_Curr, 	//{ Take::DF_SSE128,          "SSE128" },
+
+					SAD_Curr, 	//{ Take::DF_SAD,             "SAD" },
+					SAD_Curr, 	//{ Take::DF_SAD2,            "SAD2" },
+					SAD_Curr, 	//{ Take::DF_SAD4,            "SAD4" },
+					SAD_Curr, 	//{ Take::DF_SAD8,            "SAD8" },
+					SAD_Curr, 	//{ Take::DF_SAD16,           "SAD16" },
+					SAD_Curr, 	//{ Take::DF_SAD32,           "SAD32" },
+					SAD_Curr, 	//{ Take::DF_SAD64,           "SAD64" },
+					SAD_Curr, 	//{ Take::DF_SAD128,          "SAD128" },
+
+					HAD_Curr,	//{ Take::DF_HAD,             "HAD" },
+					HAD_Curr,	//{ Take::DF_HAD2,            "HAD2" },
+					HAD_Curr,	//{ Take::DF_HAD4,            "HAD4" },
+					HAD_Curr,	//{ Take::DF_HAD8,            "HAD8" },
+					HAD_Curr,	//{ Take::DF_HAD16,           "HAD16" },
+					HAD_Curr,	//{ Take::DF_HAD32,           "HAD32" },
+					HAD_Curr,	//{ Take::DF_HAD64,           "HAD64" },
+					HAD_Curr,	//{ Take::DF_HAD128,          "HAD128" },
+
+					-1,			//{ Take::DF_HAD_2SAD,        "HAD_2SAD" },
+					MaskedSAD_Curr, //{ Take::DF_SAD_WITH_MASK,   "SAD_WITH_MASK" },
+
+					FastHAD_Curr, //{ Take::DF_HAD_fast,        "HAD_fast" },
+					FastHAD_Curr, //{ Take::DF_HAD2_fast,       "HAD2_fast" },
+					FastHAD_Curr, //{ Take::DF_HAD4_fast,       "HAD4_fast" },
+					FastHAD_Curr, //{ Take::DF_HAD8_fast,       "HAD8_fast" },
+					FastHAD_Curr, //{ Take::DF_HAD16_fast,      "HAD16_fast" },
+					FastHAD_Curr, //{ Take::DF_HAD32_fast,      "HAD32_fast" },
+					FastHAD_Curr, //{ Take::DF_HAD64_fast,      "HAD64_fast" },
+					FastHAD_Curr, //{ Take::DF_HAD128_fast,     "HAD128_fast" },
+
+					-1,				//{ Take::DF_TOTAL_FUNCTIONS, "TOTAL_FUNCTIONS" },
+					WeightedSSE_Curr	//{ Take::DF_SSE_WTD,         "SSE_WTD" }
+				};
+
 
 				/*constexpr int64_t RECO_MOTION_ESTIMATION 					= 0;
 				constexpr int64_t RECO_AFFINE_MOTION_ESTIMATION 			= 1;
@@ -423,6 +617,96 @@
 				constexpr int64_t FastHAD_Orig = APPROXIMATE_KNOB;
 				constexpr int64_t FastHAD_Curr = APPROXIMATE_KNOB;
 
+				constexpr int64_t HAD_2SAD_Orig = APPROXIMATE_KNOB;
+				constexpr int64_t HAD_2SAD_Curr = APPROXIMATE_KNOB;
+
+				constexpr std::array<const int64_t, Take::DF_TOTAL_FUNCTIONS_ACTUAL> DFunc_Orig = {
+					SSE_Orig, 	//{ Take::DF_SSE,             "SSE" },
+					SSE_Orig, 	//{ Take::DF_SSE2,            "SSE2" },
+					SSE_Orig, 	//{ Take::DF_SSE4,            "SSE4" },
+					SSE_Orig, 	//{ Take::DF_SSE8,            "SSE8" },
+					SSE_Orig, 	//{ Take::DF_SSE16,           "SSE16" },
+					SSE_Orig, 	//{ Take::DF_SSE32,           "SSE32" },
+					SSE_Orig, 	//{ Take::DF_SSE64,           "SSE64" },
+					SSE_Orig, 	//{ Take::DF_SSE128,          "SSE128" },
+
+					SAD_Orig, 	//{ Take::DF_SAD,             "SAD" },
+					SAD_Orig, 	//{ Take::DF_SAD2,            "SAD2" },
+					SAD_Orig, 	//{ Take::DF_SAD4,            "SAD4" },
+					SAD_Orig, 	//{ Take::DF_SAD8,            "SAD8" },
+					SAD_Orig, 	//{ Take::DF_SAD16,           "SAD16" },
+					SAD_Orig, 	//{ Take::DF_SAD32,           "SAD32" },
+					SAD_Orig, 	//{ Take::DF_SAD64,           "SAD64" },
+					SAD_Orig, 	//{ Take::DF_SAD128,          "SAD128" },
+
+					HAD_Orig,	//{ Take::DF_HAD,             "HAD" },
+					HAD_Orig,	//{ Take::DF_HAD2,            "HAD2" },
+					HAD_Orig,	//{ Take::DF_HAD4,            "HAD4" },
+					HAD_Orig,	//{ Take::DF_HAD8,            "HAD8" },
+					HAD_Orig,	//{ Take::DF_HAD16,           "HAD16" },
+					HAD_Orig,	//{ Take::DF_HAD32,           "HAD32" },
+					HAD_Orig,	//{ Take::DF_HAD64,           "HAD64" },
+					HAD_Orig,	//{ Take::DF_HAD128,          "HAD128" },
+
+					HAD_2SAD_Orig,	//{ Take::DF_HAD_2SAD,        "HAD_2SAD" }, // PREFERABLY NOT TO BE USED
+					MaskedSAD_Orig, //{ Take::DF_SAD_WITH_MASK,   "SAD_WITH_MASK" },
+
+					FastHAD_Orig, //{ Take::DF_HAD_fast,        "HAD_fast" },
+					FastHAD_Orig, //{ Take::DF_HAD2_fast,       "HAD2_fast" },
+					FastHAD_Orig, //{ Take::DF_HAD4_fast,       "HAD4_fast" },
+					FastHAD_Orig, //{ Take::DF_HAD8_fast,       "HAD8_fast" },
+					FastHAD_Orig, //{ Take::DF_HAD16_fast,      "HAD16_fast" },
+					FastHAD_Orig, //{ Take::DF_HAD32_fast,      "HAD32_fast" },
+					FastHAD_Orig, //{ Take::DF_HAD64_fast,      "HAD64_fast" },
+					FastHAD_Orig, //{ Take::DF_HAD128_fast,     "HAD128_fast" },
+
+					OTHER,				//{ Take::DF_TOTAL_FUNCTIONS, "TOTAL_FUNCTIONS" },
+					WeightedSSE_Orig	//{ Take::DF_SSE_WTD,         "SSE_WTD" }
+				};
+
+				constexpr std::array<const int64_t, Take::DF_TOTAL_FUNCTIONS_ACTUAL> DFunc_Curr = {
+					SSE_Curr, 	//{ Take::DF_SSE,             "SSE" },
+					SSE_Curr, 	//{ Take::DF_SSE2,            "SSE2" },
+					SSE_Curr, 	//{ Take::DF_SSE4,            "SSE4" },
+					SSE_Curr, 	//{ Take::DF_SSE8,            "SSE8" },
+					SSE_Curr, 	//{ Take::DF_SSE16,           "SSE16" },
+					SSE_Curr, 	//{ Take::DF_SSE32,           "SSE32" },
+					SSE_Curr, 	//{ Take::DF_SSE64,           "SSE64" },
+					SSE_Curr, 	//{ Take::DF_SSE128,          "SSE128" },
+
+					SAD_Curr, 	//{ Take::DF_SAD,             "SAD" },
+					SAD_Curr, 	//{ Take::DF_SAD2,            "SAD2" },
+					SAD_Curr, 	//{ Take::DF_SAD4,            "SAD4" },
+					SAD_Curr, 	//{ Take::DF_SAD8,            "SAD8" },
+					SAD_Curr, 	//{ Take::DF_SAD16,           "SAD16" },
+					SAD_Curr, 	//{ Take::DF_SAD32,           "SAD32" },
+					SAD_Curr, 	//{ Take::DF_SAD64,           "SAD64" },
+					SAD_Curr, 	//{ Take::DF_SAD128,          "SAD128" },
+
+					HAD_Curr,	//{ Take::DF_HAD,             "HAD" },
+					HAD_Curr,	//{ Take::DF_HAD2,            "HAD2" },
+					HAD_Curr,	//{ Take::DF_HAD4,            "HAD4" },
+					HAD_Curr,	//{ Take::DF_HAD8,            "HAD8" },
+					HAD_Curr,	//{ Take::DF_HAD16,           "HAD16" },
+					HAD_Curr,	//{ Take::DF_HAD32,           "HAD32" },
+					HAD_Curr,	//{ Take::DF_HAD64,           "HAD64" },
+					HAD_Curr,	//{ Take::DF_HAD128,          "HAD128" },
+
+					HAD_2SAD_Curr,	//{ Take::DF_HAD_2SAD,        "HAD_2SAD" }, // PREFERABLY NOT TO BE USED
+					MaskedSAD_Curr, //{ Take::DF_SAD_WITH_MASK,   "SAD_WITH_MASK" },
+
+					FastHAD_Curr, //{ Take::DF_HAD_fast,        "HAD_fast" },
+					FastHAD_Curr, //{ Take::DF_HAD2_fast,       "HAD2_fast" },
+					FastHAD_Curr, //{ Take::DF_HAD4_fast,       "HAD4_fast" },
+					FastHAD_Curr, //{ Take::DF_HAD8_fast,       "HAD8_fast" },
+					FastHAD_Curr, //{ Take::DF_HAD16_fast,      "HAD16_fast" },
+					FastHAD_Curr, //{ Take::DF_HAD32_fast,      "HAD32_fast" },
+					FastHAD_Curr, //{ Take::DF_HAD64_fast,      "HAD64_fast" },
+					FastHAD_Curr, //{ Take::DF_HAD128_fast,     "HAD128_fast" },
+
+					OTHER,				//{ Take::DF_TOTAL_FUNCTIONS, "TOTAL_FUNCTIONS" },
+					WeightedSSE_Curr	//{ Take::DF_SSE_WTD,         "SSE_WTD" }
+				};
 
 				/*constexpr int64_t RECO_MOTION_ESTIMATION 					= JUST_TRACKING;
 				constexpr int64_t RECO_AFFINE_MOTION_ESTIMATION 			= JUST_TRACKING;
@@ -458,106 +742,6 @@
 				constexpr int64_t FME_FILT_TEMP								= JUST_TRACKING;*/
 			}
 
-			#if COST_DOUBLETAKE
-			namespace Take {
-				constexpr uint64_t Approximate = 0;
-				constexpr uint64_t Precise = 1;
-				constexpr uint64_t Size = 2;
-
-				constexpr std::array<char const*const, Size> Names = {"~", "="};
-
-				enum DFunc : uint8_t //gambiarra feia pra nao dar um include quebrado
-				{
-				DF_SSE             = 0,             ///< general size SSE
-				DF_SSE2            = DF_SSE+1,      ///<   2xM SSE
-				DF_SSE4            = DF_SSE+2,      ///<   4xM SSE
-				DF_SSE8            = DF_SSE+3,      ///<   8xM SSE
-				DF_SSE16           = DF_SSE+4,      ///<  16xM SSE
-				DF_SSE32           = DF_SSE+5,      ///<  32xM SSE
-				DF_SSE64           = DF_SSE+6,      ///<  64xM SSE
-				DF_SSE128          = DF_SSE+7,      ///< 16NxM SSE
-
-				DF_SAD             = 8,             ///< general size SAD
-				DF_SAD2            = DF_SAD+1,      ///<   2xM SAD
-				DF_SAD4            = DF_SAD+2,      ///<   4xM SAD
-				DF_SAD8            = DF_SAD+3,      ///<   8xM SAD
-				DF_SAD16           = DF_SAD+4,      ///<  16xM SAD
-				DF_SAD32           = DF_SAD+5,      ///<  32xM SAD
-				DF_SAD64           = DF_SAD+6,      ///<  64xM SAD
-				DF_SAD128          = DF_SAD+7,      ///< 16NxM SAD
-
-				DF_HAD             = 16,            ///< general size Hadamard
-				DF_HAD2            = DF_HAD+1,      ///<   2xM HAD
-				DF_HAD4            = DF_HAD+2,      ///<   4xM HAD
-				DF_HAD8            = DF_HAD+3,      ///<   8xM HAD
-				DF_HAD16           = DF_HAD+4,      ///<  16xM HAD
-				DF_HAD32           = DF_HAD+5,      ///<  32xM HAD
-				DF_HAD64           = DF_HAD+6,      ///<  64xM HAD
-				DF_HAD128          = DF_HAD+7,      ///< 16NxM HAD
-
-				DF_HAD_2SAD        = 24,            //tbd th remove
-
-				DF_SAD_WITH_MASK   = 25,
-				
-				DF_HAD_fast        = 26,            ///< general size Hadamard
-				DF_HAD2_fast       = DF_HAD_fast+1,      ///<   2xM fast HAD
-				DF_HAD4_fast       = DF_HAD_fast+2,      ///<   4xM fast HAD
-				DF_HAD8_fast       = DF_HAD_fast+3,      ///<   8xM fast HAD
-				DF_HAD16_fast      = DF_HAD_fast+4,      ///<  16xM fast HAD
-				DF_HAD32_fast      = DF_HAD_fast+5,      ///<  32xM fast HAD
-				DF_HAD64_fast      = DF_HAD_fast+6,      ///<  64xM fast HAD
-				DF_HAD128_fast     = DF_HAD_fast+7,      ///< 16NxM fast HAD
-
-				DF_TOTAL_FUNCTIONS = 34,
-
-				DF_SSE_WTD         = 0xf2u          // out of func scope
-				};
-
-				const std::unordered_map<const uint8_t, char const * const, std::hash<uint8_t>> DFuncNames = {
-					{ DF_SSE,             "SSE" },
-					{ DF_SSE2,            "SSE2" },
-					{ DF_SSE4,            "SSE4" },
-					{ DF_SSE8,            "SSE8" },
-					{ DF_SSE16,           "SSE16" },
-					{ DF_SSE32,           "SSE32" },
-					{ DF_SSE64,           "SSE64" },
-					{ DF_SSE128,          "SSE128" },
-
-					{ DF_SAD,             "SAD" },
-					{ DF_SAD2,            "SAD2" },
-					{ DF_SAD4,            "SAD4" },
-					{ DF_SAD8,            "SAD8" },
-					{ DF_SAD16,           "SAD16" },
-					{ DF_SAD32,           "SAD32" },
-					{ DF_SAD64,           "SAD64" },
-					{ DF_SAD128,          "SAD128" },
-
-					{ DF_HAD,             "HAD" },
-					{ DF_HAD2,            "HAD2" },
-					{ DF_HAD4,            "HAD4" },
-					{ DF_HAD8,            "HAD8" },
-					{ DF_HAD16,           "HAD16" },
-					{ DF_HAD32,           "HAD32" },
-					{ DF_HAD64,           "HAD64" },
-					{ DF_HAD128,          "HAD128" },
-
-					{ DF_HAD_2SAD,        "HAD_2SAD" },
-					{ DF_SAD_WITH_MASK,   "SAD_WITH_MASK" },
-
-					{ DF_HAD_fast,        "HAD_fast" },
-					{ DF_HAD2_fast,       "HAD2_fast" },
-					{ DF_HAD4_fast,       "HAD4_fast" },
-					{ DF_HAD8_fast,       "HAD8_fast" },
-					{ DF_HAD16_fast,      "HAD16_fast" },
-					{ DF_HAD32_fast,      "HAD32_fast" },
-					{ DF_HAD64_fast,      "HAD64_fast" },
-					{ DF_HAD128_fast,     "HAD128_fast" },
-
-					{ DF_TOTAL_FUNCTIONS, "TOTAL_FUNCTIONS" },
-					{ DF_SSE_WTD,         "SSE_WTD" }
-				};
-			}
-			#endif
 
 			#if PRINT_COST
 				extern double bestTempCost;
@@ -581,7 +765,7 @@
 			void PrintBuffersInfo();
 			void PrintBufferInfo(const std::string& bufferName, const int64_t bufferId, const int64_t configurationId, const std::string& tab = "\t");
 
-			#if COST_DOUBLETAKE
+			#if COST_CAPTURE
 			void ProcessTake(const uint8_t takeId, const uint8_t funcId, const uint64_t cost);
 			#endif
 

@@ -10,6 +10,8 @@ AllocatedBuffersSet ApproxInter::allocatedBuffers{};
 //AllocatedBuffersSet ApproxInter::unmarkedBuffers{};
 std::mutex ApproxInter::allocatedBuffersMutex;
 
+int ApproxInter::lastFuncId = -1;
+
 //FME_BEST_MV_COST_RECALC
 uint32_t ApproxInter::fme_uiDirecBest = 0;
 
@@ -115,7 +117,7 @@ void ApproxInter::UninstrumentIfMarked(void * const address, const bool giveAway
 	}
 }
 
-#if COST_DOUBLETAKE
+#if COST_CAPTURE
 void ApproxInter::ProcessTake(const uint8_t takeId, const uint8_t funcId, const uint64_t cost) {
 	std::cout << Take::DFuncNames.at(funcId) << Take::Names[takeId] <<  cost << std::endl;
 }
@@ -153,7 +155,7 @@ void ApproxInter::PrintMacrosStates() {
 
 	ApproxInter::PrintMacroState("APPROX_FME_BEST_MV_COST_RECALC", 				APPROX_FME_BEST_MV_COST_RECALC);
 
-	ApproxInter::PrintMacroState("COST_DOUBLETAKE", 							COST_DOUBLETAKE);
+	ApproxInter::PrintMacroState("COST_CAPTURE", 							COST_CAPTURE);
 
 	ApproxInter::PrintMacroState("MATHEUS_SKIP_FRACTIONAL_MOTION_ESTIMATION", MATHEUS_SKIP_FRACTIONAL_MOTION_ESTIMATION);
 	std::cout << "\tMATHEUS_xPatternSearchIntRefine_ITERATED_POS" << ": " << MATHEUS_xPatternSearchIntRefine_ITERATED_POS << std::endl;

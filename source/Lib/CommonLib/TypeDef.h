@@ -374,7 +374,7 @@ enum DFunc : uint8_t
 
   DF_TOTAL_FUNCTIONS = 34,
 
-  DF_SSE_WTD         = 0xf2u          // out of func scope
+  DF_SSE_WTD         = 35 //0xf2u          // out of func scope <Matheus>
 };
 
 /// motion vector predictor direction used in AMVP
