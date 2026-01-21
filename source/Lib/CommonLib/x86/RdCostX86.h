@@ -2767,6 +2767,10 @@ Distortion RdCost::xGetHAD2SADs_SIMD( const DistParam &rcDtParam )
     ApproxSS::end_level();
   }
 
+  #if CAPTURED_METRIC_INSTRUMENTATION
+    std::cout << '(' << ApproxInter::Take::Names[ApproxInter::Take::CurrentTake] << distHad << ',' << 2*distSad << ')' << std::endl;
+  #endif
+
   return std::min( distHad, 2*distSad);
 }
 

@@ -171,17 +171,21 @@ static Distortion xMeasurePredSearchSpaceInterceptor( const DistParam& dp )
     #endif
 
     #if LONG_DOUBLELOG
+      ApproxInter::Take::CurrentTake = ApproxInter::Take::Approximate;
       ApproxInter::ProcessTake(ApproxInter::Take::Approximate, m_funcId, m_distFunc(distParam));
 
       ApproxSS::disable_global_injection();
       const Distortion precDist = m_distFunc(distParam);
       ApproxSS::enable_global_injection();
 
+      ApproxInter::Take::CurrentTake = ApproxInter::Take::Precise;
       ApproxInter::ProcessTake(ApproxInter::Take::Precise, m_funcId, precDist);
     #else
+      ApproxInter::Take::CurrentTake = ApproxInter::Take::Approximate;
       const Distortion approxDist = m_distFunc(distParam);
 
       ApproxSS::disable_global_injection();
+      ApproxInter::Take::CurrentTake = ApproxInter::Take::Precise;
       const Distortion precDist = m_distFunc(distParam);
       ApproxSS::enable_global_injection();
 
@@ -193,7 +197,7 @@ static Distortion xMeasurePredSearchSpaceInterceptor( const DistParam& dp )
       const double rel = ((static_cast<double>(approxDist)/static_cast<double>(precDist)-1.0)*100.0);
 
       std::cout << std::fixed << std::setprecision(2);
-      std::cout << precDist << ':' << (rel > 0? "+" : "") << rel << "%" << std::endl;
+      std::cout << '=' << precDist << '~' << (rel > 0? "+" : "") << rel << "%" << std::endl;
       std::cout << std::defaultfloat << std::setprecision(6);
     #endif
 
@@ -360,17 +364,21 @@ Distortion RdCost::getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitD
 
 
       #if LONG_DOUBLELOG
+        ApproxInter::Take::CurrentTake = ApproxInter::Take::Approximate;
         ApproxInter::ProcessTake(ApproxInter::Take::Approximate, eDFunc, RdCost::xGetSSE_WTD( dp ));
 
         ApproxSS::disable_global_injection();
+        ApproxInter::Take::CurrentTake = ApproxInter::Take::Precise;
         const Distortion precDist = RdCost::xGetSSE_WTD( dp );
         ApproxSS::enable_global_injection();
 
         ApproxInter::ProcessTake(ApproxInter::Take::Precise, eDFunc, precDist);
       #else
+        ApproxInter::Take::CurrentTake = ApproxInter::Take::Approximate;
         const Distortion approxDist = RdCost::xGetSSE_WTD( dp );
 
         ApproxSS::disable_global_injection();
+        ApproxInter::Take::CurrentTake = ApproxInter::Take::Precise;
         const Distortion precDist = RdCost::xGetSSE_WTD( dp );
         ApproxSS::enable_global_injection();
 
@@ -382,7 +390,7 @@ Distortion RdCost::getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitD
         const double rel = ((static_cast<double>(approxDist)/static_cast<double>(precDist)-1.0)*100.0);
 
         std::cout << std::fixed << std::setprecision(2);
-        std::cout << precDist << ':' << (rel > 0? "+" : "") << rel << "%" << std::endl;
+        std::cout << '=' << precDist << '~' << (rel > 0? "+" : "") << rel << "%" << std::endl;
         std::cout << std::defaultfloat << std::setprecision(6);
       #endif
 
@@ -2247,6 +2255,10 @@ Distortion RdCost::xGetHAD2SADs( const DistParam &rcDtParam )
     ApproxSS::end_level();
   }  
   
+  #if CAPTURED_METRIC_INSTRUMENTATION
+    std::cout << '(' << ApproxInter::Take::Names[ApproxInter::Take::CurrentTake] << distHad << ',' << 2*distSad << ')' << std::endl;
+  #endif
+
   return std::min( distHad, 2*distSad);
 }
 

@@ -45,7 +45,7 @@
 	#define APPROX_FME_ORIG 							false
 	#define APPROX_FME_FILT								false
 
-	#define COST_CAPTURE								true //i'm iffy if it's corretly implemented on ARM (RdCostARM.h)
+	#define COST_CAPTURE								true //i'm iffy if it's corretly implemented on ARM (RdCostARM.h), actually new CostCapture should do it 
 	#define LONG_DOUBLELOG								false
 
 	#define INSTRUMENT_METRICS							false
@@ -99,6 +99,8 @@
 				constexpr uint64_t Size = 2;
 
 				constexpr std::array<char const*const, Size> Names = {"~", "="};
+
+				extern uint64_t CurrentTake;
 
 				enum DFunc : uint8_t //gambiarra feia pra nao dar um include quebrado
 				{
