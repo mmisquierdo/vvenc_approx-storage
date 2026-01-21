@@ -933,7 +933,7 @@ Distortion RdCost::xGetHAD2SADs_ARMSIMD( const DistParam &rcDtParam )  //MATHEUS
   Distortion distSad = RdCost::xGetSAD_SIMD<SIMD_EVERYWHERE_EXTENSION_LEVEL>( rcDtParam );
 
   #if CAPTURED_METRIC_INSTRUMENTATION
-    std::cout << '(' << ApproxInter::Take::Names[ApproxInter::Take::CurrentTake] << distHad << ',' << 2*distSad << ')' << std::endl;
+    std::cout << '(' << ApproxInter::Take::Names[ApproxInter::Take::CurrentTake] << distHad << ',' << 2*distSad << ")\n"; //<< std::endl;
   #endif
 
   return std::min( distHad, 2*distSad);

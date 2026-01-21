@@ -191,13 +191,13 @@ static Distortion xMeasurePredSearchSpaceInterceptor( const DistParam& dp )
 
       if (ApproxInter::lastFuncId != this->m_funcId) {
         ApproxInter::lastFuncId = this->m_funcId;
-        std::cout << "DF_" << ApproxInter::Take::DFuncNames.at(m_funcId) << ":" << std::endl;
+        std::cout << "DF_" << ApproxInter::Take::DFuncNames.at(m_funcId) << ":\n"; //<< std::endl;
       }
 
       const double rel = ((static_cast<double>(approxDist)/static_cast<double>(precDist)-1.0)*100.0);
 
       std::cout << std::fixed << std::setprecision(2);
-      std::cout << '=' << precDist << '~' << (rel > 0? "+" : "") << rel << "%" << std::endl;
+      std::cout << '=' << precDist << '~' << (rel > 0? "+" : "") << rel << "%\n"; //<< std::endl;
       std::cout << std::defaultfloat << std::setprecision(6);
     #endif
 
@@ -384,13 +384,13 @@ Distortion RdCost::getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitD
 
         if (ApproxInter::lastFuncId != eDFunc) {
           ApproxInter::lastFuncId = eDFunc;
-          std::cout << "DF_" << ApproxInter::Take::DFuncNames.at(eDFunc) << ":" << std::endl;
+          std::cout << "DF_" << ApproxInter::Take::DFuncNames.at(eDFunc) << ":\n"; //<< std::endl;
         }
 
         const double rel = ((static_cast<double>(approxDist)/static_cast<double>(precDist)-1.0)*100.0);
 
         std::cout << std::fixed << std::setprecision(2);
-        std::cout << '=' << precDist << '~' << (rel > 0? "+" : "") << rel << "%" << std::endl;
+        std::cout << '=' << precDist << '~' << (rel > 0? "+" : "") << rel << "%\n"; //<< std::endl;
         std::cout << std::defaultfloat << std::setprecision(6);
       #endif
 
@@ -2256,7 +2256,7 @@ Distortion RdCost::xGetHAD2SADs( const DistParam &rcDtParam )
   }  
   
   #if CAPTURED_METRIC_INSTRUMENTATION
-    std::cout << '(' << ApproxInter::Take::Names[ApproxInter::Take::CurrentTake] << distHad << ',' << 2*distSad << ')' << std::endl;
+    std::cout << '(' << ApproxInter::Take::Names[ApproxInter::Take::CurrentTake] << distHad << ',' << 2*distSad << ")\n"; //<< std::endl;
   #endif
 
   return std::min( distHad, 2*distSad);
