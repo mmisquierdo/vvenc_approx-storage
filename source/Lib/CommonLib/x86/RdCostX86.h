@@ -3891,7 +3891,15 @@ void RdCost::_initRdCostX86()
   m_afpDistortFunc[0][DF_HAD128_fast]  = RdCost::xGetHADs_SIMD<vext, true>;
 
   m_afpDistortFunc[0][DF_HAD_2SAD ]     = RdCost::xGetHAD2SADs_SIMD<vext>;
-  m_afpDistortFunc[0][DF_SAD_WITH_MASK] = xGetSADwMask_SIMD<vext>;
+
+  m_afpDistortFunc[0][DF_SAD_MASKED]    = xGetSADwMask_SIMD<vext>;
+  m_afpDistortFunc[0][DF_SAD_MASKED2]   = xGetSADwMask_SIMD<vext>;
+  m_afpDistortFunc[0][DF_SAD_MASKED4]   = xGetSADwMask_SIMD<vext>;
+  m_afpDistortFunc[0][DF_SAD_MASKED8]   = xGetSADwMask_SIMD<vext>;
+  m_afpDistortFunc[0][DF_SAD_MASKED16]  = xGetSADwMask_SIMD<vext>;
+  m_afpDistortFunc[0][DF_SAD_MASKED32]  = xGetSADwMask_SIMD<vext>;
+  m_afpDistortFunc[0][DF_SAD_MASKED64]  = xGetSADwMask_SIMD<vext>;
+  m_afpDistortFunc[0][DF_SAD_MASKED128] = xGetSADwMask_SIMD<vext>;
 
   m_wtdPredPtr[0] = lumaWeightedSSE_SIMD<vext, 0>;
   m_wtdPredPtr[1] = lumaWeightedSSE_SIMD<vext, 1>;

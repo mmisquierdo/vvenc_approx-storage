@@ -359,11 +359,16 @@ enum DFunc : uint8_t
   DF_HAD64           = DF_HAD+6,      ///<  64xM HAD
   DF_HAD128          = DF_HAD+7,      ///< 16NxM HAD
 
-  DF_HAD_2SAD        = 24,            //tbd th remove
-
-  DF_SAD_WITH_MASK   = 25,
+  DF_SAD_MASKED      = 24,			
+  DF_SAD_MASKED2     = DF_SAD_MASKED+1,
+  DF_SAD_MASKED4     = DF_SAD_MASKED+2,
+  DF_SAD_MASKED8     = DF_SAD_MASKED+3,
+  DF_SAD_MASKED16    = DF_SAD_MASKED+4,
+  DF_SAD_MASKED32    = DF_SAD_MASKED+5,
+  DF_SAD_MASKED64    = DF_SAD_MASKED+6,
+  DF_SAD_MASKED128   = DF_SAD_MASKED+7,
   
-  DF_HAD_fast        = 26,            ///< general size Hadamard
+  DF_HAD_fast        = 32,                 ///< general size Hadamard
   DF_HAD2_fast       = DF_HAD_fast+1,      ///<   2xM fast HAD
   DF_HAD4_fast       = DF_HAD_fast+2,      ///<   4xM fast HAD
   DF_HAD8_fast       = DF_HAD_fast+3,      ///<   8xM fast HAD
@@ -372,9 +377,18 @@ enum DFunc : uint8_t
   DF_HAD64_fast      = DF_HAD_fast+6,      ///<  64xM fast HAD
   DF_HAD128_fast     = DF_HAD_fast+7,      ///< 16NxM fast HAD
 
-  DF_TOTAL_FUNCTIONS = 34,
+  DF_HAD_2SAD        = 40,                 //tbd th remove
 
-  DF_SSE_WTD         = 35 //0xf2u          // out of func scope <Matheus>
+  DF_TOTAL_FUNCTIONS = 41,
+
+  DF_SSE_WTD         = 42, //0xf2u          // out of func scope <Matheus>
+  DF_SSE_WTD2        = DF_SSE_WTD+1,
+  DF_SSE_WTD4        = DF_SSE_WTD+2,
+  DF_SSE_WTD8        = DF_SSE_WTD+3,
+  DF_SSE_WTD16       = DF_SSE_WTD+4,
+  DF_SSE_WTD32       = DF_SSE_WTD+5,
+  DF_SSE_WTD64       = DF_SSE_WTD+6,
+  DF_SSE_WTD128      = DF_SSE_WTD+7
 };
 
 /// motion vector predictor direction used in AMVP

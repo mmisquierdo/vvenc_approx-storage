@@ -1280,7 +1280,14 @@ void RdCost::_initRdCostARM()
   m_afpDistortFunc[0][DF_SAD64  ] = xGetSAD_NxN_ARMSIMD<64, vext>;
   m_afpDistortFunc[0][DF_SAD128]  = xGetSAD_NxN_ARMSIMD<128, vext>;
 
-  m_afpDistortFunc[0][DF_SAD_WITH_MASK] = xGetSADwMask_ARMSIMD<vext>;
+  m_afpDistortFunc[0][DF_SAD_MASKED]    = xGetSADwMask_ARMSIMD<vext>;
+  m_afpDistortFunc[0][DF_SAD_MASKED2]   = xGetSADwMask_ARMSIMD<vext>;
+  m_afpDistortFunc[0][DF_SAD_MASKED4]   = xGetSADwMask_ARMSIMD<vext>;
+  m_afpDistortFunc[0][DF_SAD_MASKED8]   = xGetSADwMask_ARMSIMD<vext>;
+  m_afpDistortFunc[0][DF_SAD_MASKED16]  = xGetSADwMask_ARMSIMD<vext>;
+  m_afpDistortFunc[0][DF_SAD_MASKED32]  = xGetSADwMask_ARMSIMD<vext>;
+  m_afpDistortFunc[0][DF_SAD_MASKED64]  = xGetSADwMask_ARMSIMD<vext>;
+  m_afpDistortFunc[0][DF_SAD_MASKED128] = xGetSADwMask_ARMSIMD<vext>;
 
 #endif  // defined( TARGET_SIMD_X86 )
 }

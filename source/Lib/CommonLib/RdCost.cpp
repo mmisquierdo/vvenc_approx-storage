@@ -126,7 +126,14 @@ void RdCost::create()
   //  m_afpDistortFunc[0][DF_SAD_INTERMEDIATE_BITDEPTH] = RdCost::xGetSAD;
   m_afpDistortFunc[0][DF_HAD_2SAD ] = RdCost::xGetHAD2SADs;
 
-  m_afpDistortFunc[0][DF_SAD_WITH_MASK] = RdCost::xGetSADwMask;
+  m_afpDistortFunc[0][DF_SAD_MASKED]    = RdCost::xGetSADwMask;
+  m_afpDistortFunc[0][DF_SAD_MASKED2]   = RdCost::xGetSADwMask;
+  m_afpDistortFunc[0][DF_SAD_MASKED4]   = RdCost::xGetSADwMask;
+  m_afpDistortFunc[0][DF_SAD_MASKED8]   = RdCost::xGetSADwMask;
+  m_afpDistortFunc[0][DF_SAD_MASKED16]  = RdCost::xGetSADwMask;
+  m_afpDistortFunc[0][DF_SAD_MASKED32]  = RdCost::xGetSADwMask;
+  m_afpDistortFunc[0][DF_SAD_MASKED64]  = RdCost::xGetSADwMask;
+  m_afpDistortFunc[0][DF_SAD_MASKED128] = RdCost::xGetSADwMask;
   // m_afpDistortFunc[1] can be used in any case
   memcpy( m_afpDistortFunc[1], m_afpDistortFunc[0], sizeof(m_afpDistortFunc)/2);
 
@@ -273,7 +280,7 @@ void RdCost::setDistParam( DistParam &rcDP, const CPelBuf& org, const Pel* piRef
 DistParam RdCost::setDistParam( const CPelBuf& org, const CPelBuf& cur, int bitDepth, DFunc dfunc )
 {
   int index = dfunc;
-  if( dfunc != DF_HAD_2SAD && dfunc != DF_SSE_WTD && dfunc != DF_SAD_WITH_MASK )
+  if( dfunc != DF_HAD_2SAD /*&& dfunc != DF_SSE_WTD && dfunc != DF_SAD_MASKED*/ )
   {
     index += Log2(org.width);
   }
@@ -358,21 +365,21 @@ Distortion RdCost::getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitD
       #if CAPTURED_METRIC_INSTRUMENTATION
         Pel const * const approxOrig = dp.org.buf;
         Pel const * const approxCurr = dp.cur.buf;
-        ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::DFunc_Orig[eDFunc], ApproxInter::ConfigurationId::DFunc_Orig[eDFunc]);
-        ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::DFunc_Curr[eDFunc], ApproxInter::ConfigurationId::DFunc_Curr[eDFunc]);
+        ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::DFunc_Orig[eDFunc + Log2(org.width)], ApproxInter::ConfigurationId::DFunc_Orig[eDFunc + Log2(org.width)]);
+        ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::DFunc_Curr[eDFunc + Log2(org.width)], ApproxInter::ConfigurationId::DFunc_Curr[eDFunc + Log2(org.width)]);
       #endif
 
 
       #if LONG_DOUBLELOG
         ApproxInter::Take::CurrentTake = ApproxInter::Take::Approximate;
-        ApproxInter::ProcessTake(ApproxInter::Take::Approximate, eDFunc, RdCost::xGetSSE_WTD( dp ));
+        ApproxInter::ProcessTake(ApproxInter::Take::Approximate, eDFunc + Log2(org.width), RdCost::xGetSSE_WTD( dp ));
 
         ApproxSS::disable_global_injection();
         ApproxInter::Take::CurrentTake = ApproxInter::Take::Precise;
         const Distortion precDist = RdCost::xGetSSE_WTD( dp );
         ApproxSS::enable_global_injection();
 
-        ApproxInter::ProcessTake(ApproxInter::Take::Precise, eDFunc, precDist);
+        ApproxInter::ProcessTake(ApproxInter::Take::Precise, eDFunc + Log2(org.width), precDist);
       #else
         ApproxInter::Take::CurrentTake = ApproxInter::Take::Approximate;
         const Distortion approxDist = RdCost::xGetSSE_WTD( dp );
@@ -382,9 +389,9 @@ Distortion RdCost::getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitD
         const Distortion precDist = RdCost::xGetSSE_WTD( dp );
         ApproxSS::enable_global_injection();
 
-        if (ApproxInter::lastFuncId != eDFunc) {
-          ApproxInter::lastFuncId = eDFunc;
-          std::cout << "DF_" << ApproxInter::Take::DFuncNames.at(eDFunc) << ":\n"; //<< std::endl;
+        if (ApproxInter::lastFuncId != eDFunc + Log2(org.width)) {
+          ApproxInter::lastFuncId = eDFunc + Log2(org.width);
+          std::cout << "DF_" << ApproxInter::Take::DFuncNames.at(eDFunc + Log2(org.width)) << ":\n"; //<< std::endl;
         }
 
         const double rel = ((static_cast<double>(approxDist)/static_cast<double>(precDist)-1.0)*100.0);
@@ -409,7 +416,7 @@ Distortion RdCost::getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitD
     if( ( org.width == 1 ) )
     {
       #if COST_CAPTURE
-      dist = CostCapture(xGetSSE, DF_SSE)( dp );
+      dist = CostCapture(xGetSSE, DF_SSE + Log2(org.width))( dp );
       #else
       dist = xGetSSE( dp );
       #endif
@@ -424,6 +431,7 @@ Distortion RdCost::getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitD
       #endif
     }
   }
+
   if (isChroma(compId))
   {
     return ((Distortion) (m_distortionWeight[ compId ] * dist));
@@ -2640,9 +2648,9 @@ void RdCost::setDistParamGeo(DistParam &rcDP, const CPelBuf &org, const Pel *piR
   // set Cost function for motion estimation with Mask
 
   #if COST_CAPTURE //<Matheus>
-    rcDP.distFunc = CostCapture(m_afpDistortFunc[0][DF_SAD_WITH_MASK], DF_SAD_WITH_MASK);
+    rcDP.distFunc = CostCapture(m_afpDistortFunc[0][DF_SAD_MASKED + Log2(org.width)], DF_SAD_MASKED + Log2(org.width));
   #else
-    rcDP.distFunc = m_afpDistortFunc[0][DF_SAD_WITH_MASK];
+    rcDP.distFunc = m_afpDistortFunc[0][DF_SAD_MASKED];
   #endif
 }
 

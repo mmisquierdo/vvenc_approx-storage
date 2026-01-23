@@ -131,11 +131,16 @@
 				DF_HAD64           = DF_HAD+6,      ///<  64xM HAD
 				DF_HAD128          = DF_HAD+7,      ///< 16NxM HAD
 
-				DF_HAD_2SAD        = 24,            //tbd th remove
-
-				DF_SAD_WITH_MASK   = 25,
+				DF_SAD_MASKED      = 24,			
+				DF_SAD_MASKED2     = DF_SAD_MASKED+1,
+				DF_SAD_MASKED4     = DF_SAD_MASKED+2,
+				DF_SAD_MASKED8     = DF_SAD_MASKED+3,
+				DF_SAD_MASKED16    = DF_SAD_MASKED+4,
+				DF_SAD_MASKED32    = DF_SAD_MASKED+5,
+				DF_SAD_MASKED64    = DF_SAD_MASKED+6,
+				DF_SAD_MASKED128   = DF_SAD_MASKED+7,				
 				
-				DF_HAD_fast        = 26,            ///< general size Hadamard
+				DF_HAD_fast        = 32,                 ///< general size Hadamard
 				DF_HAD2_fast       = DF_HAD_fast+1,      ///<   2xM fast HAD
 				DF_HAD4_fast       = DF_HAD_fast+2,      ///<   4xM fast HAD
 				DF_HAD8_fast       = DF_HAD_fast+3,      ///<   8xM fast HAD
@@ -144,11 +149,21 @@
 				DF_HAD64_fast      = DF_HAD_fast+6,      ///<  64xM fast HAD
 				DF_HAD128_fast     = DF_HAD_fast+7,      ///< 16NxM fast HAD
 
-				DF_TOTAL_FUNCTIONS = 34,
+				DF_HAD_2SAD        = 40,                 //tbd th remove
 
-				DF_SSE_WTD         = 35,          // out of func scope
-				DF_TOTAL_FUNCTIONS_ACTUAL = 36,
-				DF_OUT_OF_RANGE    = 37
+				DF_TOTAL_FUNCTIONS = 41,
+
+				DF_SSE_WTD         = 42, //0xf2u         // out of func scope
+				DF_SSE_WTD2        = DF_SSE_WTD+1,
+				DF_SSE_WTD4        = DF_SSE_WTD+2,
+				DF_SSE_WTD8        = DF_SSE_WTD+3,
+				DF_SSE_WTD16       = DF_SSE_WTD+4,
+				DF_SSE_WTD32       = DF_SSE_WTD+5,
+				DF_SSE_WTD64       = DF_SSE_WTD+6,
+				DF_SSE_WTD128      = DF_SSE_WTD+7,
+
+				DF_TOTAL_FUNCTIONS_ACTUAL = 50,
+				DF_OUT_OF_RANGE    = 51
 				};
 
 				const std::unordered_map<const uint8_t, char const * const, std::hash<uint8_t>> DFuncNames = {
@@ -179,8 +194,14 @@
 					{ DF_HAD64,           "HAD64" },
 					{ DF_HAD128,          "HAD128" },
 
-					{ DF_HAD_2SAD,        "HAD_2SAD" },
-					{ DF_SAD_WITH_MASK,   "SAD_WITH_MASK" },
+					{ DF_SAD_MASKED,      "SAD_MASKED" },
+					{ DF_SAD_MASKED2,     "SAD_MASKED2" },
+					{ DF_SAD_MASKED4,     "SAD_MASKED4" },
+					{ DF_SAD_MASKED8,     "SAD_MASKED8" },
+					{ DF_SAD_MASKED16,    "SAD_MASKED16" },
+					{ DF_SAD_MASKED32,    "SAD_MASKED32" },
+					{ DF_SAD_MASKED64,    "SAD_MASKED64" },
+					{ DF_SAD_MASKED128,   "SAD_MASKED128" },
 
 					{ DF_HAD_fast,        "HAD_fast" },
 					{ DF_HAD2_fast,       "HAD2_fast" },
@@ -191,8 +212,18 @@
 					{ DF_HAD64_fast,      "HAD64_fast" },
 					{ DF_HAD128_fast,     "HAD128_fast" },
 
+					{ DF_HAD_2SAD,        "HAD_2SAD" },
+
 					{ DF_TOTAL_FUNCTIONS, "TOTAL_FUNCTIONS" },
 					{ DF_SSE_WTD,         "SSE_WTD" },
+					{ DF_SSE_WTD2,        "SSE_WTD2" },
+					{ DF_SSE_WTD4,        "SSE_WTD4" },
+					{ DF_SSE_WTD8,        "SSE_WTD8" },
+					{ DF_SSE_WTD16,       "SSE_WTD16" },
+					{ DF_SSE_WTD32,       "SSE_WTD32" },
+					{ DF_SSE_WTD64,       "SSE_WTD64" },
+					{ DF_SSE_WTD128,      "SSE_WTD128" },
+
 					{ DF_OUT_OF_RANGE,    "OUT_OF_RANGE"}
 				};
 			}
@@ -408,8 +439,14 @@
 					HAD_Orig,	//{ Take::DF_HAD64,           "HAD64" },
 					HAD_Orig,	//{ Take::DF_HAD128,          "HAD128" },
 
-					-1,			//{ Take::DF_HAD_2SAD,        "HAD_2SAD" },
-					MaskedSAD_Orig, //{ Take::DF_SAD_WITH_MASK,   "SAD_WITH_MASK" },
+					MaskedSAD_Orig, //{ Take::DF_SAD_MASKED,   "SAD_MASKED" },
+					MaskedSAD_Orig, //{ Take::DF_SAD_MASKED2,  "SAD_MASKED2" },
+					MaskedSAD_Orig, //{ Take::DF_SAD_MASKED4,  "SAD_MASKED4" },
+					MaskedSAD_Orig, //{ Take::DF_SAD_MASKED8,  "SAD_MASKED8" },
+					MaskedSAD_Orig, //{ Take::DF_SAD_MASKED16, "SAD_MASKED16" },
+					MaskedSAD_Orig, //{ Take::DF_SAD_MASKED32, "SAD_MASKED32" },
+					MaskedSAD_Orig, //{ Take::DF_SAD_MASKED64, "SAD_MASKED64" },
+					MaskedSAD_Orig, //{ Take::DF_SAD_MASKED128,"SAD_MASKED128" },
 
 					FastHAD_Orig, //{ Take::DF_HAD_fast,        "HAD_fast" },
 					FastHAD_Orig, //{ Take::DF_HAD2_fast,       "HAD2_fast" },
@@ -419,9 +456,18 @@
 					FastHAD_Orig, //{ Take::DF_HAD32_fast,      "HAD32_fast" },
 					FastHAD_Orig, //{ Take::DF_HAD64_fast,      "HAD64_fast" },
 					FastHAD_Orig, //{ Take::DF_HAD128_fast,     "HAD128_fast" },
+	
+					-1,			//{ Take::DF_HAD_2SAD,        "HAD_2SAD" },
 
 					-1,				//{ Take::DF_TOTAL_FUNCTIONS, "TOTAL_FUNCTIONS" },
-					WeightedSSE_Orig	//{ Take::DF_SSE_WTD,         "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD,         "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD2,         "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD4,         "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD8,         "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD16,         "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD32,         "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD64,         "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD128,         "SSE_WTD"}
 				};
 
 				constexpr std::array<const int64_t, Take::DF_TOTAL_FUNCTIONS_ACTUAL> DFunc_Curr = {
@@ -452,8 +498,14 @@
 					HAD_Curr,	//{ Take::DF_HAD64,           "HAD64" },
 					HAD_Curr,	//{ Take::DF_HAD128,          "HAD128" },
 
-					-1,			//{ Take::DF_HAD_2SAD,        "HAD_2SAD" },
-					MaskedSAD_Curr, //{ Take::DF_SAD_WITH_MASK,   "SAD_WITH_MASK" },
+					MaskedSAD_Curr, //{ Take::DF_SAD_MASKED,   "SAD_MASKED" },
+					MaskedSAD_Curr, //{ Take::DF_SAD_MASKED2,  "SAD_MASKED2" },
+					MaskedSAD_Curr, //{ Take::DF_SAD_MASKED4,  "SAD_MASKED4" },
+					MaskedSAD_Curr, //{ Take::DF_SAD_MASKED8,  "SAD_MASKED8" },
+					MaskedSAD_Curr, //{ Take::DF_SAD_MASKED16, "SAD_MASKED16" },
+					MaskedSAD_Curr, //{ Take::DF_SAD_MASKED32, "SAD_MASKED32" },
+					MaskedSAD_Curr, //{ Take::DF_SAD_MASKED64, "SAD_MASKED64" },
+					MaskedSAD_Curr, //{ Take::DF_SAD_MASKED128,"SAD_MASKED128" },
 
 					FastHAD_Curr, //{ Take::DF_HAD_fast,        "HAD_fast" },
 					FastHAD_Curr, //{ Take::DF_HAD2_fast,       "HAD2_fast" },
@@ -464,8 +516,17 @@
 					FastHAD_Curr, //{ Take::DF_HAD64_fast,      "HAD64_fast" },
 					FastHAD_Curr, //{ Take::DF_HAD128_fast,     "HAD128_fast" },
 
+					-1,			//{ Take::DF_HAD_2SAD,        "HAD_2SAD" },
+
 					-1,				//{ Take::DF_TOTAL_FUNCTIONS, "TOTAL_FUNCTIONS" },
-					WeightedSSE_Curr	//{ Take::DF_SSE_WTD,         "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD,         "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD2,         "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD4,         "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD8,         "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD16,         "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD32,         "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD64,         "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD128,         "SSE_WTD"}
 				};
 
 
@@ -650,8 +711,14 @@
 					HAD_Orig,	//{ Take::DF_HAD64,           "HAD64" },
 					HAD_Orig,	//{ Take::DF_HAD128,          "HAD128" },
 
-					HAD_2SAD_Orig,	//{ Take::DF_HAD_2SAD,        "HAD_2SAD" }, // PREFERABLY NOT TO BE USED
-					MaskedSAD_Orig, //{ Take::DF_SAD_WITH_MASK,   "SAD_WITH_MASK" },
+					MaskedSAD_Orig, //{ Take::DF_SAD_MASKED,   "SAD_MASKED" },
+					MaskedSAD_Orig, //{ Take::DF_SAD_MASKED2,  "SAD_MASKED2" },
+					MaskedSAD_Orig, //{ Take::DF_SAD_MASKED4,  "SAD_MASKED4" },
+					MaskedSAD_Orig, //{ Take::DF_SAD_MASKED8,  "SAD_MASKED8" },
+					MaskedSAD_Orig, //{ Take::DF_SAD_MASKED16, "SAD_MASKED16" },
+					MaskedSAD_Orig, //{ Take::DF_SAD_MASKED32, "SAD_MASKED32" },
+					MaskedSAD_Orig, //{ Take::DF_SAD_MASKED64, "SAD_MASKED64" },
+					MaskedSAD_Orig, //{ Take::DF_SAD_MASKED128,"SAD_MASKED128" },
 
 					FastHAD_Orig, //{ Take::DF_HAD_fast,        "HAD_fast" },
 					FastHAD_Orig, //{ Take::DF_HAD2_fast,       "HAD2_fast" },
@@ -662,8 +729,17 @@
 					FastHAD_Orig, //{ Take::DF_HAD64_fast,      "HAD64_fast" },
 					FastHAD_Orig, //{ Take::DF_HAD128_fast,     "HAD128_fast" },
 
+					HAD_2SAD_Orig,	//{ Take::DF_HAD_2SAD,        "HAD_2SAD" }, // PREFERABLY NOT TO BE USED
+
 					OTHER,				//{ Take::DF_TOTAL_FUNCTIONS, "TOTAL_FUNCTIONS" },
-					WeightedSSE_Orig	//{ Take::DF_SSE_WTD,         "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD,         "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD2,         "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD4,         "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD8,         "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD16,         "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD32,         "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD64,         "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD128,         "SSE_WTD"}
 				};
 
 				constexpr std::array<const int64_t, Take::DF_TOTAL_FUNCTIONS_ACTUAL> DFunc_Curr = {
@@ -694,8 +770,14 @@
 					HAD_Curr,	//{ Take::DF_HAD64,           "HAD64" },
 					HAD_Curr,	//{ Take::DF_HAD128,          "HAD128" },
 
-					HAD_2SAD_Curr,	//{ Take::DF_HAD_2SAD,        "HAD_2SAD" }, // PREFERABLY NOT TO BE USED
-					MaskedSAD_Curr, //{ Take::DF_SAD_WITH_MASK,   "SAD_WITH_MASK" },
+					MaskedSAD_Curr, //{ Take::DF_SAD_MASKED,   "SAD_MASKED" },
+					MaskedSAD_Curr, //{ Take::DF_SAD_MASKED2,  "SAD_MASKED2" },
+					MaskedSAD_Curr, //{ Take::DF_SAD_MASKED4,  "SAD_MASKED4" },
+					MaskedSAD_Curr, //{ Take::DF_SAD_MASKED8,  "SAD_MASKED8" },
+					MaskedSAD_Curr, //{ Take::DF_SAD_MASKED16, "SAD_MASKED16" },
+					MaskedSAD_Curr, //{ Take::DF_SAD_MASKED32, "SAD_MASKED32" },
+					MaskedSAD_Curr, //{ Take::DF_SAD_MASKED64, "SAD_MASKED64" },
+					MaskedSAD_Curr, //{ Take::DF_SAD_MASKED128,"SAD_MASKED128" },
 
 					FastHAD_Curr, //{ Take::DF_HAD_fast,        "HAD_fast" },
 					FastHAD_Curr, //{ Take::DF_HAD2_fast,       "HAD2_fast" },
@@ -706,8 +788,17 @@
 					FastHAD_Curr, //{ Take::DF_HAD64_fast,      "HAD64_fast" },
 					FastHAD_Curr, //{ Take::DF_HAD128_fast,     "HAD128_fast" },
 
+					HAD_2SAD_Curr,	//{ Take::DF_HAD_2SAD,        "HAD_2SAD" }, // PREFERABLY NOT TO BE USED
+
 					OTHER,				//{ Take::DF_TOTAL_FUNCTIONS, "TOTAL_FUNCTIONS" },
-					WeightedSSE_Curr	//{ Take::DF_SSE_WTD,         "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD,         "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD2,         "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD4,         "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD8,         "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD16,         "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD32,         "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD64,         "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD128,         "SSE_WTD"}
 				};
 
 				/*constexpr int64_t RECO_MOTION_ESTIMATION 					= JUST_TRACKING;
