@@ -162,8 +162,11 @@
 				DF_SSE_WTD64       = DF_SSE_WTD+6,
 				DF_SSE_WTD128      = DF_SSE_WTD+7,
 
-				DF_TOTAL_FUNCTIONS_ACTUAL = 50,
-				DF_OUT_OF_RANGE    = 51
+				DF_SAD8XN          = 50,
+				DF_SAD16XN         = 51,
+
+				DF_TOTAL_FUNCTIONS_ACTUAL = 52,
+				DF_OUT_OF_RANGE    = 53
 				};
 
 				const std::unordered_map<const uint8_t, char const * const, std::hash<uint8_t>> DFuncNames = {
@@ -223,6 +226,9 @@
 					{ DF_SSE_WTD32,       "SSE_WTD32" },
 					{ DF_SSE_WTD64,       "SSE_WTD64" },
 					{ DF_SSE_WTD128,      "SSE_WTD128" },
+
+					{DF_SAD8XN,           "SAD8XN"},
+					{DF_SAD16XN,          "SAD16XN"},
 
 					{ DF_OUT_OF_RANGE,    "OUT_OF_RANGE"}
 				};
@@ -461,13 +467,16 @@
 
 					-1,				//{ Take::DF_TOTAL_FUNCTIONS, "TOTAL_FUNCTIONS" },
 					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD,         "SSE_WTD" }
-					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD2,         "SSE_WTD" }
-					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD4,         "SSE_WTD" }
-					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD8,         "SSE_WTD" }
-					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD16,         "SSE_WTD" }
-					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD32,         "SSE_WTD" }
-					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD64,         "SSE_WTD" }
-					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD128,         "SSE_WTD"}
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD2,        "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD4,        "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD8,        "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD16,       "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD32,       "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD64,       "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD128,      "SSE_WTD"}
+
+					SAD_Orig,	//{ Take::DF_SAD8XN,         		  "SAD8XN" }
+					SAD_Orig	//{ Take::DF_SAD16XN,                 "SAD16XN"}
 				};
 
 				constexpr std::array<const int64_t, Take::DF_TOTAL_FUNCTIONS_ACTUAL> DFunc_Curr = {
@@ -520,13 +529,16 @@
 
 					-1,				//{ Take::DF_TOTAL_FUNCTIONS, "TOTAL_FUNCTIONS" },
 					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD,         "SSE_WTD" }
-					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD2,         "SSE_WTD" }
-					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD4,         "SSE_WTD" }
-					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD8,         "SSE_WTD" }
-					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD16,         "SSE_WTD" }
-					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD32,         "SSE_WTD" }
-					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD64,         "SSE_WTD" }
-					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD128,         "SSE_WTD"}
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD2,        "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD4,        "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD8,        "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD16,       "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD32,       "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD64,       "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD128,      "SSE_WTD"}
+
+					SAD_Curr,	        //{ Take::DF_SAD8XN,          "SAD8XN" }
+					SAD_Curr	        //{ Take::DF_SAD16XN,         "SAD16XN"}
 				};
 
 
@@ -644,7 +656,8 @@
 						constexpr int64_t xProcessDMVR = 43;
 						
 					constexpr int64_t motionCompensationIBC = 44;
-
+				
+				constexpr int64_t xCalDebCost = 18;
 
 				constexpr int64_t MSE = 96;
 				constexpr int64_t SSE = 97;
@@ -736,10 +749,13 @@
 					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD2,         "SSE_WTD" }
 					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD4,         "SSE_WTD" }
 					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD8,         "SSE_WTD" }
-					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD16,         "SSE_WTD" }
-					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD32,         "SSE_WTD" }
-					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD64,         "SSE_WTD" }
-					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD128,         "SSE_WTD"}
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD16,        "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD32,        "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD64,        "SSE_WTD" }
+					WeightedSSE_Orig,	//{ Take::DF_SSE_WTD128,       "SSE_WTD" }
+
+					SAD_Orig,			//{ Take::DF_SAD8XN,           "SAD8XN" }
+					SAD_Orig			//{ Take::DF_SAD16XN,          "SAD16XN"}
 				};
 
 				constexpr std::array<const int64_t, Take::DF_TOTAL_FUNCTIONS_ACTUAL> DFunc_Curr = {
@@ -795,10 +811,13 @@
 					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD2,         "SSE_WTD" }
 					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD4,         "SSE_WTD" }
 					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD8,         "SSE_WTD" }
-					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD16,         "SSE_WTD" }
-					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD32,         "SSE_WTD" }
-					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD64,         "SSE_WTD" }
-					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD128,         "SSE_WTD"}
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD16,        "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD32,        "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD64,        "SSE_WTD" }
+					WeightedSSE_Curr,	//{ Take::DF_SSE_WTD128,       "SSE_WTD" }
+
+					SAD_Curr,			//{ Take::DF_SAD8XN,           "SAD8XN" }
+					SAD_Curr			//{ Take::DF_SAD16XN,          "SAD16XN"}
 				};
 
 				/*constexpr int64_t RECO_MOTION_ESTIMATION 					= JUST_TRACKING;

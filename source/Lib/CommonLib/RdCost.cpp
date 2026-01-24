@@ -169,7 +169,8 @@ static Distortion xMeasurePredSearchSpaceInterceptor( const DistParam& dp )
 
 //<Matheus>
 #if COST_CAPTURE
-  Distortion CostCapture::operator () (const DistParam& distParam) const {
+  template <typename T>
+  Distortion CostCapture<T>::operator () (const DistParam& distParam) const {
     #if CAPTURED_METRIC_INSTRUMENTATION
       Pel const * const approxOrig = distParam.org.buf;
       Pel const * const approxCurr = distParam.cur.buf;
@@ -215,6 +216,55 @@ static Distortion xMeasurePredSearchSpaceInterceptor( const DistParam& dp )
 
     return precDist;
   }
+
+  /*
+  template <typename T>
+  Distortion CostCapture<T>::operator () (const DistParam& distParam, Distortion* cost, bool isCalCentrePos) const {
+    #if CAPTURED_METRIC_INSTRUMENTATION
+      Pel const * const approxOrig = distParam.org.buf;
+      Pel const * const approxCurr = distParam.cur.buf;
+      ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::DFunc_Orig[this->m_funcId], ApproxInter::ConfigurationId::DFunc_Orig[this->m_funcId]);
+      ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::DFunc_Curr[this->m_funcId], ApproxInter::ConfigurationId::DFunc_Curr[this->m_funcId]);
+    #endif
+
+    #if LONG_DOUBLELOG
+      ApproxInter::Take::CurrentTake = ApproxInter::Take::Approximate;
+      ApproxInter::ProcessTake(ApproxInter::Take::Approximate, m_funcId, m_distFunc(distParam, cost, isCalCentrePos));
+
+      ApproxSS::disable_global_injection();
+      const Distortion precDist = m_distFunc(distParam, cost, isCalCentrePos);
+      ApproxSS::enable_global_injection();
+
+      ApproxInter::Take::CurrentTake = ApproxInter::Take::Precise;
+      ApproxInter::ProcessTake(ApproxInter::Take::Precise, m_funcId, precDist);
+    #else
+      ApproxInter::Take::CurrentTake = ApproxInter::Take::Approximate;
+      const Distortion approxDist = m_distFunc(distParam, cost, isCalCentrePos);
+
+      ApproxSS::disable_global_injection();
+      ApproxInter::Take::CurrentTake = ApproxInter::Take::Precise;
+      const Distortion precDist = m_distFunc(distParam, cost, isCalCentrePos);
+      ApproxSS::enable_global_injection();
+
+      if (ApproxInter::lastFuncId != this->m_funcId) {
+        ApproxInter::lastFuncId = this->m_funcId;
+        std::cout << "DF_" << ApproxInter::Take::DFuncNames.at(m_funcId) << ":\n"; //<< std::endl;
+      }
+
+      const double rel = ((static_cast<double>(approxDist)/static_cast<double>(precDist)-1.0)*100.0);
+
+      std::cout << std::fixed << std::setprecision(2);
+      std::cout << '=' << precDist << '~' << (rel > 0? "+" : "") << rel << "%\n"; //<< std::endl;
+      std::cout << std::defaultfloat << std::setprecision(6);
+    #endif
+
+    #if CAPTURED_METRIC_INSTRUMENTATION
+      ApproxInter::UninstrumentIfMarked((void*) approxOrig);
+      ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+    #endif
+
+    return precDist;
+  }*/
 #endif
 //</Matheus>
 
@@ -238,7 +288,7 @@ void RdCost::setDistParam( DistParam &rcDP, const CPelBuf& org, const Pel* piRef
   if( !useHadamard )
   {
     #if COST_CAPTURE //<Matheus>
-      rcDP.distFunc = CostCapture(m_afpDistortFunc[base][ DF_SAD + Log2( org.width ) ], DF_SAD + Log2( org.width ));
+      rcDP.distFunc = CostCapture<>(m_afpDistortFunc[base][ DF_SAD + Log2( org.width ) ], DF_SAD + Log2( org.width ));
     #else
       rcDP.distFunc = m_afpDistortFunc[base][ DF_SAD + Log2( org.width ) ];
     #endif
@@ -246,7 +296,7 @@ void RdCost::setDistParam( DistParam &rcDP, const CPelBuf& org, const Pel* piRef
   else
   {
     #if COST_CAPTURE //<Matheus>
-      rcDP.distFunc = CostCapture(m_afpDistortFunc[base][( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( org.width ) ], ( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( org.width ));
+      rcDP.distFunc = CostCapture<>(m_afpDistortFunc[base][( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( org.width ) ], ( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( org.width ));
     #else
       rcDP.distFunc = m_afpDistortFunc[base][( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( org.width ) ];
     #endif
@@ -293,7 +343,7 @@ DistParam RdCost::setDistParam( const CPelBuf& org, const CPelBuf& cur, int bitD
   return rcDP;
 #else
   #if COST_CAPTURE
-    return DistParam( org, cur, CostCapture(m_afpDistortFunc[base][index], index), bitDepth, 0, COMP_Y );
+    return DistParam( org, cur, CostCapture<>(m_afpDistortFunc[base][index], index), bitDepth, 0, COMP_Y );
   #else
     return DistParam( org, cur, m_afpDistortFunc[base][index], bitDepth, 0, COMP_Y );
   #endif
@@ -321,7 +371,7 @@ DistParam RdCost::setDistParam( const Pel* pOrg, const Pel* piRefY, int iOrgStri
   const int base = (rcDP.bitDepth > 10) ? 1 : 0;
 
   #if COST_CAPTURE //<Matheus>
-    rcDP.distFunc = CostCapture(m_afpDistortFunc[base][ DF_SAD + Log2( width ) ], DF_SAD + Log2( width ));
+    rcDP.distFunc = CostCapture<>(m_afpDistortFunc[base][ DF_SAD + Log2( width ) ], DF_SAD + Log2( width ));
   #else
     rcDP.distFunc = m_afpDistortFunc[base][ DF_SAD + Log2( width ) ];
   #endif
@@ -329,7 +379,7 @@ DistParam RdCost::setDistParam( const Pel* pOrg, const Pel* piRefY, int iOrgStri
   
   if( isDMVR )
   {
-    rcDP.dmvrSadX5 = m_afpDistortFuncX5[Log2( width ) - 3]; // no COST_CAPTURE (decoder-side)
+    rcDP.dmvrSadX5 = m_afpDistortFuncX5[Log2( width ) - 3]; // already COST_CAPTURED internally
   }
 
 #if ENABLE_MEASURE_SEARCH_SPACE
@@ -347,7 +397,7 @@ DistParam RdCost::setDistParam( const Pel* pOrg, const Pel* piRefY, int iOrgStri
 Distortion RdCost::getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitDepth, const ComponentID compId, DFunc eDFunc, const CPelBuf* orgLuma )
 {
   #if COST_CAPTURE //<Matheus>
-  DistParam dp( org, cur, CostCapture(), bitDepth, 0, compId );
+  DistParam dp( org, cur, CostCapture<>(), bitDepth, 0, compId );
   #else
   DistParam dp( org, cur, nullptr, bitDepth, 0, compId );
   #endif
@@ -416,7 +466,7 @@ Distortion RdCost::getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitD
     if( ( org.width == 1 ) )
     {
       #if COST_CAPTURE
-      dist = CostCapture(xGetSSE, DF_SSE + Log2(org.width))( dp );
+      dist = CostCapture<>(xGetSSE, DF_SSE + Log2(org.width))( dp );
       #else
       dist = xGetSSE( dp );
       #endif
@@ -425,7 +475,7 @@ Distortion RdCost::getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitD
     {
       const int base = (bitDepth > 10) ? 1 : 0;
       #if COST_CAPTURE
-      dist = CostCapture(m_afpDistortFunc[base][eDFunc + Log2(org.width)], eDFunc + Log2(org.width))(dp);
+      dist = CostCapture<>(m_afpDistortFunc[base][eDFunc + Log2(org.width)], eDFunc + Log2(org.width))(dp);
       #else
       dist = m_afpDistortFunc[base][eDFunc + Log2(org.width)](dp);
       #endif
@@ -2569,11 +2619,11 @@ void RdCost::xGetSAD8X5(const DistParam& rcDtParam, Distortion* cost, bool isCal
   rcDtParamTmp4.cur.buf -= 4;
   
   #if COST_CAPTURE
-    cost[0] = (CostCapture(RdCost::xGetSAD8, DF_SAD8)(rcDtParamTmp0)) >> 1;
-    cost[1] = (CostCapture(RdCost::xGetSAD8, DF_SAD8)(rcDtParamTmp1)) >> 1;
-    if (isCalCentrePos) cost[2] = (CostCapture(RdCost::xGetSAD8, DF_SAD8)(rcDtParamTmp2)) >> 1;
-    cost[3] = (CostCapture(RdCost::xGetSAD8, DF_SAD8)(rcDtParamTmp3)) >> 1;
-    cost[4] = (CostCapture(RdCost::xGetSAD8, DF_SAD8)(rcDtParamTmp4)) >> 1;
+    cost[0] = (CostCapture<>(RdCost::xGetSAD8, DF_SAD8)(rcDtParamTmp0)) >> 1;
+    cost[1] = (CostCapture<>(RdCost::xGetSAD8, DF_SAD8)(rcDtParamTmp1)) >> 1;
+    if (isCalCentrePos) cost[2] = (CostCapture<>(RdCost::xGetSAD8, DF_SAD8)(rcDtParamTmp2)) >> 1;
+    cost[3] = (CostCapture<>(RdCost::xGetSAD8, DF_SAD8)(rcDtParamTmp3)) >> 1;
+    cost[4] = (CostCapture<>(RdCost::xGetSAD8, DF_SAD8)(rcDtParamTmp4)) >> 1;
   #else
     cost[0] = (RdCost::xGetSAD8(rcDtParamTmp0)) >> 1;
     cost[1] = (RdCost::xGetSAD8(rcDtParamTmp1)) >> 1;
@@ -2607,11 +2657,11 @@ void RdCost::xGetSAD16X5(const DistParam& rcDtParam, Distortion* cost, bool isCa
   rcDtParamTmp4.cur.buf -= 4;
 
   #if COST_CAPTURE
-    cost[0] = (CostCapture(RdCost::xGetSAD16, DF_SAD16)(rcDtParamTmp0)) >> 1;
-    cost[1] = (CostCapture(RdCost::xGetSAD16, DF_SAD16)(rcDtParamTmp1)) >> 1;
-    if (isCalCentrePos) cost[2] = (CostCapture(RdCost::xGetSAD16, DF_SAD16)(rcDtParamTmp2)) >> 1;
-    cost[3] = (CostCapture(RdCost::xGetSAD16, DF_SAD16)(rcDtParamTmp3)) >> 1;
-    cost[4] = (CostCapture(RdCost::xGetSAD16, DF_SAD16)(rcDtParamTmp4)) >> 1;
+    cost[0] = (CostCapture<>(RdCost::xGetSAD16, DF_SAD16)(rcDtParamTmp0)) >> 1;
+    cost[1] = (CostCapture<>(RdCost::xGetSAD16, DF_SAD16)(rcDtParamTmp1)) >> 1;
+    if (isCalCentrePos) cost[2] = (CostCapture<>(RdCost::xGetSAD16, DF_SAD16)(rcDtParamTmp2)) >> 1;
+    cost[3] = (CostCapture<>(RdCost::xGetSAD16, DF_SAD16)(rcDtParamTmp3)) >> 1;
+    cost[4] = (CostCapture<>(RdCost::xGetSAD16, DF_SAD16)(rcDtParamTmp4)) >> 1;
   #else  
     cost[0] = (RdCost::xGetSAD16(rcDtParamTmp0)) >> 1;
     cost[1] = (RdCost::xGetSAD16(rcDtParamTmp1)) >> 1;
@@ -2648,7 +2698,7 @@ void RdCost::setDistParamGeo(DistParam &rcDP, const CPelBuf &org, const Pel *piR
   // set Cost function for motion estimation with Mask
 
   #if COST_CAPTURE //<Matheus>
-    rcDP.distFunc = CostCapture(m_afpDistortFunc[0][DF_SAD_MASKED + Log2(org.width)], DF_SAD_MASKED + Log2(org.width));
+    rcDP.distFunc = CostCapture<>(m_afpDistortFunc[0][DF_SAD_MASKED + Log2(org.width)], DF_SAD_MASKED + Log2(org.width));
   #else
     rcDP.distFunc = m_afpDistortFunc[0][DF_SAD_MASKED];
   #endif

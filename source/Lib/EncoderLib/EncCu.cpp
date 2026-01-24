@@ -777,13 +777,21 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
           EncTestMode encTestModeSkip = { ETM_MERGE_SKIP, ETO_STANDARD, qp, lossless };
           if (m_modeCtrl.tryMode(encTestModeSkip, cs, partitioner))
           {
-			ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostMerge);
-			ApproxSS::enable_global_injection();
+            ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostMerge);
+            ApproxSS::enable_global_injection();
+
+            #if COST_CAPTURE
+              std::cout << ">MERGE\n"; 
+            #endif
 
             xCheckRDCostUnifiedMerge(tempCS, bestCS, partitioner, encTestModeSkip);
 
-			ApproxSS::disable_global_injection();
-			ApproxSS::end_level();
+            #if COST_CAPTURE
+              std::cout << "<MERGE\n"; 
+            #endif
+
+            ApproxSS::disable_global_injection();
+            ApproxSS::end_level();
 
             CodingUnit* cu = bestCS->getCU(partitioner.chType, partitioner.treeType);
             if (cu)
@@ -793,13 +801,21 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
           EncTestMode encTestMode = { ETM_INTER_ME, ETO_STANDARD, qp, lossless };
           if (m_modeCtrl.tryMode(encTestMode, cs, partitioner))
           {
-			ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostInter);
-			ApproxSS::enable_global_injection();
+            ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostInter);
+            ApproxSS::enable_global_injection();
+
+            #if COST_CAPTURE
+              std::cout << ">INTER\n"; 
+            #endif
 
             xCheckRDCostInter(tempCS, bestCS, partitioner, encTestMode); //MATHEUS NOTE: important
 
-			ApproxSS::disable_global_injection();
-			ApproxSS::end_level();
+            #if COST_CAPTURE
+              std::cout << "<INTER\n"; 
+            #endif
+
+            ApproxSS::disable_global_injection();
+            ApproxSS::end_level();
           }
 
           if (m_pcEncCfg->m_AMVRspeed)
@@ -812,13 +828,21 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
               const bool skipAltHpelIF = ( int( ( encTestMode.opts & ETO_IMV ) >> ETO_IMV_SHIFT ) == 4 ) && ( bestIntPelCost > 1.25 * bestCS->cost );
               if (!skipAltHpelIF)
               {
-				ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostInterIMV);
-				ApproxSS::enable_global_injection();
+                ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostInterIMV);
+                ApproxSS::enable_global_injection();
+
+                #if COST_CAPTURE
+                  std::cout << ">INTERIMV\n"; 
+                #endif
 
                 xCheckRDCostInterIMV(tempCS, bestCS, partitioner, encTestMode ); //MATHEUS NOTE: important
 
-				ApproxSS::disable_global_injection();
-				ApproxSS::end_level();
+                #if COST_CAPTURE
+                  std::cout << "<INTERIMV\n"; 
+                #endif
+
+                ApproxSS::disable_global_injection();
+                ApproxSS::end_level();
               }
             }
           }
@@ -829,27 +853,45 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
           EncTestMode encTestModeIBCMerge = { ETM_IBC_MERGE, ETO_STANDARD, qp, lossless };
           if ((m_pcEncCfg->m_IBCFastMethod < 4) && (partitioner.chType == CH_L) && m_modeCtrl.tryMode(encTestModeIBCMerge, cs, partitioner))
           {
-			ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostIBCModeMerge2Nx2N);
-			ApproxSS::enable_global_injection();
+            ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostIBCModeMerge2Nx2N);
+            ApproxSS::enable_global_injection();
+
+            #if COST_CAPTURE
+              std::cout << ">IBCMERGE\n"; 
+            #endif
 
             xCheckRDCostIBCModeMerge2Nx2N(tempCS, bestCS, partitioner, encTestModeIBCMerge);
 
-			ApproxSS::disable_global_injection();
-			ApproxSS::end_level();
+            #if COST_CAPTURE
+              std::cout << "<IBCMERGE\n"; 
+            #endif
+
+            ApproxSS::disable_global_injection();
+            ApproxSS::end_level();
           }
 
           EncTestMode encTestModeIBC = { ETM_IBC, ETO_STANDARD, qp, lossless };
           if (m_modeCtrl.tryMode(encTestModeIBC, cs, partitioner))
           {
-			ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostIBCMode);
-			ApproxSS::enable_global_injection();
+            ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostIBCMode);
+            ApproxSS::enable_global_injection();
+
+            #if COST_CAPTURE
+              std::cout << ">IBC\n"; 
+            #endif
 
             xCheckRDCostIBCMode(tempCS, bestCS, partitioner, encTestModeIBC);
 
-			ApproxSS::disable_global_injection();
-			ApproxSS::end_level();
+            #if COST_CAPTURE
+              std::cout << "<IBC\n"; 
+            #endif
+
+            ApproxSS::disable_global_injection();
+            ApproxSS::end_level();
           }
         }
+
+        // Matheus: instrumented inside
         if( m_EDO && bestCS->cost != MAX_DOUBLE )
         {
           xCalDebCost(*bestCS, partitioner);
@@ -859,13 +901,21 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
         EncTestMode encTestMode( {ETM_INTRA, ETO_STANDARD, qp, lossless} );
         if( !partitioner.isConsInter() && m_modeCtrl.tryMode( encTestMode, cs, partitioner ) )
         {
-		  ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostIntra);
-		  ApproxSS::enable_global_injection();
+          ApproxSS::start_level(ApproxInter::LevelId::xCheckRDCostIntra);
+          ApproxSS::enable_global_injection();
+
+          #if COST_CAPTURE
+            std::cout << ">INTRA\n"; 
+          #endif
 
           xCheckRDCostIntra( tempCS, bestCS, partitioner, encTestMode ); //MATHEUS NOTE: important
 
-		  ApproxSS::disable_global_injection();
-		  ApproxSS::end_level();
+          #if COST_CAPTURE
+            std::cout << "<INTRA\n"; 
+          #endif
+
+          ApproxSS::disable_global_injection();
+          ApproxSS::end_level();
         }
       } // reusing cu
 
@@ -3461,6 +3511,13 @@ void EncCu::xCalDebCost( CodingStructure &cs, Partitioner &partitioner )
     return;
   }
 
+  ApproxSS::start_level(ApproxInter::LevelId::xCalDebCost);
+  ApproxSS::enable_global_injection();
+
+  #if COST_CAPTURE
+    std::cout << ">CALCDEBT\n";
+  #endif
+
   const ChromaFormat format = cs.area.chromaFormat;
   CodingUnit*            cu = cs.getCU(partitioner.chType, partitioner.treeType);
   const Position    lumaPos = cu->Y().valid() ? cu->Y().pos() : recalcPosition( format, cu->chType, CH_L, cu->blocks[cu->chType].pos() );
@@ -3469,6 +3526,11 @@ void EncCu::xCalDebCost( CodingStructure &cs, Partitioner &partitioner )
 
   if( ! ( topEdgeAvai || leftEdgeAvai ))
   {
+    ApproxSS::disable_global_injection();
+    ApproxSS::end_level();
+    #if COST_CAPTURE
+      std::cout << "<CALCDEBT\n";
+    #endif
     return;
   }
 
@@ -3492,6 +3554,11 @@ void EncCu::xCalDebCost( CodingStructure &cs, Partitioner &partitioner )
 
     if( 0== (verOffset + horOffset) )
     {
+      ApproxSS::disable_global_injection();
+      ApproxSS::end_level();
+      #if COST_CAPTURE
+        std::cout << "<CALCDEBT\n";
+      #endif
       return;
     }
 
@@ -3638,6 +3705,12 @@ void EncCu::xCalDebCost( CodingStructure &cs, Partitioner &partitioner )
   //updated cost
   int64_t distTmp = distCur - cs.dist + distAfterDb - distBeforeDb;
   cs.costDbOffset = distTmp < 0 ? -m_cRdCost.calcRdCost( 0, -distTmp ) : m_cRdCost.calcRdCost( 0, distTmp );
+
+  #if COST_CAPTURE
+    std::cout << "<CALCDEBT\n";
+  #endif
+  ApproxSS::disable_global_injection();
+  ApproxSS::end_level();
 }
 
 Distortion EncCu::xGetDistortionDb(CodingStructure &cs, CPelBuf& org, CPelBuf& reco, const CompArea& compArea, bool beforeDb)

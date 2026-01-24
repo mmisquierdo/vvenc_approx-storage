@@ -72,15 +72,17 @@ typedef void      ( *FpDistFuncX5 )( const DistParam&, Distortion*, bool );
 
 //<Matheus>
 #if COST_CAPTURE
+  template <typename T = FpDistFunc>
   class CostCapture {
-    FpDistFunc m_distFunc;
+    T m_distFunc;
     int m_funcId;
 
     public:
       CostCapture() : m_distFunc(nullptr), m_funcId(0) {}
-      CostCapture(FpDistFunc distFunc, const int& funcId) : m_distFunc(distFunc), m_funcId(funcId) {}
+      CostCapture(T distFunc, const int& funcId) : m_distFunc(distFunc), m_funcId(funcId) {}
 
       Distortion operator () (const DistParam& distParam) const;
+      Distortion operator () (const DistParam& pcDtParam, Distortion* cost, bool isCalCentrePos) const;
   };
 #endif
 //</Matheus>
@@ -97,7 +99,7 @@ public:
   CPelBuf               cur;
 
   #if COST_CAPTURE //<Matheus>
-  CostCapture       distFunc;
+  CostCapture<>       distFunc;
   #else
   FpDistFunc            distFunc  = nullptr;
   #endif
@@ -122,7 +124,7 @@ public:
   DistParam() = default;
 
   #if COST_CAPTURE //<Matheus>
-    DistParam( const CPelBuf& _org, const CPelBuf& _cur,  CostCapture _distFunc, int _bitDepth, int _subShift, ComponentID _compID )
+    DistParam( const CPelBuf& _org, const CPelBuf& _cur,  CostCapture<> _distFunc, int _bitDepth, int _subShift, ComponentID _compID )
     : org(_org), cur(_cur), distFunc(_distFunc), bitDepth(_bitDepth), subShift(_subShift), compID(_compID)
     {
     }
