@@ -167,107 +167,6 @@ static Distortion xMeasurePredSearchSpaceInterceptor( const DistParam& dp )
 }
 #endif
 
-//<Matheus>
-#if COST_CAPTURE
-  template <typename T>
-  Distortion CostCapture<T>::operator () (const DistParam& distParam) const {
-    #if CAPTURED_METRIC_INSTRUMENTATION
-      Pel const * const approxOrig = distParam.org.buf;
-      Pel const * const approxCurr = distParam.cur.buf;
-      ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::DFunc_Orig[this->m_funcId], ApproxInter::ConfigurationId::DFunc_Orig[this->m_funcId]);
-      ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::DFunc_Curr[this->m_funcId], ApproxInter::ConfigurationId::DFunc_Curr[this->m_funcId]);
-    #endif
-
-    #if LONG_DOUBLELOG
-      ApproxInter::Take::CurrentTake = ApproxInter::Take::Approximate;
-      ApproxInter::ProcessTake(ApproxInter::Take::Approximate, m_funcId, m_distFunc(distParam));
-
-      ApproxSS::disable_global_injection();
-      const Distortion precDist = m_distFunc(distParam);
-      ApproxSS::enable_global_injection();
-
-      ApproxInter::Take::CurrentTake = ApproxInter::Take::Precise;
-      ApproxInter::ProcessTake(ApproxInter::Take::Precise, m_funcId, precDist);
-    #else
-      ApproxInter::Take::CurrentTake = ApproxInter::Take::Approximate;
-      const Distortion approxDist = m_distFunc(distParam);
-
-      ApproxSS::disable_global_injection();
-      ApproxInter::Take::CurrentTake = ApproxInter::Take::Precise;
-      const Distortion precDist = m_distFunc(distParam);
-      ApproxSS::enable_global_injection();
-
-      if (ApproxInter::lastFuncId != this->m_funcId) {
-        ApproxInter::lastFuncId = this->m_funcId;
-        std::cout << "DF_" << ApproxInter::Take::DFuncNames.at(m_funcId) << ":\n"; //<< std::endl;
-      }
-
-      const double rel = ((static_cast<double>(approxDist)/static_cast<double>(precDist)-1.0)*100.0);
-
-      std::cout << std::fixed << std::setprecision(2);
-      std::cout << '=' << precDist << '~' << (rel > 0? "+" : "") << rel << "%\n"; //<< std::endl;
-      std::cout << std::defaultfloat << std::setprecision(6);
-    #endif
-
-    #if CAPTURED_METRIC_INSTRUMENTATION
-      ApproxInter::UninstrumentIfMarked((void*) approxOrig);
-      ApproxInter::UninstrumentIfMarked((void*) approxCurr);
-    #endif
-
-    return precDist;
-  }
-
-  /*
-  template <typename T>
-  Distortion CostCapture<T>::operator () (const DistParam& distParam, Distortion* cost, bool isCalCentrePos) const {
-    #if CAPTURED_METRIC_INSTRUMENTATION
-      Pel const * const approxOrig = distParam.org.buf;
-      Pel const * const approxCurr = distParam.cur.buf;
-      ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::DFunc_Orig[this->m_funcId], ApproxInter::ConfigurationId::DFunc_Orig[this->m_funcId]);
-      ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::DFunc_Curr[this->m_funcId], ApproxInter::ConfigurationId::DFunc_Curr[this->m_funcId]);
-    #endif
-
-    #if LONG_DOUBLELOG
-      ApproxInter::Take::CurrentTake = ApproxInter::Take::Approximate;
-      ApproxInter::ProcessTake(ApproxInter::Take::Approximate, m_funcId, m_distFunc(distParam, cost, isCalCentrePos));
-
-      ApproxSS::disable_global_injection();
-      const Distortion precDist = m_distFunc(distParam, cost, isCalCentrePos);
-      ApproxSS::enable_global_injection();
-
-      ApproxInter::Take::CurrentTake = ApproxInter::Take::Precise;
-      ApproxInter::ProcessTake(ApproxInter::Take::Precise, m_funcId, precDist);
-    #else
-      ApproxInter::Take::CurrentTake = ApproxInter::Take::Approximate;
-      const Distortion approxDist = m_distFunc(distParam, cost, isCalCentrePos);
-
-      ApproxSS::disable_global_injection();
-      ApproxInter::Take::CurrentTake = ApproxInter::Take::Precise;
-      const Distortion precDist = m_distFunc(distParam, cost, isCalCentrePos);
-      ApproxSS::enable_global_injection();
-
-      if (ApproxInter::lastFuncId != this->m_funcId) {
-        ApproxInter::lastFuncId = this->m_funcId;
-        std::cout << "DF_" << ApproxInter::Take::DFuncNames.at(m_funcId) << ":\n"; //<< std::endl;
-      }
-
-      const double rel = ((static_cast<double>(approxDist)/static_cast<double>(precDist)-1.0)*100.0);
-
-      std::cout << std::fixed << std::setprecision(2);
-      std::cout << '=' << precDist << '~' << (rel > 0? "+" : "") << rel << "%\n"; //<< std::endl;
-      std::cout << std::defaultfloat << std::setprecision(6);
-    #endif
-
-    #if CAPTURED_METRIC_INSTRUMENTATION
-      ApproxInter::UninstrumentIfMarked((void*) approxOrig);
-      ApproxInter::UninstrumentIfMarked((void*) approxCurr);
-    #endif
-
-    return precDist;
-  }*/
-#endif
-//</Matheus>
-
 void RdCost::setDistParam( DistParam &rcDP, const CPelBuf& org, const Pel* piRefY, int iRefStride, int bitDepth, ComponentID compID, int subShiftMode, int useHadamard )
 {
   rcDP.bitDepth   = bitDepth;
@@ -379,7 +278,11 @@ DistParam RdCost::setDistParam( const Pel* pOrg, const Pel* piRefY, int iOrgStri
   
   if( isDMVR )
   {
-    rcDP.dmvrSadX5 = m_afpDistortFuncX5[Log2( width ) - 3]; // already COST_CAPTURED internally
+    #if COST_CAPTURE
+      rcDP.dmvrSadX5 = CostCapture<FpDistFuncX5>(m_afpDistortFuncX5[Log2( width ) - 3], (Log2( width ) - 3) == 0 ? ApproxInter::Take::DF_SAD8XN : ApproxInter::Take::DF_SAD16XN);
+    #else
+      rcDP.dmvrSadX5 = m_afpDistortFuncX5[Log2( width ) - 3]; 
+    #endif
   }
 
 #if ENABLE_MEASURE_SEARCH_SPACE
@@ -2618,7 +2521,7 @@ void RdCost::xGetSAD8X5(const DistParam& rcDtParam, Distortion* cost, bool isCal
   rcDtParamTmp4.org.buf += 4;
   rcDtParamTmp4.cur.buf -= 4;
   
-  #if COST_CAPTURE
+  #if 0 //COST_CAPTURE
     cost[0] = (CostCapture<>(RdCost::xGetSAD8, DF_SAD8)(rcDtParamTmp0)) >> 1;
     cost[1] = (CostCapture<>(RdCost::xGetSAD8, DF_SAD8)(rcDtParamTmp1)) >> 1;
     if (isCalCentrePos) cost[2] = (CostCapture<>(RdCost::xGetSAD8, DF_SAD8)(rcDtParamTmp2)) >> 1;
@@ -2656,7 +2559,7 @@ void RdCost::xGetSAD16X5(const DistParam& rcDtParam, Distortion* cost, bool isCa
   rcDtParamTmp4.org.buf += 4;
   rcDtParamTmp4.cur.buf -= 4;
 
-  #if COST_CAPTURE
+  #if 0 //COST_CAPTURE
     cost[0] = (CostCapture<>(RdCost::xGetSAD16, DF_SAD16)(rcDtParamTmp0)) >> 1;
     cost[1] = (CostCapture<>(RdCost::xGetSAD16, DF_SAD16)(rcDtParamTmp1)) >> 1;
     if (isCalCentrePos) cost[2] = (CostCapture<>(RdCost::xGetSAD16, DF_SAD16)(rcDtParamTmp2)) >> 1;

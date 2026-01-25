@@ -1442,9 +1442,9 @@ void DMVR::xProcessDMVR( const CodingUnit& cu, PelUnitBuf& pcYuvDst, const ClpRn
             distParam.org.buf = addrL0 + offset;
             distParam.cur.buf = addrL1 - offset;
               
-			ApproxSS::disable_global_injection();
+			      ApproxSS::disable_global_injection();
             distParam.dmvrSadX5( distParam, pSADsArray, ver != 0 );
-			ApproxSS::enable_global_injection();
+			      ApproxSS::enable_global_injection();
 
             for( int hor = -2; hor <= 2; hor++, pSADsArray++ )
             {

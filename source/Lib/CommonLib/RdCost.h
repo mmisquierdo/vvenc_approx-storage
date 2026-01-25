@@ -70,8 +70,12 @@ class DistParam;
 typedef Distortion( *FpDistFunc   )( const DistParam& );
 typedef void      ( *FpDistFuncX5 )( const DistParam&, Distortion*, bool );
 
+
 //<Matheus>
 #if COST_CAPTURE
+  #include <tuple>
+  #include <type_traits>
+
   template <typename T = FpDistFunc>
   class CostCapture {
     T m_distFunc;
@@ -81,8 +85,63 @@ typedef void      ( *FpDistFuncX5 )( const DistParam&, Distortion*, bool );
       CostCapture() : m_distFunc(nullptr), m_funcId(0) {}
       CostCapture(T distFunc, const int& funcId) : m_distFunc(distFunc), m_funcId(funcId) {}
 
-      Distortion operator () (const DistParam& distParam) const;
-      Distortion operator () (const DistParam& pcDtParam, Distortion* cost, bool isCalCentrePos) const;
+      template <typename... CallArgs>
+      Distortion GetDistortion(const CallArgs&... args) const {
+        if constexpr (std::is_same_v<T, FpDistFunc>) {
+          return m_distFunc(args...);
+        } else {
+          m_distFunc(args...);
+
+          const auto& arguments = std::forward_as_tuple(args...);
+          Distortion const * const cost = std::get<1>(arguments); 
+          const bool isCalCentrePos = std::get<2>(arguments);
+
+          return cost[0] + cost[1] + (isCalCentrePos ? cost[2] : 0) + cost[3] + cost[4];
+        }
+      }
+
+      template <typename... CallArgs>
+      auto operator () (const CallArgs&... args) const {
+        const auto& arguments = std::forward_as_tuple(args...);
+        const auto& distParam = std::get<0>(arguments);
+
+        #if CAPTURED_METRIC_INSTRUMENTATION
+          Pel const * const approxOrig = distParam.org.buf;
+          Pel const * const approxCurr = distParam.cur.buf;
+          ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::DFunc_Orig[this->m_funcId], ApproxInter::ConfigurationId::DFunc_Orig[this->m_funcId]);
+          ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::DFunc_Curr[this->m_funcId], ApproxInter::ConfigurationId::DFunc_Curr[this->m_funcId]);
+        #endif
+
+        ApproxSS::enable_global_injection();
+
+        const Distortion approxDist = this->GetDistortion(args...);
+
+        ApproxSS::disable_global_injection();
+
+        const Distortion precDist   = this->GetDistortion(args...);
+
+        ApproxSS::enable_global_injection();
+
+        if (ApproxInter::lastFuncId != this->m_funcId) {
+          ApproxInter::lastFuncId = this->m_funcId;
+          std::cout << "DF_" << ApproxInter::Take::DFuncNames.at(m_funcId) << ":\n";
+        }
+                
+        const double rel = ((static_cast<double>(approxDist)/static_cast<double>(precDist)-1.0)*100.0);
+
+        std::cout << std::fixed << std::setprecision(2);
+        std::cout << '=' << precDist << '~' << (rel > 0? "+" : "") << rel << "%\n";
+        std::cout << std::defaultfloat << std::setprecision(6);
+
+        #if CAPTURED_METRIC_INSTRUMENTATION
+          ApproxInter::UninstrumentIfMarked((void*) approxOrig);
+          ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+        #endif
+
+        if constexpr (std::is_same_v<T, FpDistFunc>) {
+          return precDist;
+        }
+      }
   };
 #endif
 //</Matheus>
@@ -99,11 +158,12 @@ public:
   CPelBuf               cur;
 
   #if COST_CAPTURE //<Matheus>
-  CostCapture<>       distFunc;
+  CostCapture<>     distFunc;
+  CostCapture<FpDistFuncX5>   dmvrSadX5;
   #else
   FpDistFunc            distFunc  = nullptr;
-  #endif
   FpDistFuncX5          dmvrSadX5 = nullptr;
+  #endif
 
 #if ENABLE_MEASURE_SEARCH_SPACE
   FpDistFunc            xDistFunc = nullptr;
