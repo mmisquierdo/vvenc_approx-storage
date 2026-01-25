@@ -73,6 +73,8 @@ typedef void      ( *FpDistFuncX5 )( const DistParam&, Distortion*, bool );
 
 //<Matheus>
 #if COST_CAPTURE
+  class RdCost;
+
   #include <tuple>
   #include <type_traits>
 
@@ -89,6 +91,8 @@ typedef void      ( *FpDistFuncX5 )( const DistParam&, Distortion*, bool );
       Distortion GetDistortion(const CallArgs&... args) const {
         if constexpr (std::is_same_v<T, FpDistFunc>) {
           return m_distFunc(args...);
+        } else if constexpr (std::is_same_v<T, const vvenc::RdCost&>) {
+          return m_distFunc.xGetSSE_WTD(args...);
         } else {
           m_distFunc(args...);
 
@@ -138,7 +142,7 @@ typedef void      ( *FpDistFuncX5 )( const DistParam&, Distortion*, bool );
           ApproxInter::UninstrumentIfMarked((void*) approxCurr);
         #endif
 
-        if constexpr (std::is_same_v<T, FpDistFunc>) {
+        if constexpr (std::is_same_v<T, FpDistFunc> || std::is_same_v<T, const vvenc::RdCost&>) {
           return precDist;
         }
       }
@@ -229,6 +233,11 @@ private:
   double                  m_motionLambda;
   int                     m_iCostScale;
   double                  m_dCostIBC;
+
+  #if COST_CAPTURE
+    friend class CostCapture<const vvenc::RdCost&>;
+  #endif
+
 public:
   RdCost();
   virtual ~RdCost();

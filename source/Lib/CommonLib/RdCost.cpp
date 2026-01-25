@@ -315,51 +315,7 @@ Distortion RdCost::getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitD
     dp.orgLuma  = orgLuma;
 
     #if COST_CAPTURE
-      #if CAPTURED_METRIC_INSTRUMENTATION
-        Pel const * const approxOrig = dp.org.buf;
-        Pel const * const approxCurr = dp.cur.buf;
-        ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::DFunc_Orig[eDFunc + Log2(org.width)], ApproxInter::ConfigurationId::DFunc_Orig[eDFunc + Log2(org.width)]);
-        ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::DFunc_Curr[eDFunc + Log2(org.width)], ApproxInter::ConfigurationId::DFunc_Curr[eDFunc + Log2(org.width)]);
-      #endif
-
-
-      #if LONG_DOUBLELOG
-        ApproxInter::Take::CurrentTake = ApproxInter::Take::Approximate;
-        ApproxInter::ProcessTake(ApproxInter::Take::Approximate, eDFunc + Log2(org.width), RdCost::xGetSSE_WTD( dp ));
-
-        ApproxSS::disable_global_injection();
-        ApproxInter::Take::CurrentTake = ApproxInter::Take::Precise;
-        const Distortion precDist = RdCost::xGetSSE_WTD( dp );
-        ApproxSS::enable_global_injection();
-
-        ApproxInter::ProcessTake(ApproxInter::Take::Precise, eDFunc + Log2(org.width), precDist);
-      #else
-        ApproxInter::Take::CurrentTake = ApproxInter::Take::Approximate;
-        const Distortion approxDist = RdCost::xGetSSE_WTD( dp );
-
-        ApproxSS::disable_global_injection();
-        ApproxInter::Take::CurrentTake = ApproxInter::Take::Precise;
-        const Distortion precDist = RdCost::xGetSSE_WTD( dp );
-        ApproxSS::enable_global_injection();
-
-        if (ApproxInter::lastFuncId != eDFunc + Log2(org.width)) {
-          ApproxInter::lastFuncId = eDFunc + Log2(org.width);
-          std::cout << "DF_" << ApproxInter::Take::DFuncNames.at(eDFunc + Log2(org.width)) << ":\n"; //<< std::endl;
-        }
-
-        const double rel = ((static_cast<double>(approxDist)/static_cast<double>(precDist)-1.0)*100.0);
-
-        std::cout << std::fixed << std::setprecision(2);
-        std::cout << '=' << precDist << '~' << (rel > 0? "+" : "") << rel << "%\n"; //<< std::endl;
-        std::cout << std::defaultfloat << std::setprecision(6);
-      #endif
-
-      #if CAPTURED_METRIC_INSTRUMENTATION
-        ApproxInter::UninstrumentIfMarked((void*) approxOrig);
-        ApproxInter::UninstrumentIfMarked((void*) approxCurr);
-      #endif
-
-      dist = precDist;
+      dist = CostCapture<const RdCost&>(*this, DF_SSE_WTD)( dp );
     #else
       dist = RdCost::xGetSSE_WTD( dp );
     #endif
