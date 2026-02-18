@@ -267,6 +267,7 @@ void InterSearch::init( const VVEncCfg& encCfg, TrQuant* pTrQuant, RdCost* pRdCo
     m_tmpPredStorage[i].create( UnitArea( cform, Area( 0, 0, ctuSize, ctuSize ) ) );
     m_tmpPredStorage[i].RemarkBuffers(ApproxInter::BufferId::InterSearch_m_tmpPredStorage);
   }
+  
   m_tmpStorageLCU.create( UnitArea( cform, Area( 0, 0, ctuSize, ctuSize ) ) );
   m_tmpStorageLCU.RemarkBuffers(ApproxInter::BufferId::InterSearch_m_tmpStorageLCU);
 
