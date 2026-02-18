@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -181,11 +181,10 @@ InterpolationFilter::InterpolationFilter()
   m_filterHor[2][1][0] = filter<2, false, true, false>;
   m_filterHor[2][1][1] = filter<2, false, true, true>;
 
-  // for scalar implementation, use the 8-tap filter, as the 6-tap filter is 0-padded
-  m_filterHor[3][0][0] = filter<8, false, false, false>;
-  m_filterHor[3][0][1] = filter<8, false, false, true>;
-  m_filterHor[3][1][0] = filter<8, false, true, false>;
-  m_filterHor[3][1][1] = filter<8, false, true, true>;
+  m_filterHor[3][0][0] = filter<6, false, false, false>;
+  m_filterHor[3][0][1] = filter<6, false, false, true>;
+  m_filterHor[3][1][0] = filter<6, false, true, false>;
+  m_filterHor[3][1][1] = filter<6, false, true, true>;
 
   m_filterVer[0][0][0] = filter<8, true, false, false>;
   m_filterVer[0][0][1] = filter<8, true, false, true>;
@@ -202,31 +201,30 @@ InterpolationFilter::InterpolationFilter()
   m_filterVer[2][1][0] = filter<2, true, true, false>;
   m_filterVer[2][1][1] = filter<2, true, true, true>;
 
-  // for scalar implementation, use the 8-tap filter, as the 6-tap filter is 0-padded
-  m_filterVer[3][0][0] = filter<8, true, false, false>;
-  m_filterVer[3][0][1] = filter<8, true, false, true>;
-  m_filterVer[3][1][0] = filter<8, true, true, false>;
-  m_filterVer[3][1][1] = filter<8, true, true, true>;
+  m_filterVer[3][0][0] = filter<6, true, false, false>;
+  m_filterVer[3][0][1] = filter<6, true, false, true>;
+  m_filterVer[3][1][0] = filter<6, true, true, false>;
+  m_filterVer[3][1][1] = filter<6, true, true, true>;
 
   m_filterCopy[0][0]   = filterCopy<false, false>;
   m_filterCopy[0][1]   = filterCopy<false, true>;
   m_filterCopy[1][0]   = filterCopy<true, false>;
   m_filterCopy[1][1]   = filterCopy<true, true>;
 
-  m_filter4x4[0][0] = filterXxY_N8<false, 4>;
-  m_filter4x4[0][1] = filterXxY_N8<true , 4>;
-  m_filter4x4[1][0] = filterXxY_N4<false, 4>;
-  m_filter4x4[1][1] = filterXxY_N4<true , 4>;
+  m_filter4x4[0][0] = filterWxH_N8<false, 4>;
+  m_filter4x4[0][1] = filterWxH_N8<true , 4>;
+  m_filter4x4[1][0] = filterWxH_N4<false, 4>;
+  m_filter4x4[1][1] = filterWxH_N4<true , 4>;
   
-  m_filter8x8[0][0] = filterXxY_N8<false, 8>;
-  m_filter8x8[0][1] = filterXxY_N8<true , 8>;
-  m_filter8x8[1][0] = filterXxY_N4<false, 8>;
-  m_filter8x8[1][1] = filterXxY_N4<true , 8>;
+  m_filter8xH[0][0] = filterWxH_N8<false, 8>;
+  m_filter8xH[0][1] = filterWxH_N8<true , 8>;
+  m_filter8xH[1][0] = filterWxH_N4<false, 8>;
+  m_filter8xH[1][1] = filterWxH_N4<true , 8>;
   
-  m_filter16x16[0][0] = filterXxY_N8<false, 16>;
-  m_filter16x16[0][1] = filterXxY_N8<true , 16>;
-  m_filter16x16[1][0] = filterXxY_N4<false, 16>;
-  m_filter16x16[1][1] = filterXxY_N4<true , 16>;
+  m_filter16xH[0][0] = filterWxH_N8<false, 16>;
+  m_filter16xH[0][1] = filterWxH_N8<true , 16>;
+  m_filter16xH[1][0] = filterWxH_N4<false, 16>;
+  m_filter16xH[1][1] = filterWxH_N4<true , 16>;
 
   m_filterN2_2D = scalarFilterN2_2D;
 
@@ -359,6 +357,11 @@ template<int N, bool isVertical, bool isFirst, bool isLast>
 void InterpolationFilter::filter(const ClpRng& clpRng, Pel const *src, int srcStride, Pel* dst, int dstStride, int width, int height, TFilterCoeff const *coeff)
 {
   int row, col;
+
+  if( N == 6 )
+  {
+    coeff++;
+  }
 
   Pel c[8];
   ApproxInter::MarkBuffer((void*) &c[0], (void*) &c[8], ApproxInter::BufferId::filterC, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
@@ -714,7 +717,7 @@ void InterpolationFilter::filter4x4( const ComponentID compID, const Pel* src, i
     THROW( "4x4 interpolation filter does not support bilinear filtering!" );
   }
 }
-void InterpolationFilter::filter8x8( const ComponentID compID, const Pel* src, int srcStride, Pel* dst, int dstStride, int width, int height,  int fracX, int fracY, bool isLast, const ChromaFormat fmt, const ClpRng& clpRng,bool useAltHpelIf,int nFilterIdx /*= 0*/ )
+void InterpolationFilter::filter8xH( const ComponentID compID, const Pel* src, int srcStride, Pel* dst, int dstStride, int width, int height,  int fracX, int fracY, bool isLast, const ChromaFormat fmt, const ClpRng& clpRng,bool useAltHpelIf,int nFilterIdx /*= 0*/ )
 {
   const int vFilterSize = nFilterIdx == 1 ? 2 : ( isLuma( compID ) ? NTAPS_LUMA : NTAPS_CHROMA );
 
@@ -725,7 +728,7 @@ void InterpolationFilter::filter8x8( const ComponentID compID, const Pel* src, i
     const TFilterCoeff* vCoeff = (useAltHpelIf && fracY==8) ? m_lumaAltHpelIFilter : m_lumaFilter[fracY];
     const TFilterCoeff* hCoeff = (useAltHpelIf && fracX==8) ? m_lumaAltHpelIFilter : m_lumaFilter[fracX];
 
-    m_filter8x8[0][isLast]( clpRng,src,srcStride, dst,dstStride, width, height, hCoeff, vCoeff);
+    m_filter8xH[0][isLast]( clpRng,src,srcStride, dst,dstStride, width, height, hCoeff, vCoeff);
   }
   else if( vFilterSize == 4 )
   {
@@ -734,7 +737,7 @@ void InterpolationFilter::filter8x8( const ComponentID compID, const Pel* src, i
     const int csx = getComponentScaleX( compID, fmt );
     const int csy = getComponentScaleY( compID, fmt );
 
-    m_filter8x8[1][isLast]( clpRng, src,srcStride, dst,dstStride, width, height, m_chromaFilter[fracX << ( 1 - csx )], m_chromaFilter[fracY << ( 1 - csy )] );
+    m_filter8xH[1][isLast]( clpRng, src,srcStride, dst,dstStride, width, height, m_chromaFilter[fracX << ( 1 - csx )], m_chromaFilter[fracY << ( 1 - csy )] );
   }
   else
   {
@@ -742,7 +745,7 @@ void InterpolationFilter::filter8x8( const ComponentID compID, const Pel* src, i
   }
 }
 
-void InterpolationFilter::filter16x16( const ComponentID compID, const Pel* src, int srcStride, Pel* dst, int dstStride, int width, int height, int fracX, int fracY, bool isLast, const ChromaFormat fmt, const ClpRng& clpRng,bool useAltHpelIf, int nFilterIdx /*= 0*/ )
+void InterpolationFilter::filter16xH( const ComponentID compID, const Pel* src, int srcStride, Pel* dst, int dstStride, int width, int height, int fracX, int fracY, bool isLast, const ChromaFormat fmt, const ClpRng& clpRng,bool useAltHpelIf, int nFilterIdx /*= 0*/ )
 {
   const int vFilterSize = nFilterIdx == 1 ? 2 : ( isLuma( compID ) ? NTAPS_LUMA : NTAPS_CHROMA );
 
@@ -753,7 +756,7 @@ void InterpolationFilter::filter16x16( const ComponentID compID, const Pel* src,
     const TFilterCoeff* vCoeff = (useAltHpelIf && fracY==8) ? m_lumaAltHpelIFilter : m_lumaFilter[fracY];
     const TFilterCoeff* hCoeff = (useAltHpelIf && fracX==8) ? m_lumaAltHpelIFilter : m_lumaFilter[fracX];
 
-    m_filter16x16[0][isLast]( clpRng, src, srcStride, dst,dstStride, width, height, hCoeff, vCoeff );
+    m_filter16xH[0][isLast]( clpRng, src, srcStride, dst,dstStride, width, height, hCoeff, vCoeff );
   }
   else if( vFilterSize == 4 )
   {
@@ -762,7 +765,7 @@ void InterpolationFilter::filter16x16( const ComponentID compID, const Pel* src,
     const int csx = getComponentScaleX( compID, fmt );
     const int csy = getComponentScaleY( compID, fmt );
 
-    m_filter16x16[1][isLast]( clpRng, src,srcStride, dst,dstStride, width, height, m_chromaFilter[fracX << ( 1 - csx )], m_chromaFilter[fracY << ( 1 - csy )] );
+    m_filter16xH[1][isLast]( clpRng, src,srcStride, dst,dstStride, width, height, m_chromaFilter[fracX << ( 1 - csx )], m_chromaFilter[fracY << ( 1 - csy )] );
   }
   else
   {
@@ -771,7 +774,7 @@ void InterpolationFilter::filter16x16( const ComponentID compID, const Pel* src,
 }
 
 template<bool isLast, int w>
-void InterpolationFilter::filterXxY_N2( const ClpRng& clpRng, Pel const *src, int srcStride, Pel* _dst, int dstStride, int width, int h, TFilterCoeff const *coeffH, TFilterCoeff const *coeffV )
+void InterpolationFilter::filterWxH_N2( const ClpRng& clpRng, Pel const *src, int srcStride, Pel* _dst, int dstStride, int width, int h, TFilterCoeff const *coeffH, TFilterCoeff const *coeffV )
 {
   int row, col;
 
@@ -849,7 +852,7 @@ void InterpolationFilter::filterXxY_N2( const ClpRng& clpRng, Pel const *src, in
 }
 
 template<bool isLast, int w>
-void InterpolationFilter::filterXxY_N4( const ClpRng& clpRng, const Pel* src, int srcStride, Pel* _dst, int dstStride, int width, int height, const TFilterCoeff *coeffH, const TFilterCoeff *coeffV )
+void InterpolationFilter::filterWxH_N4( const ClpRng& clpRng, const Pel* src, int srcStride, Pel* _dst, int dstStride, int width, int height, const TFilterCoeff *coeffH, const TFilterCoeff *coeffV )
 {
   int row, col;
 
@@ -938,7 +941,7 @@ void InterpolationFilter::filterXxY_N4( const ClpRng& clpRng, const Pel* src, in
 
 
 template<bool isLast, int w>
-void InterpolationFilter::filterXxY_N8( const ClpRng& clpRng, const Pel* src, int srcStride, Pel* _dst, int dstStride, int width, int h, const TFilterCoeff *coeffH, const TFilterCoeff *coeffV )
+void InterpolationFilter::filterWxH_N8( const ClpRng& clpRng, const Pel* src, int srcStride, Pel* _dst, int dstStride, int width, int h, const TFilterCoeff *coeffH, const TFilterCoeff *coeffV )
 {
   int row, col;
 

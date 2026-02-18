@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -57,7 +57,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "CommonLib/LoopFilter.h"
 #include "CommonLib/Picture.h"
 #include "CommonLib/MCTF.h"
-
+#include "CommonLib/AffineGradientSearch.h"
 #include "CommonLib/AdaptiveLoopFilter.h"
 #include "CommonLib/SampleAdaptiveOffset.h"
 
@@ -65,6 +65,28 @@ namespace vvenc
 {
 
 #ifdef TARGET_SIMD_ARM
+
+#if ENABLE_SIMD_OPT_ALF
+void AdaptiveLoopFilter::initAdaptiveLoopFilterARM()
+{
+  auto vext = read_arm_extension_flags();
+  if( vext >= NEON )
+  {
+    _initAdaptiveLoopFilterARM<NEON>();
+  }
+}
+#endif
+
+#if ENABLE_SIMD_OPT_AFFINE_ME
+void AffineGradientSearch::initAffineGradientSearchARM()
+{
+  auto vext = read_arm_extension_flags();
+  if( vext >= NEON )
+  {
+    _initAffineGradientSearchARM<NEON>();
+  }
+}
+#endif
 
 #if ENABLE_SIMD_OPT_MCIF
 void InterpolationFilter::initInterpolationFilterARM()
@@ -74,6 +96,12 @@ void InterpolationFilter::initInterpolationFilterARM()
   {
     _initInterpolationFilterARM<NEON>();
   }
+#if TARGET_SIMD_ARM_SVE
+  if( vext >= SVE )
+  {
+    _initInterpolationFilterARM<SVE>();
+  }
+#endif
 }
 #endif
 
@@ -96,6 +124,12 @@ void RdCost::initRdCostARM()
   {
     _initRdCostARM<NEON>();
   }
+#if TARGET_SIMD_ARM_SVE
+  if( vext >= SVE )
+  {
+    _initRdCostARM<SVE>();
+  }
+#endif // TARGET_SIMD_ARM_SVE
 }
 #endif
 
@@ -107,8 +141,14 @@ void MCTF::initMCTF_ARM()
   {
     _initMCTF_ARM<NEON>();
   }
+#if TARGET_SIMD_ARM_SVE
+  if( vext >= SVE )
+  {
+    _initMCTF_ARM<SVE>();
+  }
+#endif // TARGET_SIMD_ARM_SVE
 }
-#endif  // ENABLE_SIMD_OPT_MCTF
+#endif // ENABLE_SIMD_OPT_MCTF
 
 #if ENABLE_SIMD_TRAFO
 void TCoeffOps::initTCoeffOpsARM()
@@ -131,12 +171,20 @@ void TCoeffOps::initTCoeffOpsARM()
 void InterPredInterpolation::initInterPredictionARM()
 {
   auto vext = read_arm_extension_flags();
-  switch (vext){
-    case NEON:
-      _initInterPredictionARM<NEON>();
-      break;
-    default:
-      break;
+  if( vext >= NEON )
+  {
+    _initInterPredictionARM<NEON>();
+  }
+}
+#endif
+
+#if ENABLE_SIMD_OPT_INTRAPRED
+void IntraPrediction::initIntraPredictionARM()
+{
+  auto vext = read_arm_extension_flags();
+  if( vext >= NEON )
+  {
+    _initIntraPredictionARM<NEON>();
   }
 }
 #endif

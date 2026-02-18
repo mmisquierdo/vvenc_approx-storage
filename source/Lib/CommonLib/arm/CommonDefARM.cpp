@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -45,12 +45,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "CommonDefARM.h"
 
-#if defined( __linux__ )
-#include <sys/auxv.h>  // getauxval
+#if TARGET_SIMD_ARM_SVE
+#if defined( __linux__ ) || HAVE_ELF_AUX_INFO
+#include <sys/auxv.h>  // getauxval / elf_aux_info
+#endif
 #endif
 
 namespace vvenc
 {
+#if ENABLE_SIMD_OPT && defined(TARGET_SIMD_ARM)
 using namespace arm_simd;
 
 const static std::vector<std::pair<ARM_VEXT, std::string>> vext_names{
@@ -95,7 +98,7 @@ ARM_VEXT string_to_arm_vext( const std::string& ext_name )
   THROW( "Invalid SIMD Mode string: \"" << ext_name << "\"" );
 }
 
-#if defined( __linux__ )
+#if defined( __linux__ ) || HAVE_ELF_AUX_INFO
 
 // Define hwcap values ourselves: building with an old auxv header where these
 // hwcap values are not defined should not prevent features from being enabled.
@@ -108,10 +111,20 @@ static ARM_VEXT _get_arm_extensions()
   ARM_VEXT ext = NEON;
 
 #if TARGET_SIMD_ARM_SVE
+#if HAVE_ELF_AUX_INFO
+  unsigned long hwcap = 0;
+  elf_aux_info( AT_HWCAP, &hwcap, sizeof(hwcap) );
+#else
   unsigned long hwcap = getauxval( AT_HWCAP );
 #endif
+#endif
 #if TARGET_SIMD_ARM_SVE2
+#if HAVE_ELF_AUX_INFO
+  unsigned long hwcap2 = 0;
+  elf_aux_info( AT_HWCAP2, &hwcap2, sizeof(hwcap2) );
+#else
   unsigned long hwcap2 = getauxval( AT_HWCAP2 );
+#endif
 #endif
 
 #if TARGET_SIMD_ARM_SVE
@@ -162,5 +175,6 @@ const std::string& read_arm_extension_name()
 {
   return arm_vext_to_string( read_arm_extension_flags() );
 }
+#endif
 
 }   // namespace

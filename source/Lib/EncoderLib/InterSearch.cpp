@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -260,32 +260,30 @@ void InterSearch::init( const VVEncCfg& encCfg, TrQuant* pTrQuant, RdCost* pRdCo
     }
   }
 
-  const ChromaFormat cform = encCfg.m_internChromaFormat;
-  for( uint32_t i = 0; i < NUM_REF_PIC_LIST_01; i++ )
+  const ChromaFormat cform   = encCfg.m_internChromaFormat;
+  const int          ctuSize = encCfg.m_CTUSize;
+  for (uint32_t i = 0; i < NUM_REF_PIC_LIST_01; i++)
   {
-    m_tmpPredStorage[i].create( UnitArea( cform, Area( 0, 0, MAX_CU_SIZE, MAX_CU_SIZE ) ) );
-	m_tmpPredStorage[i].RemarkBuffers(ApproxInter::BufferId::InterSearch_m_tmpPredStorage);
-	//JICS: instrumentar aqui
+    m_tmpPredStorage[i].create( UnitArea( cform, Area( 0, 0, ctuSize, ctuSize ) ) );
+    m_tmpPredStorage[i].RemarkBuffers(ApproxInter::BufferId::InterSearch_m_tmpPredStorage);
   }
-  m_tmpStorageLCU.create( UnitArea( cform, Area( 0, 0, MAX_CU_SIZE, MAX_CU_SIZE ) ) );
+  m_tmpStorageLCU.create( UnitArea( cform, Area( 0, 0, ctuSize, ctuSize ) ) );
   m_tmpStorageLCU.RemarkBuffers(ApproxInter::BufferId::InterSearch_m_tmpStorageLCU);
-  //JICS: instrumentar aqui
-  m_pTempPel = xMalloc(Pel, encCfg.m_CTUSize * encCfg.m_CTUSize); //new Pel[ encCfg.m_CTUSize * encCfg.m_CTUSize ];
-  ApproxInter::RemarkBuffer((void*) m_pTempPel, ApproxInter::BufferId::InterSearch_m_pTempPel, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
 
-  m_tmpAffiStorage.create(UnitArea(cform, Area(0, 0, MAX_CU_SIZE, MAX_CU_SIZE + 2)));  // allow overread by 2 samples
+  m_pTempPel = xMalloc(Pel, ctuSize * ctuSize); //new Pel[ctuSize * ctuSize];
+  ApproxInter::RemarkBuffer((void*) m_pTempPel, ApproxInter::BufferId::InterSearch_m_pTempPel, ApproxInter::ConfigurationId::PRECISE_KNOB, sizeof(Pel));
+
+  m_tmpAffiStorage.create(UnitArea(cform, Area(0, 0, ctuSize, ctuSize + 2)));  // allow overread by 2 samples
   m_tmpAffiStorage.RemarkBuffers(ApproxInter::BufferId::InterSearch_m_tmpAffiStorage);
-  //JICS: instrumentar aqui
-  
-  m_tmpAffiError = xMalloc(Pel, MAX_CU_SIZE * MAX_CU_SIZE); //new Pel[MAX_CU_SIZE * MAX_CU_SIZE];
-  ApproxInter::RemarkBuffer((void*) m_tmpAffiError, ApproxInter::BufferId::InterSearch_m_tmpAffiError, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
 
-  m_tmpAffiDeri[0] = xMalloc(Pel, MAX_CU_SIZE * MAX_CU_SIZE); //new Pel[MAX_CU_SIZE * MAX_CU_SIZE];
-  ApproxInter::RemarkBuffer((void*) m_tmpAffiDeri[0], ApproxInter::BufferId::InterSearch_m_tmpAffiDeri0, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
+  m_tmpAffiError = xMalloc(Pel, ctuSize * ctuSize); //new Pel[ctuSize * ctuSize];
+  ApproxInter::RemarkBuffer((void*) m_tmpAffiError, ApproxInter::BufferId::InterSearch_m_tmpAffiError, ApproxInter::ConfigurationId::PRECISE_KNOB, sizeof(Pel));
 
-  m_tmpAffiDeri[1] = xMalloc(Pel, MAX_CU_SIZE * MAX_CU_SIZE); //new Pel[MAX_CU_SIZE * MAX_CU_SIZE];
-  ApproxInter::RemarkBuffer((void*) m_tmpAffiDeri[1], ApproxInter::BufferId::InterSearch_m_tmpAffiDeri1, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
-  //JICS: intrumentar como Affine...
+  m_tmpAffiDeri[0] = xMalloc(Pel, ctuSize * ctuSize); //new Pel[ctuSize * ctuSize];
+  ApproxInter::RemarkBuffer((void*) m_tmpAffiDeri[0], ApproxInter::BufferId::InterSearch_m_tmpAffiDeri0, ApproxInter::ConfigurationId::PRECISE_KNOB, sizeof(Pel));
+
+  m_tmpAffiDeri[1] = xMalloc(Pel, ctuSize * ctuSize); //new Pel[ctuSize * ctuSize];
+  ApproxInter::RemarkBuffer((void*) m_tmpAffiDeri[1], ApproxInter::BufferId::InterSearch_m_tmpAffiDeri1, ApproxInter::ConfigurationId::PRECISE_KNOB, sizeof(Pel));
 
   CompArea chromaArea( COMP_Cb, cform, Area( 0, 0, encCfg.m_CTUSize, encCfg.m_CTUSize ), true );
   for( int i = 0; i < 4; i++ )
@@ -807,9 +805,11 @@ Distortion InterSearch::xPatternRefinement( const CPelBuf* pcPatternKey,
   int dstStride = width + 1;
   Pel* intPtr;
   Pel* dstPtr;
-  int filterSize = NTAPS_LUMA;
+  int filterSize     = useAltHpelIf ? ( reduceTap >= 1 ? NTAPS_AFFINE : NTAPS_LUMA )
+                                    : ( reduceTap == 1 ? NTAPS_AFFINE
+                                                       : ( reduceTap == 0 ? NTAPS_LUMA : NTAPS_CHROMA ) );
   int halfFilterSize = ( filterSize >> 1 );
-  const Pel* srcPtr = pattern->buf - halfFilterSize*srcStride - 1;
+  const Pel* srcPtr  = pattern->buf - halfFilterSize*srcStride - 1;
 
   const ChromaFormat chFmt = m_currChromaFormat;
 
@@ -3216,7 +3216,7 @@ Distortion InterSearch::xGetSymCost( const CodingUnit& cu, CPelUnitBuf& origBuf,
   clipMv( mvB, cu.lumaPos(), cu.lumaSize(), *cu.cs->pcv );
   xPredInterBlk( COMP_Y, cu, picRefB, mvB, predBufB, false, cu.slice->clpRngs[ COMP_Y ], false, false );
 
-  PelUnitBuf bufTmp = m_tmpStorageLCU.getCompactBuf( UnitAreaRelative( cu, cu ) );
+  PelUnitBuf bufTmp = m_tmpStorageLCU.getCompactBuf( cu );
   bufTmp.copyFrom( origBuf );
   bufTmp.removeHighFreq( predBufA, m_pcEncCfg->m_bClipForBiPredMeEnabled, cu.slice->clpRngs/*, getBcwWeight( cu.BcwIdx, eTarRefPicList )*/ );
   double fWeight = xGetMEDistortionWeight( cu.BcwIdx, eTarRefPicList );
@@ -3389,18 +3389,20 @@ void InterSearch::xExtDIFUpSamplingH(CPelBuf* pattern, bool useAltHpelIf)
 
   PROFILER_SCOPE_AND_STAGE( 0, _TPROF, P_HPEL_INTERP );
   const ClpRng& clpRng = m_lumaClpRng;
-  int width      = pattern->width;
-  int height     = pattern->height;
-  int srcStride  = pattern->stride;
+  int width            = pattern->width;
+  int height           = pattern->height;
+  int srcStride        = pattern->stride;
   const int reduceTap = m_pcEncCfg->m_meReduceTap;
 
   int intStride = width + 1;
   int dstStride = width + 1;
   Pel* intPtr; 		//MATHEUS NOTE: approximar m_filteredBlockTmp e m_filteredBlock!!!
   Pel* dstPtr;
-  int filterSize = NTAPS_LUMA;
-  int halfFilterSize = (filterSize>>1);
-  const Pel* srcPtr = pattern->buf - halfFilterSize*srcStride - 1;
+  int filterSize     = useAltHpelIf ? ( reduceTap >= 1 ? NTAPS_AFFINE : NTAPS_LUMA )
+                                    : ( reduceTap == 1 ? NTAPS_AFFINE
+                                                       : ( reduceTap == 0 ? NTAPS_LUMA : NTAPS_CHROMA ) );
+  int halfFilterSize = ( filterSize >> 1 );
+  const Pel *srcPtr  = pattern->buf - halfFilterSize * srcStride - 1;
 
   const ChromaFormat chFmt = m_currChromaFormat;
 
@@ -3462,7 +3464,9 @@ void InterSearch::xExtDIFUpSamplingQ( CPelBuf* pattern, Mv halfPelRef, int& patt
   int dstStride = width + 1;
   Pel* intPtr;
   Pel* dstPtr;
-  int filterSize = NTAPS_LUMA;
+
+  int filterSize     = reduceTap == 1 ? NTAPS_AFFINE
+                   : ( reduceTap == 0 ? NTAPS_LUMA : NTAPS_CHROMA );
 
   int halfFilterSize = (filterSize>>1);
 
@@ -4943,7 +4947,7 @@ void InterSearch::xSymMvdCheckBestMvp(
   xClipMvSearch( mvA, cu.lumaPos(), cu.lumaSize(), *cu.cs->pcv, m_ifpLines );
   xPredInterBlk( COMP_Y, cu, picRefA, mvA, predBufA, false, cu.slice->clpRngs[ COMP_Y ], false, false );
 
-  bufTmp = m_tmpStorageLCU.getBuf( UnitAreaRelative( cu, cu ) );
+  bufTmp = m_tmpStorageLCU.getCompactBuf( cu );
   bufTmp.copyFrom( origBuf );
   bufTmp.removeHighFreq( predBufA, m_pcEncCfg->m_bClipForBiPredMeEnabled, cu.slice->clpRngs/*, getBcwWeight( cu.BcwIdx, tarRefList )*/ );
   fWeight = xGetMEDistortionWeight( cu.BcwIdx, tarRefList );
@@ -6541,7 +6545,7 @@ int InterSearch::xIBCSearchMVChromaRefine(CodingUnit& cu,
     cu.interDir = 1;
     cu.refIdx[0] = cu.cs->slice->numRefIdx[REF_PIC_LIST_0]; // last idx in the list
 
-    PelUnitBuf predBufTmp = m_tmpPredStorage[REF_PIC_LIST_0].getBuf(UnitAreaRelative(cu, cu));
+    PelUnitBuf predBufTmp = m_tmpPredStorage[REF_PIC_LIST_0].getCompactBuf(cu);
     motionCompensation(cu, predBufTmp, REF_PIC_LIST_0);
 
     for (unsigned int ch = COMP_Cb; ch < getNumberValidComponents(cu.cs->sps->chromaFormatIdc); ch++)

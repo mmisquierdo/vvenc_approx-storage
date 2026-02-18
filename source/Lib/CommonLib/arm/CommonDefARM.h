@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -47,7 +47,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "CommonDef.h"
 
-#ifdef TARGET_SIMD_ARM
+#if ENABLE_SIMD_OPT && defined(TARGET_SIMD_ARM)
 
 #ifdef USE_NEON
 #define SIMDARM NEON

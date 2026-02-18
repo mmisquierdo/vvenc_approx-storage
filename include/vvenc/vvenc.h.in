@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -57,6 +57,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #define VVENC_NAMESPACE_BEGIN
 #define VVENC_NAMESPACE_END
+
+#define VVENC_USE_UNSTABLE_API @VVENC_USE_UNSTABLE_API@
 
 #ifdef __cplusplus
 extern "C" {
@@ -133,8 +135,11 @@ typedef struct vvencYUVBuffer
 {
   vvencYUVPlane planes[ 3 ];           // plane buffer for 3 components (yuv)
   uint64_t      sequenceNumber;        // sequence number of the picture
-  uint64_t      cts;                   // composition time stamp in TicksPerSecond
+  int64_t       cts;                   // composition time stamp in TicksPerSecond
   bool          ctsValid;              // composition time stamp valid flag (true: valid, false: CTS not set)
+#if VVENC_USE_UNSTABLE_API
+  void*         userData;              // user data to be returned in corresponding access unit
+#endif
 }vvencYUVBuffer;
 
 /* vvenc_YUVBuffer_alloc:
@@ -183,8 +188,8 @@ typedef struct vvencAccessUnit
   int             payloadSize;         // size of the allocated buffer in bytes
   int             payloadUsedSize;     // length of the coded data in bytes
 
-  uint64_t        cts;                 // composition time stamp in TicksPerSecond (see vvenc_config)
-  uint64_t        dts;                 // decoding time stamp in TicksPerSecond (see vvenc_config)
+  int64_t         cts;                 // composition time stamp in TicksPerSecond (see vvenc_config)
+  int64_t         dts;                 // decoding time stamp in TicksPerSecond (see vvenc_config)
   bool            ctsValid;            // composition time stamp valid flag (true: valid, false: CTS not set)
   bool            dtsValid;            // decoding time stamp valid flag (true: valid, false: DTS not set)
   bool            rap;                 // random access point flag (true: AU is random access point, false: sequential access)
@@ -196,6 +201,9 @@ typedef struct vvencAccessUnit
   int             status;              // additional info (see Status)
   int             essentialBytes;      // number of bytes in nalus of type SLICE_*, DCI, VPS, SPS, PPS, PREFIX_APS, SUFFIX_APS
   char            infoString[VVENC_MAX_STRING_LEN]; // debug info from inside the encoder
+#if VVENC_USE_UNSTABLE_API
+  void*           userData;            // user data passed in corresponding input YUV buffer
+#endif
 } vvencAccessUnit;
 
 /* vvenc_accessUnit_alloc:

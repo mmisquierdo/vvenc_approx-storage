@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -53,6 +53,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "TrQuant_EMT.h"
 #include "sum_neon.h"
 
+#include <cstdint>
+
 //! \ingroup CommonLib
 //! \{
 
@@ -64,6 +66,116 @@ namespace vvenc
 static inline int64_t shift_and_round( int64_t x, int shift )
 {
   return ( x + ( static_cast<int64_t>(1) << ( shift - 1 ) ) ) >> shift;
+}
+
+template<int W>
+void cpyCoeff_neon( const Pel* src, ptrdiff_t srcStride, TCoeff* dst, unsigned width, unsigned height );
+
+template<>
+void cpyCoeff_neon<4>( const Pel* src, ptrdiff_t srcStride, TCoeff* dst, unsigned width, unsigned height )
+{
+  CHECK( height < 1, "Height must be >= 1" );
+  CHECK( width != 4, "Width must be 4" );
+
+  do
+  {
+    int16x4_t s = vld1_s16( src );
+    vst1q_s32( dst, vmovl_s16( s ) );
+
+    src += srcStride;
+    dst += width;
+  } while( --height != 0 );
+}
+
+template<>
+void cpyCoeff_neon<8>( const Pel* src, ptrdiff_t srcStride, TCoeff* dst, unsigned width, unsigned height )
+{
+  CHECK( height < 1, "Height must be >= 1" );
+  CHECK( width < 8 || width & 7, "Width must be >= 8 and a multiple of 8" );
+
+  do
+  {
+    unsigned w = 0;
+    for( ; w + 16 <= width; w += 16 )
+    {
+      int16x8_t s_lo = vld1q_s16( src + w + 0 );
+      int16x8_t s_hi = vld1q_s16( src + w + 8 );
+      vst1q_s32( dst + w + 0, vmovl_s16( vget_low_s16( s_lo ) ) );
+      vst1q_s32( dst + w + 4, vmovl_s16( vget_high_s16( s_lo ) ) );
+      vst1q_s32( dst + w + 8, vmovl_s16( vget_low_s16( s_hi ) ) );
+      vst1q_s32( dst + w + 12, vmovl_s16( vget_high_s16( s_hi ) ) );
+    }
+    if( width & 8 )
+    {
+      int16x8_t s = vld1q_s16( src + w );
+      vst1q_s32( dst + w + 0, vmovl_s16( vget_low_s16( s ) ) );
+      vst1q_s32( dst + w + 4, vmovl_s16( vget_high_s16( s ) ) );
+    }
+
+    src += srcStride;
+    dst += width;
+  } while( --height != 0 );
+}
+
+template<int W>
+void roundClip_neon( TCoeff* dst, unsigned width, unsigned height, unsigned stride, const TCoeff outputMin,
+                     const TCoeff outputMax, const TCoeff round, const TCoeff shift );
+
+template<>
+void roundClip_neon<4>( TCoeff* dst, unsigned width, unsigned height, unsigned stride, const TCoeff outputMin,
+                        const TCoeff outputMax, const TCoeff round, const TCoeff shift )
+{
+  CHECKD( height < 1, "Height must be >= 1" );
+  CHECKD( width != 4, "Width must be 4" );
+  CHECKD( round != 1 << ( shift - 1 ), "Round must be 1 << ( shift - 1 )" );
+  CHECKD( outputMin != INT16_MIN, "OutputMin should be -32768" );
+  CHECKD( outputMax != INT16_MAX, "OutputMax should be 32767" );
+
+  // Current call to this function guarantees a minimum rshift of 7.
+  // If dst max bit-depth is 23-bit, we do not need to do clipping to int16 range.
+  CHECKD( shift < 7, "Shift must be >= 7" );
+
+  do
+  {
+    int32x4_t d = vld1q_s32( dst );
+    d = vrshlq_s32( d, vdupq_n_s32( -shift ) );
+    vst1q_s32( dst, d );
+
+    dst += stride;
+  } while( --height != 0 );
+}
+
+template<>
+void roundClip_neon<8>( TCoeff* dst, unsigned width, unsigned height, unsigned stride, const TCoeff outputMin,
+                        const TCoeff outputMax, const TCoeff round, const TCoeff shift )
+{
+  CHECKD( height < 1, "Height must be >= 1" );
+  CHECKD( width < 8 || width & 7, "Width must be >= 8 and a multiple of 8" );
+  CHECKD( round != 1 << ( shift - 1 ), "Round must be 1 << ( shift - 1 )" );
+  CHECKD( outputMin != INT16_MIN, "OutputMin should be -32768" );
+  CHECKD( outputMax != INT16_MAX, "OutputMax should be 32767" );
+
+  // Current call to this function guarantees a minimum rshift of 7.
+  // If dst max bit-depth is 23-bit, we do not need to do clipping to int16 range.
+  CHECKD( shift < 7, "Shift must be >= 7" );
+
+  do
+  {
+    unsigned w = 0;
+    do
+    {
+      int32x4_t d_lo = vld1q_s32( dst + w + 0 );
+      int32x4_t d_hi = vld1q_s32( dst + w + 4 );
+      d_lo = vrshlq_s32( d_lo, vdupq_n_s32( -shift ) );
+      d_hi = vrshlq_s32( d_hi, vdupq_n_s32( -shift ) );
+      vst1q_s32( dst + w + 0, d_lo );
+      vst1q_s32( dst + w + 4, d_hi );
+
+      w += 8;
+    } while( w != width );
+
+    dst += stride;
+  } while( --height != 0 );
 }
 
 template<unsigned trSize>
@@ -264,6 +376,11 @@ static void fastFwdCore_neon( const TMatrixCoeff* tc, const TCoeff* src, TCoeff*
 template<>
 void TCoeffOps::_initTCoeffOpsARM<NEON>()
 {
+  cpyCoeff4  = cpyCoeff_neon<4>;
+  cpyCoeff8  = cpyCoeff_neon<8>;
+  roundClip4 = roundClip_neon<4>;
+  roundClip8 = roundClip_neon<8>;
+
   fastInvCore[ 0 ]    = fastInvCore_neon<4>;
   fastInvCore[ 1 ]    = fastInvCore_neon<8>;
   fastInvCore[ 2 ]    = fastInvCore_neon<16>;

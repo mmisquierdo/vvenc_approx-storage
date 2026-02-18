@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -62,7 +62,7 @@ POSSIBILITY OF SUCH DAMAGE.
 # endif
 #endif
 
-#ifdef TARGET_SIMD_X86
+#if defined(TARGET_SIMD_X86)  && ENABLE_SIMD_OPT
 
 namespace vvenc
 {
@@ -74,6 +74,8 @@ const static std::map<X86_VEXT, std::string> vext_names{ { UNDEFINED, "" }, { SC
 const static std::map<X86_VEXT, std::string> vext_names{ { UNDEFINED, "" }, { SCALAR, "SCALAR" }, { SIMD_EVERYWHERE_EXTENSION_LEVEL, "NEON" } };
 #    elif defined( REAL_TARGET_WASM )
 const static std::map<X86_VEXT, std::string> vext_names{ { UNDEFINED, "" }, { SCALAR, "SCALAR" }, { SIMD_EVERYWHERE_EXTENSION_LEVEL, "WASM" } };
+#    elif defined( REAL_TARGET_LOONGARCH )
+const static std::map<X86_VEXT, std::string> vext_names{ { UNDEFINED, "" }, { SCALAR, "SCALAR" }, { SIMD_EVERYWHERE_EXTENSION_LEVEL, "LSX" } };
 #    else
 const static std::map<X86_VEXT, std::string> vext_names{ { UNDEFINED, "" }, { SCALAR, "SCALAR" }, { SIMD_EVERYWHERE_EXTENSION_LEVEL, "SIMDE" } };
 #    endif
@@ -275,12 +277,19 @@ X86_VEXT read_x86_extension_flags( X86_VEXT request )
     if( request > max_supported )
     {
 #ifdef REAL_TARGET_X86
-      THROW( "requested SIMD level (" << request << ") not supported by current CPU (max " << max_supported << ")." );
+      THROW( "requested SIMD level (" << x86_vext_to_string( request ) << ") not supported by current CPU (max " << x86_vext_to_string( max_supported ) << ")." );
 #endif
     }
 
     ext_flags = request;
   }
+
+#ifdef REAL_TARGET_X86
+  if( max_supported < X86_SIMD_SSE41 )
+  {
+    THROW( "maximum SIMD level of current CPU is " << x86_vext_to_string( max_supported ) << " but at least SSE4.1 is required." );
+  }
+#endif
 
   return ext_flags;
 }

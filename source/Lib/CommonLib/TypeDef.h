@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -146,10 +146,16 @@ namespace vvenc {
 #define ENABLE_SIMD_LOG2                                ( 1 && ENABLE_SIMD_OPT )                            ///< use SIMD intrisic to calculate log2
 #define ENABLE_SIMD_OPT_FGA                             ( 1 && ENABLE_SIMD_OPT )                            ///< use SIMD intrisic for FGA
 
+#if defined( __clang_major__ ) && __clang_major__ >= 18 && __clang_major__ < 20 && defined( __ARM_ARCH ) && __ARM_ARCH == 7
+// workaround for clang targeting armv7 (see: https://github.com/fraunhoferhhi/vvenc/issues/560)
+#  warning FGA SIMD disabled for Clang 18 & 19 targeting ARMv7 to work around a compiler bug
+#  undef ENABLE_SIMD_OPT_FGA
+#  define ENABLE_SIMD_OPT_FGA                             0
+#endif
+
 #if ENABLE_SIMD_OPT_BUFFER
 #define ENABLE_SIMD_OPT_BCW                               1                                                 ///< SIMD optimization for GBi
 #endif
-
 
 #if defined( TARGET_SIMD_X86 ) && !defined( REAL_TARGET_X86 )
 #  define SIMD_EVERYWHERE_EXTENSION_LEVEL                 SSE41

@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -761,6 +761,9 @@ int VVEncImpl::xCopyAu( vvencAccessUnit& rcAccessUnit, const vvenc::AccessUnitLi
     rcAccessUnit.temporalLayer   = rcAuList.temporalLayer;
     rcAccessUnit.poc             = rcAuList.poc;
     rcAccessUnit.status          = rcAuList.status;
+#if VVENC_USE_UNSTABLE_API
+    rcAccessUnit.userData        = rcAuList.userData;
+#endif
 
     if ( !rcAuList.InfoString.empty() )
     {
@@ -797,24 +800,24 @@ void VVEncImpl::registerMsgCbf( void * ctx, vvencLoggingCallback msgFnc )
 const char* VVEncImpl::setSIMDExtension( const char* simdId )
 {
   const std::string simdReqStr( simdId ? simdId : "" );
-#if defined( TARGET_SIMD_X86 ) || defined( TARGET_SIMD_ARM )
-#if HANDLE_EXCEPTION
+#if ENABLE_SIMD_OPT && ( defined( TARGET_SIMD_X86 ) || defined( TARGET_SIMD_ARM ) )
+# if HANDLE_EXCEPTION
   try
-#endif  // HANDLE_EXCEPTION
+# endif  // HANDLE_EXCEPTION
   {
-#if defined( TARGET_SIMD_ARM )
+# if defined( TARGET_SIMD_ARM )
     ARM_VEXT arm_ext = string_to_arm_vext( simdReqStr );
-#if defined( TARGET_SIMD_X86 )
+#  if defined( TARGET_SIMD_X86 )
     // Translate any non-scalar Arm SIMD request to enable SIMDe.
     X86_VEXT x86_ext = arm_ext == arm_simd::UNDEFINED ? x86_simd::UNDEFINED
                      : arm_ext == arm_simd::SCALAR    ? x86_simd::SCALAR
                                                       : SIMD_EVERYWHERE_EXTENSION_LEVEL;
-#endif
+#  endif  // TARGET_SIMD_X86
     try
     {
-#if defined( TARGET_SIMD_X86 )
+#  if defined( TARGET_SIMD_X86 )
       read_x86_extension_flags( x86_ext );
-#endif
+#  endif   // TARGET_SIMD_X86
       read_arm_extension_flags( arm_ext );
     }
     catch( Exception& )
@@ -824,7 +827,7 @@ const char* VVEncImpl::setSIMDExtension( const char* simdId )
       THROW( "requested SIMD level (" << simdReqStr << ") not supported by current CPU (max "
                                       << read_arm_extension_name() << ")." );
     }
-#else  // defined( TARGET_SIMD_X86 )
+# else  // defined( TARGET_SIMD_X86 )
     X86_VEXT request_ext = string_to_x86_vext( simdReqStr );
     try
     {
@@ -837,41 +840,41 @@ const char* VVEncImpl::setSIMDExtension( const char* simdId )
       THROW( "requested SIMD level (" << simdReqStr << ") not supported by current CPU (max "
                                       << read_x86_extension_name() << ")." );
     }
-#endif
+# endif  // defined( TARGET_SIMD_X86 )
 
-#if ENABLE_SIMD_OPT_BUFFER
-#if defined( TARGET_SIMD_X86 )
+# if ENABLE_SIMD_OPT_BUFFER
+#  if defined( TARGET_SIMD_X86 )
     g_pelBufOP.initPelBufOpsX86();
-#endif
-#if defined( TARGET_SIMD_ARM )
+#  endif
+#  if defined( TARGET_SIMD_ARM )
     g_pelBufOP.initPelBufOpsARM();
-#endif
-#endif  // ENABLE_SIMD_OPT_BUFFER
+#  endif
+# endif   // ENABLE_SIMD_OPT_BUFFER
 
-#if ENABLE_SIMD_TRAFO
-#if defined( TARGET_SIMD_X86 )
+# if ENABLE_SIMD_TRAFO
+#  if defined( TARGET_SIMD_X86 )
     g_tCoeffOps.initTCoeffOpsX86();
-#endif
-#if defined( TARGET_SIMD_ARM )
+#  endif   // TARGET_SIMD_X86
+#  if defined( TARGET_SIMD_ARM )
     g_tCoeffOps.initTCoeffOpsARM();
-#endif
-#endif  // ENABLE_SIMD_TRAFO
+#  endif   // TARGET_SIMD_ARM
+# endif    // ENABLE_SIMD_TRAFO
 
-#if defined( TARGET_SIMD_ARM )
+# if defined( TARGET_SIMD_ARM )
     return read_arm_extension_name().c_str();
-#else
+# else    // !TARGET_SIMD_ARM
     return read_x86_extension_name().c_str();
-#endif
+# endif   // !TARGET_SIMD_ARM
   }
-#if HANDLE_EXCEPTION
+# if HANDLE_EXCEPTION
   catch( Exception& e )
   {
     MsgLog msg;
     msg.log( VVENC_ERROR, "\n%s\n", e.what() );
     return nullptr;
   }
-#endif  // HANDLE_EXCEPTION
-#else   // !defined( TARGET_SIMD_X86 ) && !defined( TARGET_SIMD_ARM )
+# endif  // HANDLE_EXCEPTION
+#else   // !( ENABLE_SIMD_OPT && ( defined( TARGET_SIMD_X86 ) || defined( TARGET_SIMD_ARM ) ) )
   if( !simdReqStr.empty() && simdReqStr != "SCALAR" )
   {
     MsgLog msg;
@@ -879,7 +882,7 @@ const char* VVEncImpl::setSIMDExtension( const char* simdId )
     return nullptr;
   }
   return "SCALAR";
-#endif  // defined( TARGET_SIMD_X86 ) || defined( TARGET_SIMD_ARM )
+#endif  // !( ENABLE_SIMD_OPT && ( defined( TARGET_SIMD_X86 ) || defined( TARGET_SIMD_ARM ) ) )
 }
 
 ///< creates compile info string containing OS, Compiler and Bit-depth (e.g. 32 or 64 bit).
@@ -896,10 +899,10 @@ std::string VVEncImpl::getCompileInfoString()
 std::string VVEncImpl::createEncoderInfoStr()
 {
   std::stringstream cssCap;
-#if defined( TARGET_SIMD_ARM )
+#if defined( TARGET_SIMD_ARM ) && ENABLE_SIMD_OPT
   setSIMDExtension( nullptr );  // Ensure SIMD-detection is finished
   cssCap << getCompileInfoString() << "[SIMD=" << read_arm_extension_name() << "]";
-#elif defined( TARGET_SIMD_X86 )
+#elif defined( TARGET_SIMD_X86 ) && ENABLE_SIMD_OPT
   setSIMDExtension( nullptr );  // Ensure SIMD-detection is finished
   cssCap << getCompileInfoString() << "[SIMD=" << read_x86_extension_name() <<"]";
 #else  // !TARGET_SIMD_X86 && !TARGET_SIMD_ARM

@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -45,7 +45,7 @@ POSSIBILITY OF SUCH DAMAGE.
     \brief    Rate control manager class
 */
 #ifdef VVENC_ENABLE_THIRDPARTY_JSON
-#include "nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
 #endif
 
 #include "vvenc/version.h"
@@ -660,7 +660,7 @@ void RateCtrl::adjustStatsDownsample()
       auto& stat = *itrv;
       if (stat.spVisAct != 0)
       {
-        sumVar += (abs(stat.spVisAct - meanValue) * abs(stat.spVisAct - meanValue));
+        sumVar += (std::abs(stat.spVisAct - meanValue) * std::abs(stat.spVisAct - meanValue));
         numVar++;
       }
     }
@@ -701,7 +701,7 @@ void RateCtrl::adjustStatsDownsample()
         doChangeBits = false;
         if (stat.gopNum != 0)
         {
-          const int64_t var_cur = abs(statValue - meanValue);
+          const int64_t var_cur = std::abs(statValue - meanValue);
           if (var_cur > (sumVar << 1))
           {
             doChangeBits = true;

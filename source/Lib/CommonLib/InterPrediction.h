@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -56,7 +56,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace vvenc {
 
+#if ENABLE_SIMD_OPT_BDOF && defined( TARGET_SIMD_X86 )
 using namespace x86_simd;
+#endif
+#if ENABLE_SIMD_OPT_BDOF && defined( TARGET_SIMD_ARM )
+using namespace arm_simd;
+#endif
 
 // forward declaration
 class Mv;
@@ -84,14 +89,16 @@ protected:
   Pel*                 m_filteredBlockTmp     [LUMA_INTERPOLATION_FILTER_SUB_SAMPLE_POSITIONS_SIGNAL][MAX_NUM_COMP];
   int                  m_ifpLines;
 
-  int  xRightShiftMSB         ( int numer, int denom );
   void xApplyBDOF             ( PelBuf& yuvDst, const ClpRng& clpRng );
+
+public:
   void(*xFpBiDirOptFlow)      ( const Pel* srcY0, const Pel* srcY1, const Pel* gradX0, const Pel* gradX1, const Pel* gradY0, const Pel* gradY1, const int width, const int height, Pel* dstY, const ptrdiff_t dstStride, const int shiftNum, const int  offset, const int  limit, const ClpRng& clpRng, const int bitDepth ) = nullptr;
   void(*xFpBDOFGradFilter)    ( const Pel* pSrc, int srcStride, int width, int height, int gradStride, Pel* gradX, Pel* gradY, const int bitDepth );
   void(*xFpProfGradFilter)    ( const Pel* pSrc, int srcStride, int width, int height, int gradStride, Pel* gradX, Pel* gradY, const int bitDepth );
   void(*xFpApplyPROF)         ( Pel* dst, int dstStride, const Pel* src, int srcStride, int width, int height, const Pel* gradX, const Pel* gradY, int gradStride, const int* dMvX, const int* dMvY, int dMvStride, const bool& bi, int shiftNum, Pel offset, const ClpRng& clpRng );
   void(*xFpPadDmvr)           ( const Pel* src, const int srcStride, Pel* dst, const int dstStride, int width, int height, int padSize );
 
+protected:
 #if ENABLE_SIMD_OPT_BDOF && defined( TARGET_SIMD_X86 )
   void initInterPredictionX86();
   template <X86_VEXT vext>
@@ -104,7 +111,6 @@ protected:
   void _initInterPredictionARM();
 #endif
 
-protected:
   void xWeightedAverage       ( const CodingUnit& cu, const CPelUnitBuf& pcYuvSrc0, const CPelUnitBuf& pcYuvSrc1, PelUnitBuf& pcYuvDst, const bool bdofApplied, PelUnitBuf *yuvPredTmp = NULL );
   void xPredAffineBlk         ( const ComponentID compID, const CodingUnit& cu, const Picture* refPic, const Mv* _mv, PelUnitBuf& dstPic, const bool bi, const ClpRng& clpRng, const RefPicList refPicList = REF_PIC_LIST_X);
   void xPredInterBlk( const ComponentID compID, const CodingUnit& cu, const Picture* refPic, const Mv& _mv, PelUnitBuf& dstPic, const bool bi, const ClpRng& clpRng
@@ -121,8 +127,8 @@ protected:
 public:
   InterPredInterpolation();
   virtual ~InterPredInterpolation();
-  void    destroy         ();
-  void    init            ();
+  void destroy();
+  void init( bool enableOpt = true );
 
   void    weightedGeoBlk  ( const ClpRngs &clpRngs, CodingUnit& cu, const uint8_t splitDir, int32_t channel,
                             PelUnitBuf &predDst, PelUnitBuf &predSrc0, PelUnitBuf &predSrc1);

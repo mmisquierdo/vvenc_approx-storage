@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -178,6 +178,7 @@ public:
     rap           = false;
     refPic        = false;
     InfoString.clear();
+    userData      = nullptr;
 
     for( AccessUnitList::iterator it = this->begin(); it != this->end(); it++ )
     {
@@ -191,8 +192,8 @@ public:
     std::list<NALUnitEBSP*>::clear();
   }
 
-  uint64_t        cts;                                   ///< composition time stamp
-  uint64_t        dts;                                   ///< decoding time stamp
+  int64_t         cts;                                   ///< composition time stamp
+  int64_t         dts;                                   ///< decoding time stamp
   uint64_t        poc;                                   ///< picture order count
   vvencSliceType  sliceType;                              ///< slice type (I/P/B) */
   int             temporalLayer;                          ///< temporal layer
@@ -202,6 +203,7 @@ public:
   bool            rap;                                    ///< random access point flag
   bool            refPic;                                 ///< reference picture
   std::string     InfoString;
+  void*           userData;                               ///< user data passed in corresponding input YUV buffer
 };
 
 

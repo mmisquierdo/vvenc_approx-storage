@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -178,6 +178,8 @@ Picture::Picture()
     , sliceDataNumBins    ( 0 )
     , cts                 ( 0 )
     , ctsValid            ( false )
+    , picsInMissing       ( 0 )
+    , picOutOffset        ( 0 )
     , isPreAnalysis       ( false )
     , m_picShared         ( nullptr )
     , gopAdaptedQP        ( 0 )
@@ -273,6 +275,11 @@ void Picture::reset()
   encRCPic             = nullptr;
   picApsGlobal         = nullptr;
   refApsGlobal         = nullptr;
+
+  cts                  = 0;
+  ctsValid             = false;
+  picsInMissing        = 0;
+  picOutOffset         = 0;
 
   picVA.reset();
 

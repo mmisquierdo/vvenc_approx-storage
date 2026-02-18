@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -56,6 +56,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace vvenc
 {
+#if defined( USE_SSE41 ) || defined( USE_SSE42 ) ||  defined( USE_AVX ) || defined( USE_AVX2 )
 
 #ifdef MISSING_INTRIN_mm_storeu_si16
 static inline void _mm_storeu_si16( void* p, __m128i a )
@@ -132,6 +133,8 @@ static inline int64_t _mm_extract_epi64( __m128i a, int i )
   return x;
 }
 #endif
+
+#endif // defined( USE_SSE41 ) || defined( USE_SSE42 ) ||  defined( USE_AVX ) || defined( USE_AVX2 )
 
 #if defined( USE_AVX ) || defined( USE_AVX2 )
 

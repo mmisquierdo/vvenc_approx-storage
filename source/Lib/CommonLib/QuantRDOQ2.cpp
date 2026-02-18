@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -485,7 +485,7 @@ int QuantRDOQ2::xRateDistOptQuantFast( TransformUnit &tu, const ComponentID &com
   const ChannelType chType  = toChannelType( compID );
   const int channelBitDepth = sps.bitDepths[ chType ];
 
-  const int  maxLog2TrDynamicRange = sps.getMaxLog2TrDynamicRange(chType);
+  const int  maxLog2TrDynamicRange = sps.getMaxLog2TrDynamicRange();
 
   if( compID != COMP_Cr || !tu.cbf[COMP_Cb] )
     xInitLastPosBitsTab( cctx, uiWidth, uiHeight, chType, fracBits );
@@ -691,6 +691,8 @@ int QuantRDOQ2::xRateDistOptQuantFast( TransformUnit &tu, const ComponentID &com
     //////////////////////////////////////////////////////////////////////////
 
     cctx.initSubblock( subSetId );
+
+    const int remRegBinsStartCG = remRegBins;
 
     for( ; iScanPosinCG >= 0; iScanPosinCG--, iScanPos-- )
     {
@@ -1002,6 +1004,7 @@ int QuantRDOQ2::xRateDistOptQuantFast( TransformUnit &tu, const ComponentID &com
               cctx.resetSigGroup();
               iCodedCostCG = iUncodedCostCGTmp;
               iCostCoeffGroupSig = iCostCoeffGroupSig0;
+              remRegBins = remRegBinsStartCG;
 
               // reset coeffs to 0 in this block
               for( iScanPosinCG = iCGSize - 1; iScanPosinCG >= 0; iScanPosinCG-- )

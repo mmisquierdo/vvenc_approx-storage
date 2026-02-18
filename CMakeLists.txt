@@ -10,7 +10,7 @@ if( NOT CMAKE_VERSION VERSION_LESS 3.13.0 )
 endif()
 
 # project name
-project( vvenc VERSION 1.13.0 )
+project( vvenc VERSION 1.14.0 )
 
 # set alternative version numbering for release candidates
 #set( PROJECT_VERSION_RC rc1 )
@@ -37,11 +37,32 @@ if( VVENC_TARGET_ARCH MATCHES "ARM\|AARCH64" )
   set_if_compiler_supports_arm_extensions( FLAG_sve FLAG_sve2 )
 endif()
 
+if( VVENC_TARGET_ARCH MATCHES "LOONGARCH64" )
+  set( VVENC_LOONGARCH64_SIMD_DEFAULT TRUE )
+
+  if( CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld")
+  endif()
+endif()
+
 # We enable x86 intrinsics for all target architectures, because they are implemented through SIMD-everywhere on non-x86.
 set( VVENC_ENABLE_X86_SIMD TRUE                      CACHE BOOL "Enable x86 intrinsics" )
 set( VVENC_ENABLE_ARM_SIMD ${VVENC_ARM_SIMD_DEFAULT} CACHE BOOL "Enable Arm Neon intrinsics" )
-set( VVENC_ENABLE_ARM_SIMD_SVE FALSE                 CACHE BOOL "Enable Arm SVE intrinsics" )
+set( VVENC_ENABLE_ARM_SIMD_SVE ${FLAG_sve}           CACHE BOOL "Enable Arm SVE intrinsics" )
 set( VVENC_ENABLE_ARM_SIMD_SVE2 FALSE                CACHE BOOL "Enable Arm SVE2 intrinsics" )
+set( VVENC_ENABLE_LOONGARCH64_SIMD_LSX ${VVENC_LOONGARCH64_SIMD_DEFAULT} CACHE BOOL "Enable LoongArch64 LSX intrinsics" )
+set( VVENC_FFP_CONTRACT_OFF OFF                      CACHE BOOL "Disable floating point expression contraction fFr exact math" )
+
+set( VVENC_ENABLE_UNSTABLE_API            OFF        CACHE BOOL "Enable unstable API" )
+
+# Avoid non-portable fp contractions leading to cross-platform bit-differences.
+if ( VVENC_FFP_CONTRACT_OFF )
+  if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
+      CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
+    set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffp-contract=off" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffp-contract=off" )
+  endif()
+endif()
 
 check_problematic_compiler( VVENC_PROBLEMATIC_COMPILER "MSVC" 19.38 19.39 )
 if( VVENC_PROBLEMATIC_COMPILER )
@@ -63,15 +84,14 @@ if( VVENC_PROBLEMATIC_COMPILER )
           ${VVENC_PROBLEMATIC_COMPILER_MSG_OVERRIDE} )
 endif()
 
+set( VVENC_USE_UNSTABLE_API 0 )
+if( VVENC_ENABLE_UNSTABLE_API )
+  set( VVENC_USE_UNSTABLE_API 1 )
+endif()
+configure_file( include/vvenc/vvenc.h.in ${CMAKE_BINARY_DIR}/vvenc/vvenc.h @ONLY )
+
 # enable sse4.1 build for all source files for gcc and clang
 if( VVENC_ENABLE_X86_SIMD )
-  if( UNIX OR MINGW )
-    # when building for non-x86, but emulating simd using simd-everywhere (e.g. on ARM),
-    # the x86-compiler flags are not understood by the compiler
-    set_if_compiler_supports_flag( FLAG_msse41 -msse4.1 )
-    add_compile_options( ${FLAG_msse41} )
-  endif()
-
   if( NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" )
     check_missing_intrinsics()
   endif()
@@ -119,6 +139,26 @@ if( VVENC_TARGET_ARCH STREQUAL "ARM" )
   endif()
 endif()
 
+if( VVENC_TARGET_ARCH STREQUAL "LOONGARCH64" )
+  if( VVENC_ENABLE_LOONGARCH64_SIMD_LSX )
+    set_if_compiler_supports_flag( FLAG_mlsx -mlsx )
+    set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG_mlsx}" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAG_mlsx}" )
+    message( STATUS "LoongArch64 LSX intrinsics enabled" )
+  else()
+    message( STATUS "LoongArch64 LSX intrinsics disabled" )
+  endif()
+endif()
+
+if( VVENC_ENABLE_ARM_SIMD_SVE )
+  include (CheckSymbolExists)
+
+  check_symbol_exists(elf_aux_info "sys/auxv.h" HAVE_AUXV_ELF_AUX_INFO)
+  if( HAVE_AUXV_ELF_AUX_INFO )
+    add_compile_definitions( HAVE_ELF_AUX_INFO=1 )
+  endif()
+endif()
+
 if( NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
   # set exception handling
   if( MSVC )
@@ -151,21 +191,20 @@ set( VVENC_ENABLE_BUILD_TYPE_POSTFIX        OFF CACHE BOOL   "Enable or disable 
 
 set( VVENC_ENABLE_LINK_TIME_OPT             ON  CACHE BOOL   "Enable link time optimization for release and profile builds" )
 
-set( VVENC_ENABLE_THIRDPARTY_JSON           ON  CACHE BOOL   "Enable use of thirdparty json library" )
+set( VVENC_ENABLE_THIRDPARTY_JSON           ON  CACHE STRING "Enable use of thirdparty json library, pass in SYSTEM to rely on an external nlohmann_json" )
+
+set_property( CACHE VVENC_ENABLE_THIRDPARTY_JSON PROPERTY STRINGS OFF SYSTEM ON )
 
 set( VVENC_INSTALL_FULLFEATURE_APP          OFF CACHE BOOL   "Install the full-feature app: vvencFFapp" )
 
 set( VVENC_ENABLE_WERROR                    ON  CACHE BOOL   "Treat warnings as errors (-Werror or /WX)" )
 
+set( VVENC_USE_ADDRESS_SANITIZER            OFF CACHE BOOL   "Enable or disable address sanitizer" )
+
 if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
     CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
-
-  # enable address sanitizer
-  set( VVENC_USE_ADDRESS_SANITIZER          OFF CACHE BOOL   "Enable or disable address sanitizer" )
-
   set( VVENC_OPT_TARGET_ARCH                ""  CACHE STRING "Enable or disable building with architecture specific optimization" )
 endif()
-
 
 if( VVENC_ENABLE_BUILD_TYPE_POSTFIX )
   if( BUILD_SHARED_LIBS )
@@ -263,10 +302,13 @@ if( VVENC_ENABLE_TRACING )
 endif()
 
 if( VVENC_ENABLE_WERROR )
-  add_compile_options( "$<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Werror>" )
+  add_compile_options( "$<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Werror;-Wno-error=#warnings>" )
   add_compile_options( "$<$<CXX_COMPILER_ID:GNU>:-Werror>" )
   add_compile_options( "$<$<CXX_COMPILER_ID:MSVC>:/WX>" )
 endif()
+
+# enable warnings for clang, that xcode enables by default
+add_compile_options( "$<$<CXX_COMPILER_ID:Clang>:-Wshorten-64-to-32>" )
 
 if( VVENC_ENABLE_X86_SIMD )
   if( ( UNIX OR MINGW ) AND VVENC_OPT_TARGET_ARCH )
@@ -318,15 +360,22 @@ endif()
 
 # set address sanitizer compiler arguments
 if( VVENC_USE_ADDRESS_SANITIZER )
-   # add compile options
-   add_compile_options( "-fsanitize=address" )
-   add_compile_options( "-fno-omit-frame-pointer" )
-   add_compile_options( "-fsanitize=undefined" )
-   add_compile_options( "-fsanitize=leak" )
-   add_link_options( "-fsanitize=address" )
-   add_link_options( "-fno-omit-frame-pointer" )
-   add_link_options( "-fsanitize=undefined" )
-   add_link_options( "-fsanitize=leak" )
+  if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
+    CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
+    message( STATUS "enabled GNU/Clang address sanitizer" )
+     # add compile options
+     add_compile_options( "-fsanitize=address" )
+     add_compile_options( "-fno-omit-frame-pointer" )
+     add_compile_options( "-fsanitize=undefined" )
+     add_compile_options( "-fsanitize=leak" )
+     add_link_options( "-fsanitize=address" )
+     add_link_options( "-fno-omit-frame-pointer" )
+     add_link_options( "-fsanitize=undefined" )
+     add_link_options( "-fsanitize=leak" )
+   elseif(MSVC)  
+     message( STATUS "enabled MSVC address sanitizer" )
+     add_compile_options( "/fsanitize=address" )
+   endif()  
 endif()
 
 # set thread sanitizer compiler arguments
@@ -346,10 +395,19 @@ if( CCACHE_FOUND )
   set_property( GLOBAL PROPERTY RULE_LAUNCH_LINK ccache )
 endif()
 
-
+# handle thirdparty json
 if( VVENC_ENABLE_THIRDPARTY_JSON )
-  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DVVENC_ENABLE_THIRDPARTY_JSON" )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVVENC_ENABLE_THIRDPARTY_JSON" )
+  string( TOUPPER "${VVENC_ENABLE_THIRDPARTY_JSON}" VVENC_ENABLE_THIRDPARTY_JSON )
+  message( STATUS "VVENC_ENABLE_THIRDPARTY_JSON: ${VVENC_ENABLE_THIRDPARTY_JSON}" )
+  if ( VVENC_ENABLE_THIRDPARTY_JSON STREQUAL "SYSTEM" )
+    find_package( nlohmann_json REQUIRED ) # Provides nlohmann_json::nlohmann_json
+  elseif( NOT TARGET nlohmann_json::nlohmann_json ) # Implies either ON, TRUE, or 1
+    add_library( nlohmann_json::nlohmann_json INTERFACE IMPORTED )
+    target_include_directories( nlohmann_json::nlohmann_json INTERFACE ${PROJECT_SOURCE_DIR}/thirdparty/nlohmann_json/single_include )
+  endif()
+  target_compile_definitions( nlohmann_json::nlohmann_json INTERFACE VVENC_ENABLE_THIRDPARTY_JSON)
+else()
+  message( STATUS "VVENC_ENABLE_THIRDPARTY_JSON is disabled" )
 endif()
 
 # handle rpath correctly

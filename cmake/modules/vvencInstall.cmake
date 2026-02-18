@@ -60,8 +60,8 @@ endmacro( install_exe_pdb )
 target_include_directories( vvenc  SYSTEM INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}> )
 
 # install headers
-install( FILES     ${CMAKE_BINARY_DIR}/vvenc/version.h  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/vvenc )
-install( DIRECTORY include/vvenc                        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} )
+install( DIRECTORY ${CMAKE_BINARY_DIR}/vvenc  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} )
+install( DIRECTORY include/vvenc              DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} PATTERN "*.in" EXCLUDE )
 
 # install targets
 install_targets( Release )
@@ -111,7 +111,9 @@ function( resolve_target_interface_libs TGT OUT_VAR )
       resolve_target_interface_libs( ${lib} lib )
     endif()
 
-    list( APPEND ret ${lib} )
+    if( lib )
+      list( APPEND ret ${lib} )
+    endif()
   endforeach()
 
   set( ${OUT_VAR} ${ret} PARENT_SCOPE )

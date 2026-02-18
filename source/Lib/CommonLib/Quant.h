@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -56,7 +56,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace vvenc {
 
+#if defined(TARGET_SIMD_X86)  && ENABLE_SIMD_OPT_QUANT
 using namespace x86_simd;
+#endif
 
 // ====================================================================================================================
 // Constants
@@ -148,7 +150,7 @@ private:
                                     const TCoeff m_thrVal );
   bool    ( *xNeedRdoq )          ( const TCoeff* pCoeff, size_t numCoeff, int quantCoeff, int64_t offset, int shift );
 
-#ifdef TARGET_SIMD_X86
+#if defined(TARGET_SIMD_X86)  && ENABLE_SIMD_OPT_QUANT
   void initQuantX86();
   template <X86_VEXT vext>
   void _initQuantX86();

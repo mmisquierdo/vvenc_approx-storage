@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -486,8 +486,8 @@ void applyBlockCore( const CPelBuf& src, PelBuf& dst, const CompArea& blk, const
         }
       }
     }
-    variance <<= 2*(10-clpRng.bd);
-    diffsum <<= 2*(10-clpRng.bd);
+    variance *= (int64_t) 1 << (2*(10-clpRng.bd));
+    diffsum  *= (int64_t) 1 << (2*(10-clpRng.bd));
     const int cntV = w * h;
     const int cntD = 2 * cntV - w - h;
     vnoise[i] = ( int ) round( ( 15.0 * cntD / cntV * variance + 5.0 ) / ( diffsum + 5.0 ) );
@@ -564,7 +564,7 @@ double calcVarCore( const Pel* org, const ptrdiff_t origStride, const int w, con
   return variance / 256.0;
 }
 
-MCTF::MCTF()
+MCTF::MCTF( bool enableOpt )
   : m_encCfg     ( nullptr )
   , m_threadPool ( nullptr )
   , m_isFinalPass( true )
@@ -585,13 +585,15 @@ MCTF::MCTF()
   m_applyBlock              = applyBlockCore;
   m_calcVar                 = calcVarCore;
 
+  if( enableOpt )
+  {
 #if defined( TARGET_SIMD_X86 ) && ENABLE_SIMD_OPT_MCTF
-  initMCTF_X86();
+    initMCTF_X86();
 #endif
 #if defined( TARGET_SIMD_ARM ) && ENABLE_SIMD_OPT_MCTF
-  initMCTF_ARM();
+    initMCTF_ARM();
 #endif
-
+  }
 }
 
 MCTF::~MCTF()

@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -296,8 +296,9 @@ bool GOPCfg::isSTAallowed( int poc ) const
 {
   int intraDistBack    = poc - m_lastIntraPOC;
   int intraDistForward = m_numTillIntra + 1;
-
-  return ( intraDistBack >= m_minIntraDist && intraDistForward >= m_minIntraDist );
+  
+  //if intraDistBack == 0 we have a regular I-Slice and there we need to do the STA analysis as well
+  return ( ( intraDistBack >= m_minIntraDist && intraDistForward >= m_minIntraDist ) || intraDistBack == 0 );
 }
 
 bool GOPCfg::hasNonZeroTemporalId() const

@@ -118,6 +118,10 @@ if( VVENC_ENABLE_X86_SIMD )
     set_property( SOURCE ${SSE42_SRC_FILES} APPEND PROPERTY COMPILE_FLAGS "${FLAG_msse42}" )
     set_property( SOURCE ${AVX_SRC_FILES}   APPEND PROPERTY COMPILE_FLAGS "${FLAG_mavx}"   )
     set_property( SOURCE ${AVX2_SRC_FILES}  APPEND PROPERTY COMPILE_FLAGS "${FLAG_mavx2}"  )
+    
+    set_source_files_properties( ../EncoderLib/EncAdaptiveLoopFilter.cpp APPEND PROPERTY COMPILE_FLAGS "${FLAG_msse41}" )
+    set_source_files_properties( ../CommonLib/LoopFilter.cpp APPEND PROPERTY COMPILE_FLAGS "${FLAG_msse41}" )
+    set_source_files_properties( ../CommonLib/QuantRDOQ2.cpp APPEND PROPERTY COMPILE_FLAGS "${FLAG_msse41}" )
   endif()
 
   add_library( ${LIB_NAME}_x86_simd OBJECT ${SSE41_SRC_FILES} ${SSE42_SRC_FILES} ${AVX_SRC_FILES} ${AVX2_SRC_FILES} )
@@ -130,6 +134,10 @@ if( VVENC_ENABLE_X86_SIMD )
                                               INTERPROCEDURAL_OPTIMIZATION_MINSIZEREL     OFF )
 
   set_target_properties( ${LIB_NAME}_x86_simd PROPERTIES FOLDER lib )
+
+  target_include_directories( ${LIB_NAME}_x86_simd PRIVATE $<$<TARGET_EXISTS:nlohmann_json::nlohmann_json>:$<TARGET_PROPERTY:nlohmann_json::nlohmann_json,INTERFACE_INCLUDE_DIRECTORIES>> )
+  target_compile_options( ${LIB_NAME}_x86_simd PRIVATE $<$<TARGET_EXISTS:nlohmann_json::nlohmann_json>:$<TARGET_PROPERTY:nlohmann_json::nlohmann_json,INTERFACE_COMPILE_OPTIONS>> )
+  target_compile_definitions( ${LIB_NAME}_x86_simd PRIVATE $<$<TARGET_EXISTS:nlohmann_json::nlohmann_json>:$<TARGET_PROPERTY:nlohmann_json::nlohmann_json,INTERFACE_COMPILE_DEFINITIONS>> )
 endif()
 
 if( VVENC_ENABLE_ARM_SIMD )
@@ -166,6 +174,10 @@ if( VVENC_ENABLE_ARM_SIMD )
                                               INTERPROCEDURAL_OPTIMIZATION_MINSIZEREL     OFF )
 
   set_target_properties( ${LIB_NAME}_arm_simd PROPERTIES FOLDER lib )
+
+  target_include_directories( ${LIB_NAME}_arm_simd PRIVATE $<$<TARGET_EXISTS:nlohmann_json::nlohmann_json>:$<TARGET_PROPERTY:nlohmann_json::nlohmann_json,INTERFACE_INCLUDE_DIRECTORIES>> )
+  target_compile_options( ${LIB_NAME}_arm_simd PRIVATE $<$<TARGET_EXISTS:nlohmann_json::nlohmann_json>:$<TARGET_PROPERTY:nlohmann_json::nlohmann_json,INTERFACE_COMPILE_OPTIONS>> )
+  target_compile_definitions( ${LIB_NAME}_arm_simd PRIVATE $<$<TARGET_EXISTS:nlohmann_json::nlohmann_json>:$<TARGET_PROPERTY:nlohmann_json::nlohmann_json,INTERFACE_COMPILE_DEFINITIONS>> )
 endif()
 
 # set resource file for MSVC compilers
@@ -183,12 +195,9 @@ if( CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0 )
   target_compile_options( ${LIB_NAME} PRIVATE $<$<CXX_COMPILER_ID:GNU>: -Wno-array-bounds> )
 endif()
 
-
-if( VVENC_ENABLE_THIRDPARTY_JSON )
-  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DVVENC_ENABLE_THIRDPARTY_JSON" )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVVENC_ENABLE_THIRDPARTY_JSON" )
-  target_include_directories( ${LIB_NAME} PRIVATE ../../../thirdparty/nlohmann_json/single_include )
-endif()
+target_include_directories( ${LIB_NAME} PRIVATE $<$<TARGET_EXISTS:nlohmann_json::nlohmann_json>:$<TARGET_PROPERTY:nlohmann_json::nlohmann_json,INTERFACE_INCLUDE_DIRECTORIES>> )
+target_compile_options( ${LIB_NAME} PRIVATE $<$<TARGET_EXISTS:nlohmann_json::nlohmann_json>:$<TARGET_PROPERTY:nlohmann_json::nlohmann_json,INTERFACE_COMPILE_OPTIONS>> )
+target_compile_definitions( ${LIB_NAME} PRIVATE $<$<TARGET_EXISTS:nlohmann_json::nlohmann_json>:$<TARGET_PROPERTY:nlohmann_json::nlohmann_json,INTERFACE_COMPILE_DEFINITIONS>> )
 
 if( TARGET INTEL_ITT)
   target_link_libraries( ${LIB_NAME} PRIVATE INTEL_ITT Threads::Threads )

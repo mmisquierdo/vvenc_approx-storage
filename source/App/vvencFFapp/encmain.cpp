@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
 
   if( ! vvenc_set_SIMD_extension( simdOpt.c_str() ) )
   {
-	ApproxSS::end_level();
+	  ApproxSS::end_level();
     return 1;
   }
 
@@ -110,13 +110,15 @@ int main(int argc, char* argv[])
   // parse configuration
   if ( ! pcEncApp->parseCfg( argc, argv ) )
   {
-	ApproxSS::end_level();
+    delete pcEncApp;
+	  ApproxSS::end_level();
     return 1;
   }
 
   if( pcEncApp->isShowVersionHelp() )
   {
-	ApproxSS::end_level();
+    delete pcEncApp;
+	  ApproxSS::end_level();
     return 0;
   }
 

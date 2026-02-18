@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -58,7 +58,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace vvenc {
 
+#if defined(TARGET_SIMD_X86)  && (ENABLE_SIMD_OPT_QUANT || ENABLE_SIMD_TRAFO)
 using namespace x86_simd;
+#endif
 
 typedef void FwdTrans(const TCoeff*, TCoeff*, int, int, int, int);
 typedef void InvTrans(const TCoeff*, TCoeff*, int, int, int, int, const TCoeff, const TCoeff);
@@ -149,7 +151,7 @@ private:
   // inverse skipping transform
   void xITransformSkip(const CCoeffBuf& plCoef, PelBuf& pResidual, const TransformUnit& tu, const ComponentID component);
   
-#ifdef TARGET_SIMD_X86
+#if defined(TARGET_SIMD_X86)  && (ENABLE_SIMD_TRAFO )
   template<X86_VEXT vext>
   void _initTrQuantX86();
   void initTrQuantX86();

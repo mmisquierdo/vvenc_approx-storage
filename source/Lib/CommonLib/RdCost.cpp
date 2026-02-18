@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -82,7 +82,7 @@ void RdCost::setLambda( double dLambda, const BitDepths &bitDepths )
 
 
 // Initialize Function Pointer by [eDFunc]
-void RdCost::create()
+void RdCost::create( bool enableOpt )
 {
   m_signalType                 = RESHAPE_SIGNAL_NULL;
   m_chromaWeight               = 1.0;
@@ -145,12 +145,15 @@ void RdCost::create()
   m_afpDistortFuncX5[1] = RdCost::xGetSAD16X5;
 
 #if ENABLE_SIMD_OPT_DIST
+  if( enableOpt )
+  {
 #ifdef TARGET_SIMD_X86
-  initRdCostX86();
+    initRdCostX86();
 #endif
 #ifdef TARGET_SIMD_ARM
-  initRdCostARM();
+    initRdCostARM();
 #endif
+  }
 #endif
 
   m_costMode      = VVENC_COST_STANDARD_LOSSY;

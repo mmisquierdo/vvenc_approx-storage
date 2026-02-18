@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -52,7 +52,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 //! \ingroup CommonLib
 //! \{
-
+  
 namespace vvenc {
 
 static const int prefix_ctx[7]  = { 0, 0, 0, 3, 6, 10, 15 };
@@ -72,7 +72,7 @@ CoeffCodingContext::CoeffCodingContext( const TransformUnit& tu, ComponentID com
   , m_log2BlockHeight           (Log2(m_height))
   , m_maxNumCoeff               (m_width * m_height)
   , m_signHiding                (signHide)
-  , m_maxLog2TrDynamicRange     (tu.cs->sps->getMaxLog2TrDynamicRange(m_chType))
+  , m_maxLog2TrDynamicRange     (tu.cs->sps->getMaxLog2TrDynamicRange())
   , m_scan                      (getScanOrder( SCAN_GROUPED_4x4, m_log2BlockWidth, m_log2BlockHeight ))
   , m_scanCG                    (getScanOrder( SCAN_UNGROUPED  , Log2(m_widthInGroups), Log2(m_heightInGroups)))
   , m_CtxSetLastX               (Ctx::LastX[m_chType])

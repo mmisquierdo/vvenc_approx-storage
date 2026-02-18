@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -53,7 +53,13 @@ namespace vvenc {
   //! \ingroup CommonLib
   //! \{
 
+#if defined(TARGET_SIMD_X86) && ENABLE_SIMD_OPT_AFFINE_ME
 using namespace x86_simd;
+#endif
+
+#if defined(TARGET_SIMD_ARM) && ENABLE_SIMD_OPT_AFFINE_ME
+using namespace arm_simd;
+#endif
 
   class AffineGradientSearch
   {
@@ -67,17 +73,23 @@ using namespace x86_simd;
     template<bool b6Param>
     static void xEqualCoeffComputer   ( Pel* const pResi, const int resiStride, Pel **const ppDerivate, const int derivateBufStride, const int width, const int height, int64_t(*pEqualCoeff)[7]);
 
-    AffineGradientSearch();
+    AffineGradientSearch( bool enableOpt = true );
     ~AffineGradientSearch() {}
 
-#ifdef TARGET_SIMD_X86
+#if defined(TARGET_SIMD_X86) && ENABLE_SIMD_OPT_AFFINE_ME
     void initAffineGradientSearchX86();
     template <X86_VEXT vext>
     void _initAffineGradientSearchX86();
 #endif
+
+#if defined(TARGET_SIMD_ARM) && ENABLE_SIMD_OPT_AFFINE_ME
+    void initAffineGradientSearchARM();
+    template <ARM_VEXT vext>
+    void _initAffineGradientSearchARM();
+#endif
   };
 
-}
+} // namespace vvenc
 
 //! \}
 

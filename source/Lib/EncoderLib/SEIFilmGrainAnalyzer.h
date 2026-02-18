@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur F�rderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur F�rderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -57,6 +57,10 @@ POSSIBILITY OF SUCH DAMAGE.
 //using namespace vvenc;
 namespace vvenc {
 
+#if defined(TARGET_SIMD_X86)  && ENABLE_SIMD_OPT_FGA
+using namespace x86_simd;
+#endif
+  
 static constexpr double   PI                     = 3.14159265358979323846;
 static constexpr double   PI_2                   = 3.14159265358979323846 / 2.0;
 static constexpr double   pi_8                   = PI / 8.0;
@@ -252,8 +256,8 @@ private:
   void adaptiveSampling ( int bins,
                           double threshold,
                           std::vector<int>& significantIndices,
-                          int startIdx = 0,
-                          bool isRow = true );
+                          bool isRow,
+                          int startIdx );
 
   void estimateCutoffFreqAdaptive ( ComponentID compID );
 

@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -149,6 +149,9 @@ private:
   bool                      m_disableLMCSIP;
   int                       m_lastCodingNum;
   int                       m_numPicsCoded;
+  int                       m_numPicsInMissing;
+  int                       m_numPicsOutOffset;
+  uint64_t                  m_lastCts;
   int                       m_pocRecOut;
   int                       m_ticksPerFrameMul4;
   int                       m_lastIDR;

@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -633,10 +633,6 @@ void AreaBuf<Pel>::addAvg( const AreaBuf<const Pel>& other1, const AreaBuf<const
   {
     g_pelBufOP.addAvg16(src0, src1Stride, src2, src2Stride, dest, destStride, width, height, shiftNum, offset, clpRng);
   }
-  else if( width > 2 && height > 2 && width == destStride )
-  {
-    g_pelBufOP.addAvg16(src0, src1Stride<<2, src2, src2Stride<<2, dest, destStride<<2, width<<2, height>>2, shiftNum, offset, clpRng);
-  }
   else if( ( width & 7 ) == 0 )
   {
     g_pelBufOP.addAvg8( src0, src1Stride, src2, src2Stride, dest, destStride, width, height, shiftNum, offset, clpRng );
@@ -674,11 +670,11 @@ void AreaBuf<Pel>::subtract( const AreaBuf<const Pel>& minuend, const AreaBuf<co
   const Pel* subs = subtrahend.buf;
 
 
+#if ENABLE_SIMD_OPT_BUFFER
   const unsigned destStride =            stride;
   const unsigned minsStride = minuend.   stride;
   const unsigned subsStride = subtrahend.stride;
 
-#if ENABLE_SIMD_OPT_BUFFER
   if( ( width & 7 ) == 0 )
   {
     g_pelBufOP.sub8( mins, minsStride, subs, subsStride, dest, destStride, width, height );

@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -275,7 +275,7 @@ protected:
 
 protected:
 
-  void create   ();
+  void create   ( int ctuSize );
   void destroy  ();
   void init     ( const Slice &slice );
 
@@ -313,7 +313,7 @@ private:
 
 protected:
   bool                 m_reuseCuResults;
-  void create   ( const bool reuseCuResults, const ChromaFormat chFmt );
+  void create   ( const bool reuseCuResults, const ChromaFormat chFmt, int ctuSize );
   void destroy  ();
 
 public:

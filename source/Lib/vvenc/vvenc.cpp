@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -197,6 +197,9 @@ VVENC_DECL void vvenc_accessUnit_reset(vvencAccessUnit *accessUnit )
   accessUnit->poc             = 0;
   accessUnit->status          = 0;
   accessUnit->essentialBytes  = 0;
+#if VVENC_USE_UNSTABLE_API
+  accessUnit->userData        = nullptr;
+#endif
 
   memset( accessUnit->infoString, 0, sizeof( accessUnit->infoString ) );
   accessUnit->infoString[0]   ='\0';

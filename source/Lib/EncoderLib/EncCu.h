@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -304,7 +304,8 @@ private:
                         m_subPuMvOffset[MRG_MAX_NUM_CANDS];
   Distortion            m_uiSadBestForQPA;
 
-  static const double coefSquareCUs[2][5][2][2][2];
+  static const double coefSquareCUsFasterFastMedium[2][5][2][2][2];
+  static const double coefSquareCUsSlowSlower[2][5][2][5][2][2][2];
 
 public:
   EncCu();

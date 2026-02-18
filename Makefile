@@ -50,8 +50,8 @@ ifneq ($(disable-lto),)
 CONFIG_OPTIONS += -DVVENC_ENABLE_LINK_TIME_OPT=OFF
 endif
 
-ifneq ($(disable-json),)
-CONFIG_OPTIONS += -DVVENC_ENABLE_THIRDPARTY_JSON=OFF
+ifneq ($(enable-json),)
+CONFIG_OPTIONS += -DVVENC_ENABLE_THIRDPARTY_JSON=${enable-json}
 endif
 
 ifneq ($(enable-build-type-postfix),)
@@ -80,6 +80,14 @@ endif
 
 ifneq ($(enable-werror),)
 CONFIG_OPTIONS += -DVVENC_ENABLE_WERROR=$(enable-werror)
+endif
+
+ifneq ($(enable-unstable-api),)
+CONFIG_OPTIONS += -DVVENC_ENABLE_UNSTABLE_API=$(enable-unstable-api)
+endif
+
+ifneq ($(ffp-contract-off),)
+CONFIG_OPTIONS += -DVVENC_FFP_CONTRACT_OFF=$(ffp-contract-off)
 endif
 
 ifeq ($(j),)

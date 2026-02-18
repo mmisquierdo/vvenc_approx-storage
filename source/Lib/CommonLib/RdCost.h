@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -56,9 +56,13 @@ POSSIBILITY OF SUCH DAMAGE.
 //! \{
 
 namespace vvenc {
-
+  
+#if defined(TARGET_SIMD_X86)  && ENABLE_SIMD_OPT_DIST
 using namespace x86_simd;
+#endif
+#if defined(TARGET_SIMD_ARM)  && ENABLE_SIMD_OPT_DIST
 using namespace arm_simd;
+#endif
 
 class DistParam;
 
@@ -205,13 +209,15 @@ public:
 /// RD cost computation class
 class RdCost
 {
-private:
-  // for distortion
+public:
+  Distortion ( *m_fxdWtdPredPtr )( const DistParam& dp, uint32_t fixedWeight );
+  Distortion ( *m_wtdPredPtr[2] )( const DistParam& dp, ChromaFormat chmFmt, const uint32_t* lumaWeights );
 
+  // for distortion
   FpDistFunc              m_afpDistortFunc[2][DF_TOTAL_FUNCTIONS]; // [eDFunc]
   FpDistFuncX5            m_afpDistortFuncX5[2]; // [eDFunc]
-  Distortion           ( *m_wtdPredPtr[2] )  ( const DistParam& dp, ChromaFormat chmFmt, const uint32_t *lumaWeights );
-  Distortion           ( *m_fxdWtdPredPtr )  ( const DistParam& dp, uint32_t fixedWeight );
+
+private:
   vvencCostMode           m_costMode;
   double                  m_distortionWeight[MAX_NUM_COMP]; // only chroma values are used.
   double                  m_dLambda;
@@ -242,14 +248,15 @@ public:
   RdCost();
   virtual ~RdCost();
 
-  void          create();
-#ifdef TARGET_SIMD_X86
+  void          create( bool enableOpt = true );
+
+#if defined(TARGET_SIMD_X86)  && ENABLE_SIMD_OPT_DIST
   void          initRdCostX86();
   template <X86_VEXT vext>
   void          _initRdCostX86();
 #endif
-	
-#ifdef TARGET_SIMD_ARM
+
+#if defined(TARGET_SIMD_ARM)  && ENABLE_SIMD_OPT_DIST
   void initRdCostARM();
   template<ARM_VEXT vext>
   void _initRdCostARM();
@@ -315,8 +322,7 @@ public:
   static Distortion xGetSAD8          ( const DistParam& pcDtParam );
   static Distortion xGetSAD16         ( const DistParam& pcDtParam ); // needs to be public for xGetSAD_MxN_SIMD ( NOTE: they are all public in vvenc )
   static void       xGetSAD16X5       ( const DistParam& pcDtParam, Distortion* cost, bool isCalCentrePos ); // needs to be public for xGetSADX5_16xN_SIMD ( NOTE: they are all public in vvenc )
-	
-private:
+
          Distortion xGetSSE_WTD       ( const DistParam& pcDtParam ) const;
 
   static Distortion xGetSSE           ( const DistParam& pcDtParam );
@@ -342,7 +348,8 @@ private:
   template<bool fastHad>
   static Distortion xGetHADs          ( const DistParam& pcDtParam );
 
-#ifdef TARGET_SIMD_X86
+#if defined(TARGET_SIMD_X86)  && ENABLE_SIMD_OPT_DIST
+
   template<X86_VEXT vext>
   static Distortion xGetSSE_SIMD    ( const DistParam& pcDtParam );
   template<int iWidth, X86_VEXT vext>
@@ -367,25 +374,7 @@ private:
   static Distortion xGetSADwMask_SIMD( const DistParam &pcDtParam );
 #endif
 
-#ifdef TARGET_SIMD_ARM
-  template <ARM_VEXT vext>
-  static void xGetSADX5_16xN_SIMD_ARM   ( const DistParam& rcDtParam, Distortion* cost, bool isCalCentrePos );
-
-  template <ARM_VEXT vext>
-  static Distortion xGetHAD2SADs_ARMSIMD( const DistParam &rcDtParam );
-
-  template <ARM_VEXT vext, bool fastHad>
-  static Distortion xGetHADs_ARMSIMD   ( const DistParam& pcDtParam );
-
-  template<ARM_VEXT vext> 
-  static Distortion xGetSADwMask_ARMSIMD(const DistParam &rcDtParam);
-
-  template< int iWidth, ARM_VEXT vext >
-  static Distortion xGetSAD_NxN_ARMSIMD( const DistParam &rcDtParam );
-#endif
-	
   unsigned int   getBitsMultiplePredsIBC(int x, int y, bool useIMV);
-public:
 
   Distortion   getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitDepth, const ComponentID compId, DFunc eDFunc, const CPelBuf* orgLuma = NULL );
 

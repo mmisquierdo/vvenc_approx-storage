@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -54,7 +54,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace vvenc {
 
+#if defined(TARGET_SIMD_X86)  && ENABLE_SIMD_OPT_MCTF
 using namespace x86_simd;
+#endif
+#if defined(TARGET_SIMD_ARM)  && ENABLE_SIMD_OPT_MCTF
+using namespace arm_simd;
+#endif
 
 class NoMallocThreadPool;
 
@@ -125,7 +130,7 @@ struct Picture;
 class MCTF : public EncStage
 {
 public:
-  MCTF();
+  MCTF( bool enableOpt = true );
   virtual ~MCTF();
 
   void init( const VVEncCfg& encCfg, bool isFinalPass, NoMallocThreadPool* threadPool );
@@ -136,17 +141,21 @@ protected:
 private:
   void filter( const std::deque<Picture*>& picFifo, int filterIdx );
 
-#ifdef TARGET_SIMD_X86
+#if defined(TARGET_SIMD_X86) && ENABLE_SIMD_OPT_MCTF
   void initMCTF_X86();
   template <X86_VEXT vext>
   void _initMCTF_X86();
 #endif
 
-#ifdef TARGET_SIMD_ARM
+#if defined(TARGET_SIMD_ARM) && ENABLE_SIMD_OPT_MCTF
   void initMCTF_ARM();
   template <ARM_VEXT vext>
   void _initMCTF_ARM();
 #endif
+
+public:
+  static const int16_t m_interpolationFilter4[16][4];
+  static const int16_t m_interpolationFilter8[16][8];
 
   int ( *m_motionErrorLumaIntX )( const Pel* org, const ptrdiff_t origStride, const Pel* buf, const ptrdiff_t buffStride, const int w, const int h, const int besterror );
   int ( *m_motionErrorLumaInt8 )( const Pel* org, const ptrdiff_t origStride, const Pel* buf, const ptrdiff_t buffStride, const int w, const int h, const int besterror );
@@ -166,8 +175,6 @@ private:
   static const int      m_range;
   static const int      m_motionVectorFactor;
   static const int      m_padding;
-  static const int16_t  m_interpolationFilter4[16][4];
-  static const int16_t  m_interpolationFilter8[16][8];
   static const double   m_refStrengths[2][6];
   static const int      m_cuTreeThresh[4];
   static const double   m_cuTreeCenter;

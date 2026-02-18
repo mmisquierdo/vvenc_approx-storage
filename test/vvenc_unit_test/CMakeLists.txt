@@ -22,12 +22,15 @@ if( VVENC_LIBRARY_ONLY )
 endif()
 
 target_compile_options( ${EXE_NAME} PRIVATE $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wall>
-                                            $<$<CXX_COMPILER_ID:GNU>:-Wall -fdiagnostics-show-option -Wno-ignored-attributes>
+                                            $<$<CXX_COMPILER_ID:GNU>:-Wall -fdiagnostics-show-option -Wno-ignored-attributes -Wno-sign-compare>
 
                                             $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX /wd4244 /wd4251 /wd4996>)
 
 target_include_directories( ${EXE_NAME} PRIVATE ${VVENC_LIB_DIR} )
 target_link_libraries( ${EXE_NAME} Threads::Threads vvenc )
+target_include_directories( ${EXE_NAME} PRIVATE $<$<TARGET_EXISTS:nlohmann_json::nlohmann_json>:$<TARGET_PROPERTY:nlohmann_json::nlohmann_json,INTERFACE_INCLUDE_DIRECTORIES>> )
+target_compile_options( ${EXE_NAME} PRIVATE $<$<TARGET_EXISTS:nlohmann_json::nlohmann_json>:$<TARGET_PROPERTY:nlohmann_json::nlohmann_json,INTERFACE_COMPILE_OPTIONS>> )
+target_compile_definitions( ${EXE_NAME} PRIVATE $<$<TARGET_EXISTS:nlohmann_json::nlohmann_json>:$<TARGET_PROPERTY:nlohmann_json::nlohmann_json,INTERFACE_COMPILE_DEFINITIONS>> )
 # example: place header files in different folders
 source_group( "Header Files"   FILES ${INC_FILES} )
 source_group( "Resource Files" FILES ${RESOURCE_FILE} )

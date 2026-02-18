@@ -18,3 +18,5 @@
 * George Steed, @georges-arm, Arm
 * Yiqun Liu, , Fraunhofer HHI
 * Mehrdad Ghafari, , Fraunhofer HHI
+* Athulya Raj Raji Mohini, @athulya-arm, Arm
+* Micro Daryl Robles, @micro-arm, Arm

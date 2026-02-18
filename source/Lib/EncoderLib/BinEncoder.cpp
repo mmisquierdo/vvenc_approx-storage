@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -386,7 +386,8 @@ void BinEncoder::encodeBin( unsigned bin, unsigned ctxId )
   {
     if( m_Range < 256 )
     {
-      int numBits   = rcProbModel.getRenormBitsRange( m_Range );
+      //int numBits   = rcProbModel.getRenormBitsRange();
+      int numBits   = 1;
       m_bitsLeft   -= numBits;
       m_Low       <<= numBits;
       m_Range     <<= numBits;

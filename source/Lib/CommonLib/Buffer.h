@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -66,8 +66,13 @@ struct vvencYUVBuffer;
 
 namespace vvenc {
 
+#if ENABLE_SIMD_OPT_BUFFER && defined(TARGET_SIMD_X86)
 using namespace x86_simd;
+#endif
+
+#if ENABLE_SIMD_OPT_BUFFER && defined(TARGET_SIMD_ARM)
 using namespace arm_simd;
+#endif
 
 // ---------------------------------------------------------------------------
 // AreaBuf struct

@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -54,7 +54,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace vvenc {
 
+#if ENABLE_SIMD_OPT_INTRAPRED && defined( TARGET_SIMD_X86 )
 using namespace x86_simd;
+#endif
+#if ENABLE_SIMD_OPT_INTRAPRED && defined( TARGET_SIMD_ARM )
+using namespace arm_simd;
+#endif
 
 // ====================================================================================================================
 // Class definition
@@ -122,7 +127,6 @@ private:
   static int getWideAngle         ( int width, int height, int predMode );
 
   // prediction
-  void (*xPredIntraPlanar)        ( PelBuf& pDst, const CPelBuf& pSrc );
   void xPredIntraDc               ( PelBuf& pDst, const CPelBuf& pSrc );
   void xPredIntraAng              ( PelBuf& pDst, const CPelBuf& pSrc, const ChannelType channelType, const ClpRng& clpRng);
   Pel  xGetPredValDc              ( const CPelBuf& pSrc, const Size& dstSize );
@@ -132,20 +136,20 @@ private:
   void xFilterReferenceSamples    ( const Pel* refBufUnfiltered, Pel* refBufFiltered, const CompArea& area, const SPS &sps, int multiRefIdx, int predStride = 0 );
   void xGetLMParameters(const CodingUnit& cu, const ComponentID compID, const CompArea& chromaArea, int& a, int& b, int& iShift);
 
-  void ( *IntraPredAngleLuma )    ( Pel* pDstBuf, const ptrdiff_t dstStride, Pel* refMain, int width, int height, int deltaPos, int intraPredAngle, const TFilterCoeff *ff, const bool useCubicFilter, const ClpRng& clpRng);
-  void ( *IntraPredAngleChroma )  ( Pel* pDst,    const ptrdiff_t dstStride, Pel* pBorder, int width, int height, int deltaPos, int intraPredAngle);
-  void ( *IntraAnglePDPC )        ( Pel* pDsty, const int dstStride, Pel* refSide, const int width, const int height, int scale, int invAngle);
-  void ( *IntraHorVerPDPC )       ( Pel* pDsty, const int dstStride, Pel* refSide, const int width, const int height, int scale, const Pel* refMain, const ClpRng& clpRng);
-  void ( *IntraPredSampleFilter)  ( PelBuf& piPred, const CPelBuf& pSrc );
-
 #if ENABLE_SIMD_OPT_INTRAPRED && defined( TARGET_SIMD_X86 )
   void initIntraPredictionX86();
   template <X86_VEXT vext>
   void _initIntraPredictionX86();
 #endif
 
+#if ENABLE_SIMD_OPT_INTRAPRED && defined( TARGET_SIMD_ARM )
+  void initIntraPredictionARM();
+  template <ARM_VEXT vext>
+  void _initIntraPredictionARM();
+#endif
+
 public:
-  IntraPrediction();
+  IntraPrediction( bool enableOpt = true );
   virtual ~IntraPrediction();
 
   void init                   ( ChromaFormat chromaFormatIDC, const unsigned bitDepthY);
@@ -183,6 +187,12 @@ public:
     return numIntra;
   }
 
+  void ( *IntraPredAngleLuma )    ( Pel* pDstBuf, const ptrdiff_t dstStride, Pel* refMain, int width, int height, int deltaPos, int intraPredAngle, const TFilterCoeff* ff, const bool useCubicFilter, const ClpRng& clpRng );
+  void ( *IntraPredAngleChroma )  ( Pel* pDst, const ptrdiff_t dstStride, Pel* pBorder, int width, int height, int deltaPos, int intraPredAngle );
+  void ( *IntraAnglePDPC )        ( Pel* pDsty, const int dstStride, Pel* refSide, const int width, const int height, int scale, int invAngle );
+  void ( *IntraHorVerPDPC )       ( Pel* pDsty, const int dstStride, Pel* refSide, const int width, const int height, int scale, const Pel* refMain, const ClpRng& clpRng );
+  void ( *IntraPredSampleFilter ) ( PelBuf& piPred, const CPelBuf& pSrc );
+  void ( *xPredIntraPlanar )      ( PelBuf& pDst, const CPelBuf& pSrc );
 };
 
 } // namespace vvenc

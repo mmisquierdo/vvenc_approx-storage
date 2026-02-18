@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -242,6 +242,8 @@ public:
   int                           sliceDataNumBins;
   uint64_t                      cts;
   bool                          ctsValid;
+  int64_t                       picsInMissing;      // summed up missing frames on input
+  int64_t                       picOutOffset;       // signalization of pic offset to re-calc dts
   bool                          isPreAnalysis;
 
   PicShared*                    m_picShared;
@@ -290,6 +292,8 @@ public:
   std::vector<short>            m_alfCtbFilterIndex;
   std::vector<uint8_t>          m_alfCtuAlternative[ MAX_NUM_COMP ];
   std::vector<std::atomic<int>>*  m_tileColsDone = nullptr;
+
+  void*                         userData;
 
 public:
   Slice*          allocateNewSlice();

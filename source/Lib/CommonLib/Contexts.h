@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -134,7 +134,7 @@ public:
     return ((q >> 2) * (range >> 5) >> 1) + 4;
   }
   static uint8_t  getRenormBitsLPS  ( unsigned LPS )                    { return    m_RenormTable_32  [LPS>>3]; }
-  static uint8_t  getRenormBitsRange( unsigned range )                  { return    1; }
+  //static uint8_t  getRenormBitsRange( unsigned range )                  { return    1; }
   uint16_t getState() const { return m_state[0] + m_state[1]; }
   void     setState(uint16_t pState)
   {

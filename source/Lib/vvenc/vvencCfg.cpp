@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -1156,9 +1156,21 @@ VVENC_DECL bool vvenc_init_config_parameter( vvenc_config *c )
     c->m_aspectRatioInfoPresent = true;
   }
 
+  if ( c->m_vuiParametersPresent == 0 )
+  {
+    if( c->m_aspectRatioIdc > 1 ) c->m_vuiParametersPresent = 1;
+    if( c->m_colourPrimaries != 2 || c->m_matrixCoefficients != 2 || c->m_matrixCoefficients != 2 )
+    {
+      c->m_vuiParametersPresent = 1;
+      c->m_colourDescriptionPresent = true;
+    }
+  }
+
+
   if( !c->m_overscanInfoPresent && c->m_overscanAppropriateFlag)
   {
     c->m_overscanInfoPresent = true;
+    c->m_vuiParametersPresent = 1;
   }
 
   if( c->m_chromaSampleLocType < 0 )
@@ -2796,7 +2808,6 @@ VVENC_DECL int vvenc_init_preset( vvenc_config *c, vvencPresetMode preset )
       c->m_JointCbCrMode                   = 1;
       c->m_LFNST                           = 1;
       c->m_LMChroma                        = 1;
-      c->m_lumaReshapeEnable               = 2;
       c->m_vvencMCTF.MCTF                  = 2;
       c->m_vvencMCTF.MCTFSpeed             = 3;
       c->m_MMVD                            = 3;
@@ -2870,7 +2881,6 @@ VVENC_DECL int vvenc_init_preset( vvenc_config *c, vvencPresetMode preset )
       c->m_JointCbCrMode                   = 1;
       c->m_LFNST                           = 1;
       c->m_LMChroma                        = 1;
-      c->m_lumaReshapeEnable               = 2;
       c->m_vvencMCTF.MCTF                  = 2;
       c->m_vvencMCTF.MCTFSpeed             = 2;
       c->m_MIP                             = 1;
@@ -2898,7 +2908,6 @@ VVENC_DECL int vvenc_init_preset( vvenc_config *c, vvencPresetMode preset )
         c->m_DMVR                          = 0;
         c->m_ISP                           = 0;
         c->m_LFNST                         = 0;
-        c->m_lumaReshapeEnable             = 0;
         c->m_MIP                           = 0;
         c->m_useFastMIP                    = 0;
         c->m_bUseSAO                       = true;
@@ -2966,7 +2975,6 @@ VVENC_DECL int vvenc_init_preset( vvenc_config *c, vvencPresetMode preset )
       c->m_JointCbCrMode                   = 1;
       c->m_LFNST                           = 1;
       c->m_LMChroma                        = 1;
-      c->m_lumaReshapeEnable               = 2;
       c->m_vvencMCTF.MCTF                  = 2;
       c->m_vvencMCTF.MCTFSpeed             = 2;
       c->m_MIP                             = 1;
@@ -3041,7 +3049,6 @@ VVENC_DECL int vvenc_init_preset( vvenc_config *c, vvencPresetMode preset )
       c->m_JointCbCrMode                   = 1;
       c->m_LFNST                           = 1;
       c->m_LMChroma                        = 1;
-      c->m_lumaReshapeEnable               = 2;
       c->m_vvencMCTF.MCTF                  = 2;
       c->m_vvencMCTF.MCTFSpeed             = 2;
       c->m_MIP                             = 1;
@@ -3118,7 +3125,6 @@ VVENC_DECL int vvenc_init_preset( vvenc_config *c, vvencPresetMode preset )
       c->m_JointCbCrMode                   = 1;
       c->m_LFNST                           = 1;
       c->m_LMChroma                        = 1;
-      c->m_lumaReshapeEnable               = 2;
       c->m_vvencMCTF.MCTF                  = 2;
       c->m_vvencMCTF.MCTFSpeed             = 2;
       c->m_MIP                             = 1;
@@ -3434,7 +3440,7 @@ VVENC_DECL const char* vvenc_get_config_as_string( vvenc_config *c, vvencMsgLeve
     css << "NumThreads:" << c->m_numThreads << " ";
     css << "MaxParallelFrames:" << c->m_maxParallelFrames << " ";
     css << "IFP:" << (c->m_ifp ? 1: 0) << " (IFPLines:" << (int)c->m_ifpLines << ")" << " ";
-    css << "NumParallelGOPs:" << c->m_numParallelGOPs << " ";
+    css << "NumParallelGOPs:" << (int) c->m_numParallelGOPs << " ";
     if( c->m_picPartitionFlag )
     {
       css << "TileParallelCtuEnc:" << c->m_tileParallelCtuEnc << " ";

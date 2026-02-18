@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -56,14 +56,6 @@ POSSIBILITY OF SUCH DAMAGE.
 //! \{
 
 namespace vvenc {
-
-const UnitScale UnitScaleArray[NUM_CHROMA_FORMAT][MAX_NUM_COMP] =
-{
-  { {2,2}, {0,0}, {0,0} },  // 4:0:0
-  { {2,2}, {1,1}, {1,1} },  // 4:2:0
-  { {2,2}, {1,2}, {1,2} },  // 4:2:2
-  { {2,2}, {2,2}, {2,2} }   // 4:4:4
-};
 
 // ---------------------------------------------------------------------------
 // coding structure method definitions
@@ -542,12 +534,22 @@ void CodingStructure::createPicLevel( const UnitArea& _unit, const PreCalcValues
   createInternals( _unit, true );
 }
 
+static constexpr int UnitScaleArray[NUM_CHROMA_FORMAT][MAX_NUM_COMP][2] =
+{
+  { {2,2}, {0,0}, {0,0} },  // 4:0:0
+  { {2,2}, {1,1}, {1,1} },  // 4:2:0
+  { {2,2}, {1,2}, {1,2} },  // 4:2:2
+  { {2,2}, {2,2}, {2,2} }   // 4:4:4
+};
+
 void CodingStructure::createInternals( const UnitArea& _unit, const bool isTopLayer )
 {
   area     = _unit;
   _maxArea = _unit;
 
-  memcpy( unitScale, UnitScaleArray[area.chromaFormat], sizeof( unitScale ) );
+  unitScale[COMP_Y ] = UnitScale( UnitScaleArray[area.chromaFormat][COMP_Y ][0], UnitScaleArray[area.chromaFormat][COMP_Y ][1] );
+  unitScale[COMP_Cb] = UnitScale( UnitScaleArray[area.chromaFormat][COMP_Cb][0], UnitScaleArray[area.chromaFormat][COMP_Cb][1] );
+  unitScale[COMP_Cr] = UnitScale( UnitScaleArray[area.chromaFormat][COMP_Cr][0], UnitScaleArray[area.chromaFormat][COMP_Cr][1] );
 
   picture = nullptr;
   parent  = nullptr;

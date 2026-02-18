@@ -6,7 +6,7 @@ the Software are granted under this license.
 
 The Clear BSD License
 
-Copyright (c) 2019-2024, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
+Copyright (c) 2019-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVenC Authors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -67,6 +67,8 @@ POSSIBILITY OF SUCH DAMAGE.
 # define REAL_TARGET_ARM 1
 #elif defined( __wasm__ ) || defined( __wasm32__ )
 # define REAL_TARGET_WASM 1
+#elif defined( __loongarch__ )
+# define REAL_TARGET_LOONGARCH 1
 #endif
 
 #if defined( TARGET_SIMD_X86 )
@@ -82,6 +84,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #pragma warning( disable : 4018 )
 // disable bool coercion "performance warning"
 #pragma warning( disable : 4800 )
+// disable "conditional expression is constant" warning (cannot do `if constexpr` in C++14)
+#pragma warning( disable : 4127 )
 #endif // _MSC_VER > 1000
 
 #define __IN_COMMONDEF_H__
@@ -123,6 +127,10 @@ POSSIBILITY OF SUCH DAMAGE.
 #  define SIMD_PREFETCH_T0( _s )
 # endif   // ENABLE_SIMD_OPT
 #endif    // TARGET_SIMD_X86
+
+#if !ENABLE_SIMD_LOG2
+#include <cmath>
+#endif
 
 //! \ingroup CommonLib
 //! \{
@@ -409,7 +417,7 @@ union MmvdIdx
 static constexpr int MAX_TU_LEVEL_CTX_CODED_BIN_CONSTRAINT =            28;
 
 static constexpr int BDOF_EXTEND_SIZE             =                     1;
-static constexpr int BDOF_TEMP_BUFFER_SIZE        =                     (MAX_CU_SIZE + 2 * BDOF_EXTEND_SIZE) * (MAX_CU_SIZE + 2 * BDOF_EXTEND_SIZE);
+static constexpr int BDOF_TEMP_BUFFER_SIZE        =                     (MAX_CU_SIZE + 2 * BDOF_EXTEND_SIZE) * (MAX_CU_SIZE + 2 * BDOF_EXTEND_SIZE) + 2; // add 2 to allow for SIMD overreads
 
 static constexpr int PROF_BORDER_EXT_W            =                     1;
 static constexpr int PROF_BORDER_EXT_H            =                     1;
@@ -741,7 +749,7 @@ static inline int getLog2( int val )
   return bit_scan_reverse( val );
 }
 #else
-extern int8_t g_aucLog2[MAX_CU_SIZE + 1];
+extern const int8_t g_aucLog2[MAX_CU_SIZE + 1];
 static inline int getLog2( int val )
 {
   CHECKD( g_aucLog2[2] != 1, "g_aucLog2[] has not been initialized yet." );
