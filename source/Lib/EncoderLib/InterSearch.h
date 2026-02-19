@@ -441,8 +441,8 @@ private:
     //<Felipe>
     // Felipe: definition of help functions to add/remove approximation at filtered samples buffer
     #if APPROX_FILT_BUFFER_V2 || APPROX_FME_FILT
-      void	addApproxFiltBuffer(const int64_t filt_configurationId, const int64_t filt_temp_configurationId);
-      void	removeApproxFiltBuffer();
+      void  addApproxFiltBuffer(const int64_t filt_configurationId, const int64_t filt_temp_configurationId);
+      void  removeApproxFiltBuffer();
     #endif
     //</Felipe>
   #endif

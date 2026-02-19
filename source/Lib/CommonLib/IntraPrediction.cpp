@@ -199,8 +199,8 @@ void IntraPredAngleLuma_Core(Pel* pDstBuf,const ptrdiff_t dstStride,Pel* refMain
     const TFilterCoeff *f = useCubicFilter ? InterpolationFilter::getChromaFilterTable(deltaFract) : intraSmoothingFilter;
 
     Pel p[4];
-	ApproxInter::MarkBuffer((void*) &p[0], (void*) &p[4], ApproxInter::BufferId::IntraPredAngleLuma_Core_p, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
-	//JICS: instrumentar como fntraPredAngleLuma_Core_p
+    ApproxInter::MarkBuffer((void*) &p[0], (void*) &p[4], ApproxInter::BufferId::IntraPredAngleLuma_Core_p, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
+    //JICS: instrumentar como fntraPredAngleLuma_Core_p
 
 
     int refMainIndex = deltaInt + 1;
@@ -223,7 +223,7 @@ void IntraPredAngleLuma_Core(Pel* pDstBuf,const ptrdiff_t dstStride,Pel* refMain
     }
     deltaPos += intraPredAngle;
 
-	ApproxInter::UnmarkBuffer((void*) &p[0], (void*) &p[4]);
+    ApproxInter::UnmarkBuffer((void*) &p[0], (void*) &p[4]);
   }
 }
 
@@ -299,8 +299,8 @@ void IntraPrediction::init(ChromaFormat chromaFormatIDC, const unsigned bitDepth
   if (m_pMdlmTemp == nullptr)
   {
     m_pMdlmTemp = xMalloc(Pel, (2 * MAX_TB_SIZEY + 1)*(2 * MAX_TB_SIZEY + 1)); //new Pel[(2 * MAX_TB_SIZEY + 1)*(2 * MAX_TB_SIZEY + 1)];//MDLM will use top-above and left-below samples.
-	ApproxInter::RemarkBuffer((void*) m_pMdlmTemp, ApproxInter::BufferId::IntraPrediction_m_pMdlmTemp, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
-	//JICS: intrumentar como MDLMTemp
+    ApproxInter::RemarkBuffer((void*) m_pMdlmTemp, ApproxInter::BufferId::IntraPrediction_m_pMdlmTemp, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
+    //JICS: intrumentar como MDLMTemp
   }
 }
 
@@ -663,10 +663,10 @@ void IntraPrediction::xPredIntraAng( PelBuf& pDst, const CPelBuf& pSrc, const Ch
               for( int x = 0; x < width; x++ )
               {
                 Pel p[4];
-				ApproxInter::MarkBuffer((void*) &p[0], (void*) &p[4], ApproxInter::BufferId::IntraPrediction_xPredIntraAng_p, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
+                ApproxInter::MarkBuffer((void*) &p[0], (void*) &p[4], ApproxInter::BufferId::IntraPrediction_xPredIntraAng_p, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
 
-				//JICS: instrumentar como xPredIntraAng_p4
-				
+                //JICS: instrumentar como xPredIntraAng_p4
+                
 
                 p[0] = refMain[deltaInt + x + 0];
                 p[1] = refMain[deltaInt + x + 1];
@@ -677,7 +677,7 @@ void IntraPrediction::xPredIntraAng( PelBuf& pDst, const CPelBuf& pSrc, const Ch
 
                 pDsty[x] = ClipPel( val, clpRng );   // always clip even though not always needed
 
-				ApproxInter::UnmarkBuffer((void*) &p[0], (void*) &p[4]);
+                ApproxInter::UnmarkBuffer((void*) &p[0], (void*) &p[4]);
               }
             }
           }

@@ -144,7 +144,7 @@ struct HRD
 {
   HRD()
   : bufferingPeriodInitialized  (false)
-  , pictureTimingAvailable      (false)	
+  , pictureTimingAvailable      (false)
   {};
 
   GeneralHrdParams      generalHrdParams;

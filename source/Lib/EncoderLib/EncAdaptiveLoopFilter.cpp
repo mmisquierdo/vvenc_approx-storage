@@ -3313,8 +3313,8 @@ void EncAdaptiveLoopFilter::getPreBlkStats(AlfCovariance* alfCovariance, const A
       }
 
       //Pel yLocal[4][4];
-	  //ApproxSS::add_approx((void*) &yLocal[0][0], (void*) &yLocal[4][4], ApproxInter::BufferId::EncAdaptiveLoopFilter_getPredBlkStats_yLocal, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
-	  //JICS: getPredBlkStats_yLocal
+      //ApproxSS::add_approx((void*) &yLocal[0][0], (void*) &yLocal[4][4], ApproxInter::BufferId::EncAdaptiveLoopFilter_getPredBlkStats_yLocal, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
+      //JICS: getPredBlkStats_yLocal
 
       for( int ii = 0; ii < 4; ii++ ) for( int jj = 0; jj < 4; jj++ )
       {
@@ -3322,8 +3322,8 @@ void EncAdaptiveLoopFilter::getPreBlkStats(AlfCovariance* alfCovariance, const A
       }
 
       //Pel ELocal[MaxAlfNumClippingValues * ( MAX_NUM_ALF_LUMA_COEFF << 4 )];
-	  //ApproxSS::add_approx((void*) &ELocal[0], (void*) &ELocal[MaxAlfNumClippingValues * ( MAX_NUM_ALF_LUMA_COEFF << 4 )], ApproxInter::BufferId::EncAdaptiveLoopFilter_getPredBlkStats_ELocal, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
-	  //JICS: getPredBlkStats_ELocal
+      //ApproxSS::add_approx((void*) &ELocal[0], (void*) &ELocal[MaxAlfNumClippingValues * ( MAX_NUM_ALF_LUMA_COEFF << 4 )], ApproxInter::BufferId::EncAdaptiveLoopFilter_getPredBlkStats_ELocal, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
+      //JICS: getPredBlkStats_ELocal
 
 
       if( isLuma( channel ) ? !m_encCfg->m_useNonLinearAlfLuma : !m_encCfg->m_useNonLinearAlfChroma )

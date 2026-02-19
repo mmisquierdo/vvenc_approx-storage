@@ -198,7 +198,7 @@ int motionErrorLumaFrac6( const Pel *org, const ptrdiff_t origStride, const Pel 
     }
     if( error > besterror )
     {
-	  ApproxInter::UnmarkBuffer((void*) &tempArray[0][0], (void*) &tempArray[64 + 8 - 1][64]);
+      ApproxInter::UnmarkBuffer((void*) &tempArray[0][0], (void*) &tempArray[64 + 8 - 1][64]);
       return error;
     }
   }
@@ -257,7 +257,7 @@ int motionErrorLumaFrac4( const Pel* org, const ptrdiff_t origStride, const Pel*
     }
     if( error > besterror )
     {
-	  ApproxInter::UnmarkBuffer((void*) &tempArray[0][0], (void*) &tempArray[64 + 4 - 1][64]);
+      ApproxInter::UnmarkBuffer((void*) &tempArray[0][0], (void*) &tempArray[64 + 4 - 1][64]);
       return error;
     }
   }
@@ -882,8 +882,8 @@ void MCTF::filter( const std::deque<Picture*>& picFifo, int filterIdx )
     if( pic->useMCTF )
     {
       fltrBuf.create( m_encCfg->m_internChromaFormat, m_area, 0, m_padding );
-	  fltrBuf.RemarkBuffers(ApproxInter::BufferId::MCTF_filter_fltrBuf1);
-	  //JICS: instrumentar aqui
+      fltrBuf.RemarkBuffers(ApproxInter::BufferId::MCTF_filter_fltrBuf1);
+      //JICS: instrumentar aqui
       bilateralFilter( origBuf, srcFrameInfo, fltrBuf, overallStrength );
     }
 
@@ -984,8 +984,8 @@ void MCTF::filter( const std::deque<Picture*>& picFifo, int filterIdx )
           if( doFilter )
           {
             fltrBuf.create( m_encCfg->m_internChromaFormat, m_area, 0, m_padding );
-			fltrBuf.RemarkBuffers(ApproxInter::BufferId::MCTF_filter_fltrBuf2);
-			//JICS: instrumentar aqui
+            fltrBuf.RemarkBuffers(ApproxInter::BufferId::MCTF_filter_fltrBuf2);
+            //JICS: instrumentar aqui
             bilateralFilter( origBuf, srcFrameInfo, fltrBuf, overallStrength );
           }
         }

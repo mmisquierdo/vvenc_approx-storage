@@ -619,22 +619,22 @@ inline std::string prnt( const char* fmt, ...)
 namespace ApproxSignaling {
   template <typename T> 
   static T* aligned_malloc(void* (*allocFunction)(const size_t, const size_t), const size_t len, const size_t alignment, const bool alignmentMultiple = false) {
-	//ALLOCATION
+  //ALLOCATION
     
-	size_t size = sizeof(T)*(len);
-	T * const bufferStart = (T*) allocFunction(size, alignment);
+  size_t size = sizeof(T)*(len);
+  T * const bufferStart = (T*) allocFunction(size, alignment);
 
-	//LOGGING BUFFER (calculating end)
-	if (alignmentMultiple) {
-		size = (size + alignment - 1) & ~(alignment - 1); //rounds up to next multiple of alignment  //note: must be power of 2 (it "always" is)
-	}
+  //LOGGING BUFFER (calculating end)
+  if (alignmentMultiple) {
+    size = (size + alignment - 1) & ~(alignment - 1); //rounds up to next multiple of alignment  //note: must be power of 2 (it "always" is)
+  }
 
-	const size_t elementCount = size / sizeof(T);
+  const size_t elementCount = size / sizeof(T);
 
     T const * const bufferEnd = bufferStart + elementCount;
     ApproxInter::MarkBuffer(BufferRange((uint8_t*) bufferStart, (uint8_t*) bufferEnd));
 
-	//ApproxInter::InstrumentIfMarked(bufferStart, ApproxInter::BufferId::OTHERS, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(T));
+  //ApproxInter::InstrumentIfMarked(bufferStart, ApproxInter::BufferId::OTHERS, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(T));
     
     return bufferStart;
   }
@@ -646,13 +646,13 @@ namespace ApproxSignaling {
     T const * const bufferEnd = bufferStart + len;
     ApproxInter::MarkBuffer(BufferRange((uint8_t*) bufferStart, (uint8_t*) bufferEnd));
 
-	//ApproxInter::InstrumentIfMarked(bufferStart, ApproxInter::BufferId::OTHERS, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(T));
+  //ApproxInter::InstrumentIfMarked(bufferStart, ApproxInter::BufferId::OTHERS, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(T));
 
     return bufferStart;
   }
 
   static void free(void (*freeFunction)(void * const), void * const prt) noexcept {
-	//ApproxInter::UninstrumentIfMarked(prt, false);
+  //ApproxInter::UninstrumentIfMarked(prt, false);
 
     ApproxInter::UnmarkBuffer(prt);
 

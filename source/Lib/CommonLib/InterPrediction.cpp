@@ -266,18 +266,18 @@ void InterPrediction::init( RdCost* pcRdCost, ChromaFormat chFormat, const int c
     for( uint32_t i = 0; i < NUM_REF_PIC_LIST_01; i++ )
     {
       m_yuvPred[i].create( chFormat, Area{ 0, 0, (int)MAX_CU_SIZE, (int)MAX_CU_SIZE }, 0, 0, 32 );
-	  m_yuvPred[i].RemarkBuffers(ApproxInter::BufferId::InterPrediction_m_yuvPred);
-	  //JICS: instrumentar aqui
+      m_yuvPred[i].RemarkBuffers(ApproxInter::BufferId::InterPrediction_m_yuvPred);
+      //JICS: instrumentar aqui
     }
 
     InterPredInterpolation::init();
     DMVR::init( pcRdCost, chFormat );
     m_geoPartBuf[0].create(UnitArea(chFormat, Area(0, 0, MAX_CU_SIZE, MAX_CU_SIZE)));
-	m_geoPartBuf[0].RemarkBuffers(ApproxInter::BufferId::InterPrediction_m_geoPartBuf_0);
-	
+    m_geoPartBuf[0].RemarkBuffers(ApproxInter::BufferId::InterPrediction_m_geoPartBuf_0);
+
     m_geoPartBuf[1].create(UnitArea(chFormat, Area(0, 0, MAX_CU_SIZE, MAX_CU_SIZE)));
-	m_geoPartBuf[1].RemarkBuffers(ApproxInter::BufferId::InterPrediction_m_geoPartBuf_1);
-	//JICS: instrumentar aqui
+    m_geoPartBuf[1].RemarkBuffers(ApproxInter::BufferId::InterPrediction_m_geoPartBuf_1);
+    //JICS: instrumentar aqui
   }
   if (m_IBCBufferWidth != g_IBCBufferSize / ctuSize)
   {
@@ -287,8 +287,8 @@ void InterPrediction::init( RdCost* pcRdCost, ChromaFormat chFormat, const int c
   {
     m_IBCBufferWidth = g_IBCBufferSize / ctuSize;
     m_IBCBuffer.create(UnitArea(chFormat, Area(0, 0, m_IBCBufferWidth, ctuSize)));
-	m_IBCBuffer.RemarkBuffers(ApproxInter::BufferId::InterPrediction_m_IBCBuffer);
-	//JICS: instrumentar aqui
+    m_IBCBuffer.RemarkBuffers(ApproxInter::BufferId::InterPrediction_m_IBCBuffer);
+    //JICS: instrumentar aqui
   }
   InterPredInterpolation::m_ifpLines = ifpLines;
 }
@@ -768,8 +768,8 @@ void InterPredInterpolation::init( bool enableOpt )
     for( uint32_t i = 0; i < LUMA_INTERPOLATION_FILTER_SUB_SAMPLE_POSITIONS_SIGNAL; i++ )
     {
       m_filteredBlockTmp[i][c] = ( Pel* ) xMalloc( Pel, ( extWidth + 4 ) * ( extHeight + 7 + 4 ) );
-	  ApproxInter::RemarkBuffer((void*) m_filteredBlockTmp[i][c], ApproxInter::BufferId::InterPredInterpolation_m_filteredBlockTmp, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
-	   //JICS: instrumentar como FILT_TEMP
+      ApproxInter::RemarkBuffer((void*) m_filteredBlockTmp[i][c], ApproxInter::BufferId::InterPredInterpolation_m_filteredBlockTmp, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
+      //JICS: instrumentar como FILT_TEMP
       VALGRIND_MEMCLEAR( m_filteredBlockTmp[i][c], sizeof( Pel ) * (extWidth + 4) * (extHeight + 7 + 4) );
 
       //<Matheus>
@@ -783,8 +783,8 @@ void InterPredInterpolation::init( bool enableOpt )
       for( uint32_t j = 0; j < LUMA_INTERPOLATION_FILTER_SUB_SAMPLE_POSITIONS_SIGNAL; j++ )
       {
         m_filteredBlock[i][j][c] = ( Pel* ) xMalloc( Pel, extWidth * extHeight );
-		ApproxInter::RemarkBuffer((void*) m_filteredBlock[i][j][c], ApproxInter::BufferId::InterPredInterpolation_m_filteredBlock, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
-		//JICS: instrumentar como FILT
+        ApproxInter::RemarkBuffer((void*) m_filteredBlock[i][j][c], ApproxInter::BufferId::InterPredInterpolation_m_filteredBlock, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
+        //JICS: instrumentar como FILT
         VALGRIND_MEMCLEAR( m_filteredBlock[i][j][c], sizeof( Pel ) * extWidth * extHeight );
 
         //<Matheus>
@@ -1066,7 +1066,7 @@ void InterPredInterpolation::xWeightedAverage( const CodingUnit& cu, const CPelU
       {
         yuvPredTmp->addAvg( pcYuvSrc0, pcYuvSrc1, clpRngs, chromaOnly, lumaOnly );
       }
-	  ApproxSS::end_level();
+      ApproxSS::end_level();
       return;
     }
     
@@ -1163,14 +1163,14 @@ void DMVR::init( RdCost* pcRdCost, const ChromaFormat chFormat )
     for( int i = 0; i < NUM_REF_PIC_LIST_01; i++ )
     {
       m_yuvPred[i].create( chFormat, predArea );
-	  m_yuvPred[i].RemarkBuffers(ApproxInter::BufferId::DMVR_m_yuvPred);
-	  //JICS: instrumentar aqui
+      m_yuvPred[i].RemarkBuffers(ApproxInter::BufferId::DMVR_m_yuvPred);
+      //JICS: instrumentar aqui
       m_yuvTmp[i].create( CHROMA_400, refArea, 0, DMVR_NUM_ITERATION );
-	  m_yuvTmp[i].RemarkBuffers(ApproxInter::BufferId::DMVR_m_yuvTmp);
-	  //JICS: instrumentar aqui
+      m_yuvTmp[i].RemarkBuffers(ApproxInter::BufferId::DMVR_m_yuvTmp);
+      //JICS: instrumentar aqui
       m_yuvPad[i].create( chFormat, predArea, 0, DMVR_NUM_ITERATION + (NTAPS_LUMA>>1), 32 );
-	  m_yuvPad[i].RemarkBuffers(ApproxInter::BufferId::DMVR_m_yuvPad);
-	  //JICS: instrumentar aqui
+      m_yuvPad[i].RemarkBuffers(ApproxInter::BufferId::DMVR_m_yuvPad);
+      //JICS: instrumentar aqui
       // the buffer m_yuvPad[i].bufs[0].buf is aligned to 32
       // the actual begin of the written to buffer is m_yuvPad[i].bufs[0].buf - 3 * stride - 3 = m_yuvPad[i].bufs[0].buf - 99,
       // which is not aligned with int. Since the margin on the left side is 1 sample too big, moving the buffer within the
@@ -1428,9 +1428,9 @@ void DMVR::xProcessDMVR( const CodingUnit& cu, PelUnitBuf& pcYuvDst, const ClpRn
         distParam.org.buf = addrL0;
         distParam.cur.buf = addrL1;
 
-		    ApproxSS::disable_global_injection();
+        ApproxSS::disable_global_injection();
         minCost  = distParam.distFunc( distParam ) >> 1;
-		    ApproxSS::enable_global_injection();
+        ApproxSS::enable_global_injection();
 
         minCost -= ( minCost >> 2 );
 
@@ -1454,9 +1454,9 @@ void DMVR::xProcessDMVR( const CodingUnit& cu, PelUnitBuf& pcYuvDst, const ClpRn
             distParam.org.buf = addrL0 + offset;
             distParam.cur.buf = addrL1 - offset;
               
-			      ApproxSS::disable_global_injection();
+            ApproxSS::disable_global_injection();
             distParam.dmvrSadX5( distParam, pSADsArray, ver != 0 );
-			      ApproxSS::enable_global_injection();
+            ApproxSS::enable_global_injection();
 
             for( int hor = -2; hor <= 2; hor++, pSADsArray++ )
             {

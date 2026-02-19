@@ -234,7 +234,7 @@ void Canny::init ( uint32_t width,
     m_orientationBuf = new PelStorage;
     m_orientationBuf->create( inputChroma,
                               Area(0, 0, width, height) );
-	  m_orientationBuf->RemarkBuffers(ApproxInter::BufferId::Canny_m_orientationBuf);
+    m_orientationBuf->RemarkBuffers(ApproxInter::BufferId::Canny_m_orientationBuf);
   }
 
   if ( !m_gradientBufX )
@@ -242,7 +242,7 @@ void Canny::init ( uint32_t width,
     m_gradientBufX = new PelStorage;
     m_gradientBufX->create ( inputChroma,
                              Area(0, 0, width, height) );
-	  m_gradientBufX->RemarkBuffers(ApproxInter::BufferId::Canny_m_gradientBufX);
+    m_gradientBufX->RemarkBuffers(ApproxInter::BufferId::Canny_m_gradientBufX);
   }
 
   if ( !m_gradientBufY )
@@ -250,7 +250,7 @@ void Canny::init ( uint32_t width,
     m_gradientBufY = new PelStorage;
     m_gradientBufY->create ( inputChroma,
                              Area(0, 0, width, height) );
-	  m_gradientBufY->RemarkBuffers(ApproxInter::BufferId::Canny_m_gradientBufY);
+    m_gradientBufY->RemarkBuffers(ApproxInter::BufferId::Canny_m_gradientBufY);
   }
 }
 
@@ -555,21 +555,21 @@ void Morph::init ( uint32_t width,
     m_dilationBuf = new PelStorage;
     m_dilationBuf->create ( VVENC_CHROMA_400,
                             Area( 0, 0, width, height ) );
-	  m_dilationBuf->RemarkBuffers(ApproxInter::BufferId::Morph_m_dilationBuf);
+    m_dilationBuf->RemarkBuffers(ApproxInter::BufferId::Morph_m_dilationBuf);
   }
   if ( !m_dilationBuf2 )
   {
     m_dilationBuf2 = new PelStorage;
     m_dilationBuf2->create ( VVENC_CHROMA_400,
                              Area( 0, 0, width >> 1, height >> 1 ) );
-	  m_dilationBuf2->RemarkBuffers(ApproxInter::BufferId::Morph_m_dilationBuf2);
+    m_dilationBuf2->RemarkBuffers(ApproxInter::BufferId::Morph_m_dilationBuf2);
   }
   if ( !m_dilationBuf4 )
   {
     m_dilationBuf4 = new PelStorage;
     m_dilationBuf4->create( VVENC_CHROMA_400,
                               Area( 0, 0, width >> 2, height >> 2 ) );
-	  m_dilationBuf4->RemarkBuffers(ApproxInter::BufferId::Morph_m_dilationBuf4);
+    m_dilationBuf4->RemarkBuffers(ApproxInter::BufferId::Morph_m_dilationBuf4);
   }
 }
 
@@ -692,7 +692,7 @@ void FGAnalyzer::init ( const int width,
                         Area(0, 0, width, height),
                         0, margin,
                         0, false );
-	m_maskBuf->RemarkBuffers(ApproxInter::BufferId::FGAnalyzer_m_maskBuf);
+    m_maskBuf->RemarkBuffers(ApproxInter::BufferId::FGAnalyzer_m_maskBuf);
   }
 
   if ( !m_grainEstimateBuf )
@@ -702,7 +702,7 @@ void FGAnalyzer::init ( const int width,
                                 Area(0, 0, width, height),
                                 0, 0,
                                 0, false );
-	m_grainEstimateBuf->RemarkBuffers(ApproxInter::BufferId::FGAnalyzer_m_grainEstimateBuf);
+    m_grainEstimateBuf->RemarkBuffers(ApproxInter::BufferId::FGAnalyzer_m_grainEstimateBuf);
   }
 
   if ( !m_workingBufSubsampled2 )
@@ -712,7 +712,7 @@ void FGAnalyzer::init ( const int width,
                                      Area(0, 0, newWidth2, newHeight2),
                                      0, margin,
                                      0, false );
-	m_workingBufSubsampled2->RemarkBuffers(ApproxInter::BufferId::FGAnalyzer_m_workingBufSubsampled2);
+    m_workingBufSubsampled2->RemarkBuffers(ApproxInter::BufferId::FGAnalyzer_m_workingBufSubsampled2);
   }
 
   if ( !m_maskSubsampled2 )
@@ -722,7 +722,7 @@ void FGAnalyzer::init ( const int width,
                                Area(0, 0, newWidth2, newHeight2),
                                0, margin,
                                0, false );
-	m_maskSubsampled2->RemarkBuffers(ApproxInter::BufferId::FGAnalyzer_m_maskSubsampled2);
+    m_maskSubsampled2->RemarkBuffers(ApproxInter::BufferId::FGAnalyzer_m_maskSubsampled2);
 
   }
   if ( !m_workingBufSubsampled4 )
@@ -732,7 +732,7 @@ void FGAnalyzer::init ( const int width,
                                      Area(0, 0, newWidth4, newHeight4),
                                      0, margin,
                                      0, false );
-	m_workingBufSubsampled4->RemarkBuffers(ApproxInter::BufferId::FGAnalyzer_m_workingBufSubsampled4);
+    m_workingBufSubsampled4->RemarkBuffers(ApproxInter::BufferId::FGAnalyzer_m_workingBufSubsampled4);
   }
 
   if ( !m_maskSubsampled4 )
@@ -742,7 +742,7 @@ void FGAnalyzer::init ( const int width,
                                Area(0, 0, newWidth4, newHeight4),
                                0, margin,
                                0, false );
-	m_maskSubsampled4->RemarkBuffers(ApproxInter::BufferId::FGAnalyzer_m_maskSubsampled4);
+    m_maskSubsampled4->RemarkBuffers(ApproxInter::BufferId::FGAnalyzer_m_maskSubsampled4);
   }
   if ( !m_maskUpsampled )
   {
@@ -751,17 +751,17 @@ void FGAnalyzer::init ( const int width,
                              Area(0, 0, width, height),
                              0, margin,
                              0, false );
-	m_maskUpsampled->RemarkBuffers(ApproxInter::BufferId::FGAnalyzer_m_maskUpsampled);
+    m_maskUpsampled->RemarkBuffers(ApproxInter::BufferId::FGAnalyzer_m_maskUpsampled);
   }
   if ( !m_DCTinout )
   {
     m_DCTinout = ( TCoeff* ) xMalloc( TCoeff, DATA_BASE_SIZE * DATA_BASE_SIZE );
-	ApproxInter::UnmarkBuffer((void*) m_DCTinout);
+    ApproxInter::UnmarkBuffer((void*) m_DCTinout);
   }
   if ( !m_DCTtemp )
   {
     m_DCTtemp = ( TCoeff* ) xMalloc( TCoeff, DATA_BASE_SIZE * DATA_BASE_SIZE );
-	ApproxInter::UnmarkBuffer((void*) m_DCTtemp);
+    ApproxInter::UnmarkBuffer((void*) m_DCTtemp);
   }
 
   calcVar=calcVarCore;

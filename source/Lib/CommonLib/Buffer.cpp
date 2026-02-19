@@ -1025,22 +1025,22 @@ void PelStorage::create( const ChromaFormat &_chromaFormat, const Area& _area )
     topLeft += area;
 
 
-	#if FELIPE_INSTRUMENTATION
-		#if APPROX_ORIG_BUFFER_INTER
-			// <Arthur> e <Felipe>
-    		// Atualiza nova variável com tamanho do buffer
-			if(ApproxInter::ORIG::tmpBool && compID == COMP_Y) {
-				ApproxInter::ORIG::frameOrigBufferWidth = totalWidth;
-				ApproxInter::ORIG::frameOrigBufferHeight = totalHeight;
+    #if FELIPE_INSTRUMENTATION
+      #if APPROX_ORIG_BUFFER_INTER
+        // <Arthur> e <Felipe>
+          // Atualiza nova variável com tamanho do buffer
+        if(ApproxInter::ORIG::tmpBool && compID == COMP_Y) {
+          ApproxInter::ORIG::frameOrigBufferWidth = totalWidth;
+          ApproxInter::ORIG::frameOrigBufferHeight = totalHeight;
 
-				ApproxInter::ORIG::collectBufferSize = false;
-				ApproxInter::ORIG::tmpBool = false; 
+          ApproxInter::ORIG::collectBufferSize = false;
+          ApproxInter::ORIG::tmpBool = false; 
 
-				//std::cout << extWidth << " " << extHeight << " " << ApproxInter::frameBufferWidth << " " << ApproxInter::frameBufferHeight << " " << ApproxInter::xMargin << " " << ApproxInter::yMargin << std::endl;
-			}
-			// <Arthur/> </Felipe>
-		#endif
-	#endif
+          //std::cout << extWidth << " " << extHeight << " " << ApproxInter::frameBufferWidth << " " << ApproxInter::frameBufferHeight << " " << ApproxInter::xMargin << " " << ApproxInter::yMargin << std::endl;
+        }
+        // <Arthur/> </Felipe>
+      #endif
+    #endif
   }
 
   m_maxArea = UnitArea( _chromaFormat, _area );
@@ -1089,28 +1089,28 @@ void PelStorage::create( const ChromaFormat &_chromaFormat, const Area& _area, c
     CHECK( !area, "Trying to create a buffer with zero area" );
 
 
-	#if FELIPE_INSTRUMENTATION
-		#if APPROX_RECO_BUFFER_INTER
-		// <Arthur> e <Felipe>
-		// Atualiza nova variável com tamanho do buffer
+    #if FELIPE_INSTRUMENTATION
+      #if APPROX_RECO_BUFFER_INTER
+      // <Arthur> e <Felipe>
+      // Atualiza nova variável com tamanho do buffer
 
-		if (ApproxInter::RECO::tmpBool && compID == COMP_Y) {
-			ApproxInter::RECO::frameBufferWidth = totalWidth;
-			ApproxInter::RECO::frameBufferHeight = totalHeight;
-			ApproxInter::RECO::xMargin = xmargin;
-			ApproxInter::RECO::yMargin = ymargin;
+      if (ApproxInter::RECO::tmpBool && compID == COMP_Y) {
+        ApproxInter::RECO::frameBufferWidth = totalWidth;
+        ApproxInter::RECO::frameBufferHeight = totalHeight;
+        ApproxInter::RECO::xMargin = xmargin;
+        ApproxInter::RECO::yMargin = ymargin;
 
-			ApproxInter::RECO::collectBufferSize = false;
-			ApproxInter::RECO::tmpBool = false; 
+        ApproxInter::RECO::collectBufferSize = false;
+        ApproxInter::RECO::tmpBool = false; 
 
-			//std::cout << extWidth << " " << extHeight << " " << ApproxInter::frameBufferWidth << " " << ApproxInter::frameBufferHeight << " " << ApproxInter::xMargin << " " << ApproxInter::yMargin << std::endl;
-		}
-		//<Arthur/> </Felipe>
-		#endif
-	#endif
+        //std::cout << extWidth << " " << extHeight << " " << ApproxInter::frameBufferWidth << " " << ApproxInter::frameBufferHeight << " " << ApproxInter::xMargin << " " << ApproxInter::yMargin << std::endl;
+      }
+      //<Arthur/> </Felipe>
+      #endif
+    #endif
 
     m_origin[i] = ( Pel* ) xMalloc( Pel, area );
-	//JICS: instrumentar genericamente NÃO!
+    //JICS: instrumentar genericamente NÃO!
     Pel* topLeft = m_origin[i] + totalWidth * ymargin + xmargin;
     bufs.push_back( PelBuf( topLeft, totalWidth, _area.width >> scaleX, _area.height >> scaleY ) );
   }
@@ -1123,15 +1123,15 @@ void PelStorage::create( const ChromaFormat &_chromaFormat, const Area& _area, c
 
 //<Matheus>
 /*void PelStorage::ReinstrumentBuffers(const int64_t baseBufferId) const{
-	if(m_origin[0]) {ApproxInter::ReinstrumentIfMarked((void*) m_origin[0],	baseBufferId+0,	ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
-	if(m_origin[1])	{ApproxInter::ReinstrumentIfMarked((void*) m_origin[1],	baseBufferId+1, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
-	if(m_origin[2])	{ApproxInter::ReinstrumentIfMarked((void*) m_origin[2],	baseBufferId+2, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
+  if(m_origin[0]) {ApproxInter::ReinstrumentIfMarked((void*) m_origin[0],  baseBufferId+0, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
+  if(m_origin[1]) {ApproxInter::ReinstrumentIfMarked((void*) m_origin[1],  baseBufferId+1, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
+  if(m_origin[2]) {ApproxInter::ReinstrumentIfMarked((void*) m_origin[2],  baseBufferId+2, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
 }*/
 
 void PelStorage::RemarkBuffers(const int64_t baseBufferId) const{
-	if(m_origin[0]) {ApproxInter::RemarkBuffer((void*) m_origin[0],	baseBufferId+0,	ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
-	if(m_origin[1])	{ApproxInter::RemarkBuffer((void*) m_origin[1],	baseBufferId+1, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
-	if(m_origin[2])	{ApproxInter::RemarkBuffer((void*) m_origin[2],	baseBufferId+2, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
+  if(m_origin[0]) {ApproxInter::RemarkBuffer((void*) m_origin[0],  baseBufferId+0, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
+  if(m_origin[1]) {ApproxInter::RemarkBuffer((void*) m_origin[1],  baseBufferId+1, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
+  if(m_origin[2]) {ApproxInter::RemarkBuffer((void*) m_origin[2],  baseBufferId+2, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));}
 }
 //<//Matheus>
 

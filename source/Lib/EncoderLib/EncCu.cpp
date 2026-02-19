@@ -365,11 +365,11 @@ void EncCu::init( const VVEncCfg& encCfg, const SPS& sps, std::vector<int>* cons
     m_pBestCS[i]->createForSearch( chromaFormat, area );
 
     m_pOrgBuffer[i].create( chromaFormat, area );
-	  m_pOrgBuffer[i].RemarkBuffers(ApproxInter::BufferId::EncCu_m_pOrgBuffer);
-	//JICS: instrumentar aqui
+    m_pOrgBuffer[i].RemarkBuffers(ApproxInter::BufferId::EncCu_m_pOrgBuffer);
+    //JICS: instrumentar aqui
     m_pRspBuffer[i].create( CHROMA_400, area );
-	  m_pRspBuffer[i].RemarkBuffers(ApproxInter::BufferId::EncCu_m_pRspBuffer);
-	//JICS: instrumentar aqui
+    m_pRspBuffer[i].RemarkBuffers(ApproxInter::BufferId::EncCu_m_pRspBuffer);
+    //JICS: instrumentar aqui
   }
 
   m_pTempCS2 = new CodingStructure( m_unitCache, nullptr );
@@ -387,14 +387,14 @@ void EncCu::init( const VVEncCfg& encCfg, const SPS& sps, std::vector<int>* cons
   for( uint8_t i = 0; i < MAX_TMP_BUFS; i++)
   {
     m_aTmpStorageLCU[i].create(chromaFormat, Area(0, 0, uiMaxSize, uiMaxSize));
-	  m_aTmpStorageLCU[i].RemarkBuffers(ApproxInter::BufferId::EncCu_m_aTmpStorageLCU);
-	//JICS: instrumentar aqui
+    m_aTmpStorageLCU[i].RemarkBuffers(ApproxInter::BufferId::EncCu_m_aTmpStorageLCU);
+    //JICS: instrumentar aqui
   }
   for (unsigned ui = 0; ui < MRG_MAX_NUM_CANDS; ui++)
   {
     m_acMergeTmpBuffer[ui].create(chromaFormat, Area(0, 0, uiMaxSize, uiMaxSize));
-	  m_acMergeTmpBuffer[ui].RemarkBuffers(ApproxInter::BufferId::EncCu_m_acMergeTmpBuffer);
-	//JICS: instrumentar aqui
+    m_acMergeTmpBuffer[ui].RemarkBuffers(ApproxInter::BufferId::EncCu_m_acMergeTmpBuffer);
+    //JICS: instrumentar aqui
   }
 
   const unsigned maxDepth = 2 * MAX_CU_SIZE_IDX;
@@ -402,8 +402,8 @@ void EncCu::init( const VVEncCfg& encCfg, const SPS& sps, std::vector<int>* cons
   m_CurrCtx = 0;
   if( encCfg.m_EDO ) {
     m_dbBuffer.create( chromaFormat, Area( 0, 0, uiMaxSize, uiMaxSize ), 0, 8 );
-	m_dbBuffer.RemarkBuffers(ApproxInter::BufferId::EncCu_m_dbBuffer);
-	//JICS: instrumentar aqui
+    m_dbBuffer.RemarkBuffers(ApproxInter::BufferId::EncCu_m_dbBuffer);
+    //JICS: instrumentar aqui
   }
 
   m_MergeSimpleFlag = 0;
@@ -1759,11 +1759,11 @@ void EncCu::xCheckRDCostIntra( CodingStructure *&tempCS, CodingStructure *&bestC
   DTRACE_MODE_COST(*tempCS, m_cRdCost.getLambda(true));
 
   #if PRINT_COST
-	//<Matheus>
-	if (cu.slice->isInterB() || cu.slice->isInterP()) {
-		std::cout << "xCheckRDCostIntra: " << tempCS->cost << std::endl;
-	}
-	//</Matheus>
+    //<Matheus>
+    if (cu.slice->isInterB() || cu.slice->isInterP()) {
+      std::cout << "xCheckRDCostIntra: " << tempCS->cost << std::endl;
+    }
+    //</Matheus>
   #endif
 
   xCheckBestMode(tempCS, bestCS, partitioner, encTestMode, m_EDO);
@@ -2125,9 +2125,9 @@ void EncCu::xCheckRDCostUnifiedMerge( CodingStructure *&tempCS, CodingStructure 
 
       if( resetCiip2Regular )
       {
-		ApproxSS::start_level(ApproxInter::LevelId::merge_RD_copyFrom);
+        ApproxSS::start_level(ApproxInter::LevelId::merge_RD_copyFrom);
         dstPredBuf.copyFrom( mrgPredBufNoCiip[mergeItem->mergeIdx] );
-		ApproxSS::end_level();
+        ApproxSS::end_level();
       }
       else
       {
@@ -2148,11 +2148,11 @@ void EncCu::xCheckRDCostUnifiedMerge( CodingStructure *&tempCS, CodingStructure 
         }
 
         if(  mergeItem->lumaPredReady ||  mergeItem->chromaPredReady ) {
-		  ApproxSS::start_level(ApproxInter::LevelId::merge_RD_copyFrom);
+          ApproxSS::start_level(ApproxInter::LevelId::merge_RD_copyFrom);
           dstPredBuf.copyFrom( mergeItem->getPredBuf( localUnitArea ), mergeItem->lumaPredReady, mergeItem->chromaPredReady );
-		  ApproxSS::end_level();
-		}
-		  if( !mergeItem->lumaPredReady || !mergeItem->chromaPredReady )
+          ApproxSS::end_level();
+    }
+      if( !mergeItem->lumaPredReady || !mergeItem->chromaPredReady )
           generateMergePrediction( localUnitArea, mergeItem, *cu, !mergeItem->lumaPredReady, !mergeItem->chromaPredReady, dstPredBuf, true, forceNoResidual, predBuf1, predBuf2 );
       }
 
@@ -2220,7 +2220,7 @@ void EncCu::generateMergePrediction( const UnitArea &unitArea, MergeItem *mergeI
   switch( mergeItem->mergeItemType )
   {
   case MergeItem::MergeItemType::REGULAR:
-	ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_REGULAR);
+    ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_REGULAR);
     // here predBuf1 is predBufNoCiip
     pu.mvRefine = true;
     m_cInterSearch.motionCompensation( pu, dstBuf, REF_PIC_LIST_X );
@@ -2230,11 +2230,11 @@ void EncCu::generateMergePrediction( const UnitArea &unitArea, MergeItem *mergeI
       predBuf1->copyFrom( dstBuf, luma, chroma );
     }
 
-	ApproxSS::end_level();
+    ApproxSS::end_level();
     break;
 
   case MergeItem::MergeItemType::CIIP:
-  	ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_CIIP);
+    ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_CIIP);
 
     m_cInterSearch.motionCompensation( pu, dstBuf, REF_PIC_LIST_X );
 
@@ -2258,43 +2258,43 @@ void EncCu::generateMergePrediction( const UnitArea &unitArea, MergeItem *mergeI
       }
     }
 
-	ApproxSS::end_level();
+    ApproxSS::end_level();
     break;
 
   case MergeItem::MergeItemType::MMVD:
-  	ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_MMVD);
+    ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_MMVD);
 
     pu.mcControl           |= finalRd ? 0 : ( pu.mmvdMergeIdx.pos.step > 2 || m_pcEncCfg->m_MMVD > 1 ) ? 1 : 0;
     mergeItem->noBdofRefine = pu.mccNoBdof() && pu.cs->sps->BDOF && !pu.cs->picHeader->disBdofFlag;
     m_cInterSearch.motionCompensation( pu, dstBuf, REF_PIC_LIST_X );
 
-	ApproxSS::end_level();
+    ApproxSS::end_level();
     break;
 
   case MergeItem::MergeItemType::SBTMVP:
-  	ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_SBTMVP);
+    ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_SBTMVP);
 
     m_cInterSearch.motionCompensation( pu, dstBuf, REF_PIC_LIST_X );
 
-	ApproxSS::end_level();
+    ApproxSS::end_level();
     break;
 
   case MergeItem::MergeItemType::AFFINE:
-  	ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_AFFINE);
+    ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_AFFINE);
 
     m_cInterSearch.motionCompensation( pu, dstBuf, REF_PIC_LIST_X );
 
-	ApproxSS::end_level();
+    ApproxSS::end_level();
     break;
 
   case MergeItem::MergeItemType::GPM:
-  	ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_GPM);
+    ApproxSS::start_level(ApproxInter::LevelId::generateMergePrediction_GPM);
 
     // here predBuf1 and predBuf2 point to geoBuffer[mergeCand0] and geoBuffer[mergeCand1], respectively
     CHECK( predBuf1 == nullptr || predBuf2 == nullptr, "Invalid input buffer to GPM" );
     m_cInterSearch.weightedGeoBlk( pu.slice->clpRngs, pu, pu.geoSplitDir, luma && chroma ? MAX_NUM_CH : luma ? CH_L : CH_C, dstBuf, *predBuf1, *predBuf2 );
 
-	ApproxSS::end_level();
+    ApproxSS::end_level();
     break;
 
   default:
@@ -3304,7 +3304,7 @@ void EncCu::xCheckRDCostInter( CodingStructure *&tempCS, CodingStructure *&bestC
     double bestCostInter = StopInterRes ? m_mergeBestSATDCost : MAX_DOUBLE;
 
     bool stopTest = m_cInterSearch.predInterSearch(cu, partitioner, bestCostInter);
-	//MATHEUS NOTE: PRINT AQUI? talvez pegue o best geral? NO FINAL NA FUNÇÃO?
+  //MATHEUS NOTE: PRINT AQUI? talvez pegue o best geral? NO FINAL NA FUNÇÃO?
 
     if (StopInterRes && (bestCostInter != m_mergeBestSATDCost))
     {
@@ -3508,7 +3508,7 @@ void EncCu::xCheckRDCostInterIMV(CodingStructure *&tempCS, CodingStructure *&bes
 
           cu.initPuData();
 
-		  //MATHEUS NOTE: imv definido aqui
+          //MATHEUS NOTE: imv definido aqui
           cu.imv = i;
 
           cu.BcwIdx = g_BcwSearchOrder[bcwLoopIdx];
@@ -3519,7 +3519,7 @@ void EncCu::xCheckRDCostInterIMV(CodingStructure *&tempCS, CodingStructure *&bes
           
           double bestCostInter = MAX_DOUBLE;
           m_cInterSearch.predInterSearch(cu, partitioner, bestCostInter);
-		  //MATHEUS NOTE: PRINT AQUI?
+          //MATHEUS NOTE: PRINT AQUI?
           
           if ( cu.interDir <= 3 )
           {
@@ -4047,7 +4047,7 @@ void EncCu::xEncodeInterResidual( CodingStructure *&tempCS, CodingStructure *&be
       {
         tempCS->cost = MAX_DOUBLE;
         tempCS->costDbOffset = 0;
-		ApproxSS::end_level();
+        ApproxSS::end_level();
         return;
       }
     }
@@ -4406,7 +4406,7 @@ void MergeItem::create( ChromaFormat chromaFormat, const Area &area )
   if( m_pelStorage.bufs.empty() )
   {
     m_pelStorage.create( chromaFormat, area );
-	  m_pelStorage.RemarkBuffers(ApproxInter::BufferId::MergeItem_m_pelStorage);
+    m_pelStorage.RemarkBuffers(ApproxInter::BufferId::MergeItem_m_pelStorage);
 
     m_mvStorage .resize( area.area() >> ( MIN_CU_LOG2 << 1 ) );
   }

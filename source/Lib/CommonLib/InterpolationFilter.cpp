@@ -1122,7 +1122,7 @@ void InterpolationFilter::initInterpolationFilter( bool enable )
 #ifdef TARGET_SIMD_X86
     initInterpolationFilterX86();
 #endif
-		
+
 #ifdef TARGET_SIMD_ARM
     initInterpolationFilterARM();
 #endif

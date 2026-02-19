@@ -512,7 +512,7 @@ bool IntraSearch::estIntraPredLumaQT(CodingUnit &cu, Partitioner &partitioner, d
     {
       cs.dist = MAX_DISTORTION;
       cs.interHad = 0;
-	  ApproxSS::end_level();
+      ApproxSS::end_level();
       return false;
     }
   }
@@ -1397,7 +1397,7 @@ void IntraSearch::xIntraCodingTUBlock(TransformUnit &tu, const ComponentID compI
     {
       // ISP has to have at least one non-zero CBF
       ruiDist = MAX_INT;
-	  ApproxSS::end_level();
+    ApproxSS::end_level();
       return;
     }
     //--- inverse transform ---
@@ -1450,7 +1450,7 @@ void IntraSearch::xIntraCodingTUBlock(TransformUnit &tu, const ComponentID compI
       if( tu.jointCbCr != codedCbfMask )
       {
         ruiDist = MAX_DISTORTION;
-		ApproxSS::end_level();
+        ApproxSS::end_level();
         return;
       }
       m_pcTrQuant->invTransformICT( tu, piResi, crResi );
@@ -2021,7 +2021,7 @@ ChromaCbfs IntraSearch::xIntraChromaCodingQT(CodingStructure& cs, Partitioner& p
   {
     if (!currArea.Cb().valid() || !currArea.Cr().valid())
     {
-	  ApproxSS::end_level();
+    ApproxSS::end_level();
       return cbfs;
     }
 

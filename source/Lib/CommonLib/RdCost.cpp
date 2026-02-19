@@ -399,11 +399,11 @@ Distortion RdCost::xGetSAD( const DistParam& rcDtParam )
     }
     if (rcDtParam.maximumDistortionForEarlyExit < ( uiSum >> distortionShift ))
     {
-    #if INSTRUMENT_METRICS
-	  ApproxInter::UninstrumentIfMarked((void*) approxOrig);
-	  ApproxInter::UninstrumentIfMarked((void*) approxCurr);
-    #endif
-    ApproxSS::end_level();
+      #if INSTRUMENT_METRICS
+      ApproxInter::UninstrumentIfMarked((void*) approxOrig);
+      ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+      #endif
+      ApproxSS::end_level();
 
       return ( uiSum >> distortionShift );
     }
@@ -715,7 +715,7 @@ Distortion RdCost::xGetSAD32( const DistParam &rcDtParam )
 
   #if INSTRUMENT_METRICS
   ApproxInter::UninstrumentIfMarked((void*) approxOrig);
-  ApproxInter::UninstrumentIfMarked((void*) approxCurr);	
+  ApproxInter::UninstrumentIfMarked((void*) approxCurr);
   #endif
   ApproxSS::end_level();
 
@@ -2116,7 +2116,7 @@ Distortion RdCost::xGetHAD2SADs( const DistParam &rcDtParam )
 
   Distortion distSad = 0;
   {
-	ApproxSS::start_level(ApproxInter::LevelId::SAD);
+    ApproxSS::start_level(ApproxInter::LevelId::SAD);
 
     CHECKD( (rcDtParam.org.width != rcDtParam.org.stride) || (rcDtParam.cur.stride != rcDtParam.org.stride) , "this functions assumes compact, aligned buffering");
 
@@ -2446,12 +2446,12 @@ Distortion RdCost::xGetSSE_WTD( const DistParam &rcDtParam ) const //distorion_m
   {
     const uint32_t fixedPTweight = ( uint32_t ) ( m_chromaWeight * ( double ) ( 1 << 16 ) );
 
-	//ApproxSS::end_level();
+    //ApproxSS::end_level();
     return m_fxdWtdPredPtr( rcDtParam, fixedPTweight );  //MATHEUS: distortion_metric: already instrumented
   }
   else
   { 
-	//ApproxSS::end_level();
+    //ApproxSS::end_level();
     return m_wtdPredPtr[getComponentScaleX(rcDtParam.compID, m_cf)]( rcDtParam, m_cf, m_reshapeLumaLevelToWeightPLUT );  //MATHEUS: distortion_metric: already instrumented
   }
 

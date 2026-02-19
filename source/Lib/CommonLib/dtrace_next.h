@@ -262,7 +262,7 @@ inline CDTrace* tracing_init( const std::string& sTracingFile, const std::string
     _CNL_DEF( D_ALF_EST ),
     _CNL_DEF( D_CCALF_EST ),
     _CNL_DEF( D_CRC ), 
-	_CNL_DEF( D_DEEP_ME )
+    _CNL_DEF( D_DEEP_ME )
   };
   dtrace_channels_t channels( next_channels, &next_channels[sizeof( next_channels ) / sizeof( next_channels[0] )] );
 

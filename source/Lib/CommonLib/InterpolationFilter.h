@@ -123,7 +123,7 @@ public:
   template <X86_VEXT vext>
   void _initInterpolationFilterX86();
 #endif
-	
+
 #if defined(TARGET_SIMD_ARM)  && ENABLE_SIMD_OPT_MCIF
   void initInterpolationFilterARM();
   template <ARM_VEXT vext>

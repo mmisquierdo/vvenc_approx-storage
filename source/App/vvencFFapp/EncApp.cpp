@@ -389,10 +389,10 @@ int EncApp::encode()
 
       }
 
-		//<Matheus>
-		//std::cout << "QUADRO FINALIZADO" << std::endl;
-		//ApproxSS::next_period();
-		//</Matheus>
+      //<Matheus>
+      //std::cout << "QUADRO FINALIZADO" << std::endl;
+      //ApproxSS::next_period();
+      //</Matheus>
     }
 
     // close input YUV

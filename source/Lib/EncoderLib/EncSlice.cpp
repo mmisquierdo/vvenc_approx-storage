@@ -247,8 +247,8 @@ void EncSlice::init( const VVEncCfg& encCfg,
                            m_syncPicCtx.data(),
                            &rateCtrl );
     taskRsc->m_alfTempCtuBuf.create( pps.pcv->chrFormat, Area( 0, 0, pps.pcv->maxCUSize + (MAX_ALF_PADDING_SIZE << 1), pps.pcv->maxCUSize + (MAX_ALF_PADDING_SIZE << 1) ), pps.pcv->maxCUSize, MAX_ALF_PADDING_SIZE, 0, false );
-	taskRsc->m_alfTempCtuBuf.RemarkBuffers(ApproxInter::BufferId::EncSlice_m_alfTempCtuBuf);
-	//JICS: instrumentar aqui
+    taskRsc->m_alfTempCtuBuf.RemarkBuffers(ApproxInter::BufferId::EncSlice_m_alfTempCtuBuf);
+    //JICS: instrumentar aqui
   }
 
   for( TileLineEncRsrc*& lnRsc : m_TileLineEncRsrc )

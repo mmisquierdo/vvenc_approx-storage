@@ -365,7 +365,7 @@ enum DFunc : uint8_t
   DF_HAD64           = DF_HAD+6,      ///<  64xM HAD
   DF_HAD128          = DF_HAD+7,      ///< 16NxM HAD
 
-  DF_SAD_MASKED      = 24,			
+  DF_SAD_MASKED      = 24,
   DF_SAD_MASKED2     = DF_SAD_MASKED+1,
   DF_SAD_MASKED4     = DF_SAD_MASKED+2,
   DF_SAD_MASKED8     = DF_SAD_MASKED+3,

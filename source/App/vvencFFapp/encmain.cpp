@@ -70,16 +70,16 @@ POSSIBILITY OF SUCH DAMAGE.
 
 int main(int argc, char* argv[])
 {
-	//<Felipe>
-	#if FELIPE_INSTRUMENTATION 
-		#if APPROX_RECO_BUFFER_INTER
-			ApproxInter::RECO::init();
-		#endif
-		#if APPROX_ORIG_BUFFER_INTER
-			ApproxInter::ORIG::init();
-		#endif
-	#endif
-	//</Felipe>
+  //<Felipe>
+  #if FELIPE_INSTRUMENTATION 
+    #if APPROX_RECO_BUFFER_INTER
+      ApproxInter::RECO::init();
+    #endif
+    #if APPROX_ORIG_BUFFER_INTER
+      ApproxInter::ORIG::init();
+    #endif
+  #endif
+  //</Felipe>
 
   //<Matheus>
   ApproxInter::PrintMacrosStates();
@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
 
   if( ! vvenc_set_SIMD_extension( simdOpt.c_str() ) )
   {
-	  ApproxSS::end_level();
+    ApproxSS::end_level();
     return 1;
   }
 
@@ -111,14 +111,14 @@ int main(int argc, char* argv[])
   if ( ! pcEncApp->parseCfg( argc, argv ) )
   {
     delete pcEncApp;
-	  ApproxSS::end_level();
+    ApproxSS::end_level();
     return 1;
   }
 
   if( pcEncApp->isShowVersionHelp() )
   {
     delete pcEncApp;
-	  ApproxSS::end_level();
+    ApproxSS::end_level();
     return 0;
   }
 

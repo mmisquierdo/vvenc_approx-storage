@@ -1580,7 +1580,7 @@ static void simdFilter( const ClpRng& clpRng, Pel const *src, int srcStride, Pel
       goto scalar_if;
     }
 
-	ApproxInter::UnmarkBuffer((void*) &c[0], (void*) &c[8]);
+    ApproxInter::UnmarkBuffer((void*) &c[0], (void*) &c[8]);
     return;
   }
 
@@ -1604,8 +1604,8 @@ static void simdFilter( const ClpRng& clpRng, Pel const *src, int srcStride, Pel
       simdInterpolateHorM2<vext, N, isLast>( src, srcStride, dst, dstStride, width, height, shift, offset, clpRng, c );
     else
       simdInterpolateHorM1<vext, N, isLast>( src, srcStride, dst, dstStride, width, height, shift, offset, clpRng, c );
-	
-	ApproxInter::UnmarkBuffer((void*) &c[0], (void*) &c[8]);
+
+    ApproxInter::UnmarkBuffer((void*) &c[0], (void*) &c[8]);
     return;
   }
   else if( N != 2 )
@@ -1629,14 +1629,14 @@ static void simdFilter( const ClpRng& clpRng, Pel const *src, int srcStride, Pel
     else
       simdInterpolateVerM1<vext, N, isLast>( src, srcStride, dst, dstStride, width, height, shift, offset, clpRng, c );
 
-	ApproxInter::UnmarkBuffer((void*) &c[0], (void*) &c[8]);
+    ApproxInter::UnmarkBuffer((void*) &c[0], (void*) &c[8]);
     return;
   }
   else// if( N == 2 )
   {
     simdInterpolateN2_10BIT_M4<vext, isLast>( src, srcStride, dst, dstStride, cStride, width, height, shift, offset, clpRng, c );
 
-	ApproxInter::UnmarkBuffer((void*) &c[0], (void*) &c[8]);
+    ApproxInter::UnmarkBuffer((void*) &c[0], (void*) &c[8]);
     return;
   }
 
@@ -2481,14 +2481,14 @@ void simdFilter16xH_N8( const ClpRng& clpRng, Pel const *src, int srcStride, Pel
     }
 #else
     Pel* tmp = ( Pel* ) alloca( 16 * extHeight * sizeof( Pel ) );
-	ApproxInter::MarkBuffer((void*) &tmp[0], (void*) &tmp[16 * extHeight], ApproxInter::BufferId::InterpolationFilterX86_simdFilter16xX_N8_tmp, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
-	//JICS: instrumentar como simdFilter16xX_N8
+    ApproxInter::MarkBuffer((void*) &tmp[0], (void*) &tmp[16 * extHeight], ApproxInter::BufferId::InterpolationFilterX86_simdFilter16xX_N8_tmp, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
+    //JICS: instrumentar como simdFilter16xX_N8
     VALGRIND_MEMCLEAR( tmp, 16 * extHeight * sizeof( Pel ) );
 
     simdInterpolateHorM8<vext, 8, false >( src, srcStride, tmp, 16, 16, extHeight, shift1st, offset1st, clpRng, coeffH );
     simdInterpolateVerM8<vext, 8, isLast>( tmp, 16, dst, dstStride, 16,    height, shift2nd, offset2nd, clpRng, coeffV );
 
-	ApproxInter::UnmarkBuffer((void*) &tmp[0], (void*) &tmp[16 * extHeight]);
+    ApproxInter::UnmarkBuffer((void*) &tmp[0], (void*) &tmp[16 * extHeight]);
 #endif
   }
 }
@@ -2773,13 +2773,13 @@ void simdFilter8xH_N8( const ClpRng& clpRng, Pel const *src, int srcStride, Pel*
     }
 #else
     Pel* tmp = ( Pel* ) alloca( 8 * extHeight * sizeof( Pel ) );
-	ApproxInter::MarkBuffer((void*) &tmp[0], (void*) &tmp[8 * extHeight], ApproxInter::BufferId::InterpolationFilterX86_simdFilter8xX_N8_tmp, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
-	//JICS: instrumentar como simdFilter8xX_N8
+    ApproxInter::MarkBuffer((void*) &tmp[0], (void*) &tmp[8 * extHeight], ApproxInter::BufferId::InterpolationFilterX86_simdFilter8xX_N8_tmp, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
+    //JICS: instrumentar como simdFilter8xX_N8
     VALGRIND_MEMCLEAR( tmp, 8 * extHeight * sizeof( Pel ) );
 
     simdInterpolateHorM8<vext, 8, false >( src, srcStride, tmp, 8, 8, extHeight, shift1st, offset1st, clpRng, coeffH );
     simdInterpolateVerM8<vext, 8, isLast>( tmp, 8, dst, dstStride, 8,    height, shift2nd, offset2nd, clpRng, coeffV );
-	ApproxInter::UnmarkBuffer((void*) &tmp[0], (void*) &tmp[8 * extHeight])
+    ApproxInter::UnmarkBuffer((void*) &tmp[0], (void*) &tmp[8 * extHeight])
 #endif
   }
 }
@@ -3027,13 +3027,13 @@ void simdFilter8xH_N4( const ClpRng& clpRng, Pel const *src, int srcStride, Pel*
     }
 #else
     Pel* tmp = ( Pel* ) alloca( 8 * extHeight * sizeof( Pel ) );
-	ApproxInter::MarkBuffer((void*) &tmp[0], (void*) &tmp[8 * extHeight], ApproxInter::BufferId::InterpolationFilterX86_simdFilter8xX_N4_tmp, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
-	//JICS: instrumentar como simdFilter8xX_N4
+    ApproxInter::MarkBuffer((void*) &tmp[0], (void*) &tmp[8 * extHeight], ApproxInter::BufferId::InterpolationFilterX86_simdFilter8xX_N4_tmp, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
+    //JICS: instrumentar como simdFilter8xX_N4
     VALGRIND_MEMCLEAR( tmp, 8 * extHeight * sizeof( Pel ) );
 
     simdInterpolateHorM8<vext, 4, false >( src, srcStride, tmp, 8, 8, extHeight, shift1st, offset1st, clpRng, coeffH );
     simdInterpolateVerM8<vext, 4, isLast>( tmp, 8, dst, dstStride, 8,    height, shift2nd, offset2nd, clpRng, coeffV );
-	ApproxInter::UnmarkBuffer((void*) &tmp[0], (void*) &tmp[8 * extHeight]);
+    ApproxInter::UnmarkBuffer((void*) &tmp[0], (void*) &tmp[8 * extHeight]);
 #endif
   }
 }

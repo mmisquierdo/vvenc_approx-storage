@@ -219,31 +219,31 @@ void Picture::create( ChromaFormat _chromaFormat, const Size& size, unsigned _ma
   margin            =  _margin;
 
   #if FELIPE_INSTRUMENTATION
-	#if APPROX_RECO_BUFFER_INTER
-		//<Felipe>
-		if(ApproxInter::RECO::collectBufferSize) {
-			ApproxInter::RECO::tmpBool = true;
-		}
-		//</Felipe>
-	#endif
-	
-	#if APPROX_ORIG_BUFFER_INTER
-	  	//<Felipe>
-		if(ApproxInter::ORIG::collectBufferSize) {
-			ApproxInter::ORIG::tmpBool = true;
-		}
-	#endif
+  #if APPROX_RECO_BUFFER_INTER
+    //<Felipe>
+    if(ApproxInter::RECO::collectBufferSize) {
+      ApproxInter::RECO::tmpBool = true;
+    }
+    //</Felipe>
+  #endif
+  
+  #if APPROX_ORIG_BUFFER_INTER
+      //<Felipe>
+    if(ApproxInter::ORIG::collectBufferSize) {
+      ApproxInter::ORIG::tmpBool = true;
+    }
+  #endif
   #endif
 
   if( _decoder )
   {
     m_picBufs[ PIC_RESIDUAL   ].create( _chromaFormat, Area( 0, 0, _maxCUSize, _maxCUSize ) );
-	m_picBufs[ PIC_RESIDUAL   ].RemarkBuffers(ApproxInter::BufferId::PIC_RESIDUAL_Y);
-	
-    m_picBufs[ PIC_PREDICTION ].create( _chromaFormat, Area( 0, 0, _maxCUSize, _maxCUSize ) );
-	m_picBufs[ PIC_PREDICTION ].RemarkBuffers(ApproxInter::BufferId::PIC_PREDICTION_Y);
+    m_picBufs[ PIC_RESIDUAL   ].RemarkBuffers(ApproxInter::BufferId::PIC_RESIDUAL_Y);
 
-	//JICS: instrumentar aqui
+    m_picBufs[ PIC_PREDICTION ].create( _chromaFormat, Area( 0, 0, _maxCUSize, _maxCUSize ) );
+    m_picBufs[ PIC_PREDICTION ].RemarkBuffers(ApproxInter::BufferId::PIC_PREDICTION_Y);
+
+    //JICS: instrumentar aqui
   }
 }
 
@@ -421,8 +421,8 @@ void Picture::finalInit( const VPS& _vps, const SPS& sps, const PPS& pps, PicHea
   if( !m_picBufs[PIC_RECONSTRUCTION].valid() )
   {
     m_picBufs[ PIC_RECONSTRUCTION ].create( chromaFormat, Area( lumaPos(), lumaSize() ), sps.CTUSize, margin, MEMORY_ALIGN_DEF_SIZE );
-	m_picBufs[ PIC_RECONSTRUCTION ].RemarkBuffers(ApproxInter::BufferId::PIC_RECONSTRUCTION_Y);
-	//JICS: instrumentar RECO aqui!!!
+    m_picBufs[ PIC_RECONSTRUCTION ].RemarkBuffers(ApproxInter::BufferId::PIC_RECONSTRUCTION_Y);
+    //JICS: instrumentar RECO aqui!!!
   }
   if( !m_tileColsDone )
   {

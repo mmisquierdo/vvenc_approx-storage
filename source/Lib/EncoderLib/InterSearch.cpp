@@ -1110,10 +1110,10 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
         }
         xEstimateMvPredAMVP( cu, origBuf, refPicList, iRefIdxTemp, cMvPred[iRefList][iRefIdxTemp], amvp[refPicList], biPDistTemp);
 
-		//<Matheus> inside xEstimateMvPredAMVP
-		//{const Mv& rcMv = cMvPred[iRefList][iRefIdxTemp];
-		//DTRACE( g_trace_ctx, D_DEEP_ME, "%d %d %d :AMVP<L%d,%d>: %d,%d,%dx%d, MV:%d,%d : %d\n", DTRACE_GET_COUNTER( g_trace_ctx, D_ME ), cu.slice->poc, 0, ( int ) refPicList, ( int ) 0, cu.Y().x, cu.Y().y, cu.Y().width, cu.Y().height, rcMv.hor << 2, rcMv.ver << 2, ruiCost );}
-		//</Matheus>
+        //<Matheus> inside xEstimateMvPredAMVP
+        //{const Mv& rcMv = cMvPred[iRefList][iRefIdxTemp];
+        //DTRACE( g_trace_ctx, D_DEEP_ME, "%d %d %d :AMVP<L%d,%d>: %d,%d,%dx%d, MV:%d,%d : %d\n", DTRACE_GET_COUNTER( g_trace_ctx, D_ME ), cu.slice->poc, 0, ( int ) refPicList, ( int ) 0, cu.Y().x, cu.Y().y, cu.Y().width, cu.Y().height, rcMv.hor << 2, rcMv.ver << 2, ruiCost );}
+        //</Matheus>
 
         aaiMvpIdx[iRefList][iRefIdxTemp] = cu.mvpIdx[refPicList];
         aaiMvpNum[iRefList][iRefIdxTemp] = cu.mvpNum[refPicList];
@@ -1187,10 +1187,10 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
       }
     }
 
-	//<Matheus>
-	//DTRACE(g_trace_ctx, D_DEEP_ME, "   MECost<L%d,%d>: %6d (%d)  MV:%d,%d\n", (int)refPicList, (int)bBi, ruiCost, ruiBits, rcMv.hor << 2, rcMv.ver << 2);
-	//DTRACE(g_trace_ctx, D_DEEP_ME, "Uni");
-	//</Matheus>
+    //<Matheus>
+    //DTRACE(g_trace_ctx, D_DEEP_ME, "   MECost<L%d,%d>: %6d (%d)  MV:%d,%d\n", (int)refPicList, (int)bBi, ruiCost, ruiBits, rcMv.hor << 2, rcMv.ver << 2);
+    //DTRACE(g_trace_ctx, D_DEEP_ME, "Uni");
+    //</Matheus>
 
 
     ::memcpy(cMvHevcTemp, cMvTemp, sizeof(cMvTemp));
@@ -1216,7 +1216,7 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
       {
         m_skipPROF = false;
         m_encOnly = false;
-		ApproxSS::end_level();
+        ApproxSS::end_level();
         return true;
       }
     }
@@ -1522,8 +1522,8 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
           Distortion bestCost = costStart;
           xSymMvdCheckBestMvp(cu, origBuf, mvStart, (RefPicList)curRefList, aacAMVPInfo, BcwIdx, cMvPredSym, mvpIdxSym, costStart, false);
           //MATHEUS NOTE: DISTORTION CALCULATION 
-		 
-		  if (costStart < bestCost)
+
+          if (costStart < bestCost)
           {
             cCurMvField.setMvField(mvStart, refIdxCur);
             cTarMvField.setMvField(mvStart.getSymmvdMv(cMvPredSym[curRefList], cMvPredSym[tarRefList]), refIdxTar);
@@ -1540,7 +1540,7 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
         {
           xSymMotionEstimation( cu, origBuf, cMvPredSym[ curRefList ], cMvPredSym[ tarRefList ], eCurRefList, cCurMvField, cTarMvField, symCost, BcwIdx );
           //MATHEUS NOTE: DISTORTION CALCULATION
-		}
+        }
 
         symCost += mvpCost;
 
@@ -1575,11 +1575,12 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
           aaiMvpIdxBi[tarRefList][cTarMvField.refIdx] = mvpIdxSym[tarRefList];
           cMvPredBi[tarRefList][iRefIdxBi[tarRefList]] = cMvPredSym[tarRefList];
 
-		  //<Matheus>
-		  {const Mv& rcMv = cCurMvField.mv;
-		  DTRACE( g_trace_ctx, D_DEEP_ME, "%d %d %d :SMVD<L%d,%d>: %d,%d,%dx%d, MV:%d,%d : %d\n", DTRACE_GET_COUNTER( g_trace_ctx, D_DEEP_ME ), cu.slice->poc, 0, ( int ) curRefList, ( int ) true, cu.Y().x, cu.Y().y, cu.Y().width, cu.Y().height, rcMv.hor << 2, rcMv.ver << 2, uiCostBi );}
-		  //</Matheus>
-          }
+        //<Matheus>
+        {
+          const Mv& rcMv = cCurMvField.mv;
+          DTRACE( g_trace_ctx, D_DEEP_ME, "%d %d %d :SMVD<L%d,%d>: %d,%d,%dx%d, MV:%d,%d : %d\n", DTRACE_GET_COUNTER( g_trace_ctx, D_DEEP_ME ), cu.slice->poc, 0, ( int ) curRefList, ( int ) true, cu.Y().x, cu.Y().y, cu.Y().width, cu.Y().height, rcMv.hor << 2, rcMv.ver << 2, uiCostBi );}
+        //</Matheus>
+        }
       }
     } // if (B_SLICE)
 
@@ -1734,11 +1735,11 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
       Mv acMvAffine4Para[2][MAX_REF_PICS][3];
       int refIdx4Para[2] = { -1, -1 };
 
-	  ApproxSS::start_level(ApproxInter::LevelId::predInterSearch_AFFINEMODEL_4PARAM);
+      ApproxSS::start_level(ApproxInter::LevelId::predInterSearch_AFFINEMODEL_4PARAM);
 
       xPredAffineInterSearch(cu, origBuf, puIdx, uiLastModeTemp, uiAffineCost, cMvHevcTemp, acMvAffine4Para, refIdx4Para, BcwIdx, enforceBcwPred, (cs.slice->sps->BCW == true) ? getWeightIdxBits(BcwIdx) : 0 );
 
-	  ApproxSS::end_level();
+      ApproxSS::end_level();
 
       if (cu.imv == 0)
       {
@@ -1777,11 +1778,11 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
           Distortion uiAffine6Cost = MAX_DISTORTION;
           cu.affineType = AFFINEMODEL_6PARAM;
 
-		  ApproxSS::start_level(ApproxInter::LevelId::predInterSearch_AFFINEMODEL_6PARAM);
+          ApproxSS::start_level(ApproxInter::LevelId::predInterSearch_AFFINEMODEL_6PARAM);
 
           xPredAffineInterSearch(cu, origBuf, puIdx, uiLastModeTemp, uiAffine6Cost, cMvHevcTemp, acMvAffine4Para, refIdx4Para, BcwIdx, enforceBcwPred, (cs.slice->sps->BCW == true) ? getWeightIdxBits(BcwIdx) : 0 );
 
-		  ApproxSS::end_level();
+          ApproxSS::end_level();
 
           if (cu.imv == 0)
           {
@@ -2069,7 +2070,7 @@ void InterSearch::xMotionEstimation(CodingUnit& cu, CPelUnitBuf& origBuf, RefPic
     ApproxInter::InstrumentIfMarked((void*) approxOrigBuffer, ApproxInter::BufferId::ORIG_MOTION_ESTIMATION, ApproxInter::ConfigurationId::ORIG_MOTION_ESTIMATION, sizeof(Pel));
     ApproxSS::start_level();  
 
-	Pel const * approxTempOrigBuffer = nullptr;
+    Pel const * approxTempOrigBuffer = nullptr;
   #endif
 
   Mv cMvHalf, cMvQter;
@@ -2086,7 +2087,7 @@ void InterSearch::xMotionEstimation(CodingUnit& cu, CPelUnitBuf& origBuf, RefPic
 
   if(bBi) // Bi-predictive ME
   {
-	ApproxSS::start_level(ApproxInter::LevelId::xMotionEstimation_removeHighFreq);
+    ApproxSS::start_level(ApproxInter::LevelId::xMotionEstimation_removeHighFreq);
 
     PelUnitBuf  origBufTmp = m_tmpStorageLCU.getCompactBuf( cu );
 
@@ -2106,7 +2107,7 @@ void InterSearch::xMotionEstimation(CodingUnit& cu, CPelUnitBuf& origBuf, RefPic
 
     fWeight        = xGetMEDistortionWeight( cu.BcwIdx, refPicList );
 
-	ApproxSS::end_level();
+    ApproxSS::end_level();
   }
 
   //  Search key pattern initialization
@@ -2202,8 +2203,8 @@ void InterSearch::xMotionEstimation(CodingUnit& cu, CPelUnitBuf& origBuf, RefPic
       Pel const * const approxRecoBufferMVPAndPattern = cStruct.piRefY;
       ApproxInter::InstrumentIfMarked((void*) approxRecoBufferMVPAndPattern, ApproxInter::BufferId::RECO_MOTION_ESTIMATION_MVP_AND_PATTERN, ApproxInter::ConfigurationId::RECO_MOTION_ESTIMATION_MVP_AND_PATTERN, sizeof(Pel));
       ApproxSS::start_level();
-  	#endif
-	ApproxSS::start_level(ApproxInter::LevelId::Full_Search_MPV);
+    #endif
+    ApproxSS::start_level(ApproxInter::LevelId::Full_Search_MPV);
 
 
     cStruct.subShiftMode = m_pcEncCfg->m_fastInterSearchMode == VVENC_FASTINTERSEARCH_MODE1 || m_pcEncCfg->m_fastInterSearchMode == VVENC_FASTINTERSEARCH_MODE3 ? 1 : 0;
@@ -2250,14 +2251,14 @@ void InterSearch::xMotionEstimation(CodingUnit& cu, CPelUnitBuf& origBuf, RefPic
       }
     }
 
-	ApproxSS::end_level();
+    ApproxSS::end_level();
 
-	ApproxSS::start_level(ApproxInter::LevelId::xPatternSearch);
+    ApproxSS::start_level(ApproxInter::LevelId::xPatternSearch);
 
     xSetSearchRange( cu, bestInitMv, iSrchRng, cStruct.searchRange );
     xPatternSearch ( cStruct, rcMv, ruiCost);
 
-	ApproxSS::end_level();
+    ApproxSS::end_level();
 
     #if MATHEUS_INSTRUMENTATION && APPROX_RECO_BUFFER_INTER_MVP_AND_PATTERN
       ApproxInter::UninstrumentIfMarked((void*) approxRecoBufferMVPAndPattern);
@@ -2270,7 +2271,7 @@ void InterSearch::xMotionEstimation(CodingUnit& cu, CPelUnitBuf& origBuf, RefPic
       Pel const * const approxRecoBufferTZ = cStruct.piRefY;
       ApproxInter::InstrumentIfMarked((void*) approxRecoBufferTZ, ApproxInter::BufferId::RECO_MOTION_ESTIMATION_TZ, ApproxInter::ConfigurationId::RECO_MOTION_ESTIMATION_TZ, sizeof(Pel));
       ApproxSS::start_level();
-  	#endif
+    #endif
 
     rcMv = cIntMv;
     cStruct.subShiftMode = ( m_pcEncCfg->m_fastInterSearchMode == VVENC_FASTINTERSEARCH_MODE1 || m_pcEncCfg->m_fastInterSearchMode == VVENC_FASTINTERSEARCH_MODE3 ) ? 1 : 0;
@@ -2287,7 +2288,7 @@ void InterSearch::xMotionEstimation(CodingUnit& cu, CPelUnitBuf& origBuf, RefPic
       Pel const * const approxRecoBufferFast = cStruct.piRefY;
       ApproxInter::InstrumentIfMarked((void*) approxRecoBufferFast, ApproxInter::BufferId::RECO_MOTION_ESTIMATION_FAST, ApproxInter::ConfigurationId::RECO_MOTION_ESTIMATION_FAST, sizeof(Pel));
       ApproxSS::start_level();
-  	#endif
+    #endif
 
     cStruct.subShiftMode = ( m_pcEncCfg->m_fastInterSearchMode == VVENC_FASTINTERSEARCH_MODE1 || m_pcEncCfg->m_fastInterSearchMode == VVENC_FASTINTERSEARCH_MODE3 ) ? 1 : 0;
     rcMv = rcMvPred;
@@ -2301,7 +2302,7 @@ void InterSearch::xMotionEstimation(CodingUnit& cu, CPelUnitBuf& origBuf, RefPic
   }
 
   #if FELIPE_INSTRUMENTATION
-    #if APPROX_FILT_BUFFER_V1 || APPROX_FILT_BUFFER_V2	
+    #if APPROX_FILT_BUFFER_V1 || APPROX_FILT_BUFFER_V2
       //<Felipe>
       // Felipe: start approximation at filtered samples buffer at FME
       addApproxFiltBuffer();  
@@ -2311,7 +2312,7 @@ void InterSearch::xMotionEstimation(CodingUnit& cu, CPelUnitBuf& origBuf, RefPic
   #endif
 
   #if MATHEUS_INSTRUMENTATION
-	  #if APPROX_ORIG_BUFFER_INTER_IME
+    #if APPROX_ORIG_BUFFER_INTER_IME
       ApproxInter::UninstrumentIfMarked((void*) approxOrigBufferIME);
       ApproxSS::end_level();
     #endif
@@ -2375,9 +2376,9 @@ void InterSearch::xMotionEstimation(CodingUnit& cu, CPelUnitBuf& origBuf, RefPic
       #endif
     #endif
 
-	//<Matheus>
-	DTRACE(g_trace_ctx, D_DEEP_ME, "   FME: %6d (%d)  MV:%d,%d\n", ruiCost, ruiBits, rcMv.hor << 2, rcMv.ver << 2);
-	//</Matheus>
+    //<Matheus>
+    DTRACE(g_trace_ctx, D_DEEP_ME, "   FME: %6d (%d)  MV:%d,%d\n", ruiCost, ruiBits, rcMv.hor << 2, rcMv.ver << 2);
+    //</Matheus>
   }
   else // integer refinement for integer-pel and 4-pel resolution
   {
@@ -2410,9 +2411,9 @@ void InterSearch::xMotionEstimation(CodingUnit& cu, CPelUnitBuf& origBuf, RefPic
       #endif
     #endif
 
-	//</Matheus>
-	DTRACE(g_trace_ctx, D_DEEP_ME, "   REF: %6d (%d)  MV:%d,%d\n", ruiCost, ruiBits, rcMv.hor << 2, rcMv.ver << 2);
-	//</Matheus>
+    //</Matheus>
+    DTRACE(g_trace_ctx, D_DEEP_ME, "   REF: %6d (%d)  MV:%d,%d\n", ruiCost, ruiBits, rcMv.hor << 2, rcMv.ver << 2);
+    //</Matheus>
   }
 
   DTRACE(g_trace_ctx, D_ME, "   MECost<L%d,%d>: %6d (%d)  MV:%d,%d\n", (int)refPicList, (int)bBi, ruiCost, ruiBits, rcMv.hor << 2, rcMv.ver << 2);
@@ -2431,13 +2432,13 @@ void InterSearch::xMotionEstimation(CodingUnit& cu, CPelUnitBuf& origBuf, RefPic
       ApproxSS::end_level();
     #endif
 
-    #if APPROX_FILT_BUFFER_V1 || APPROX_FILT_BUFFER_V2	
+    #if APPROX_FILT_BUFFER_V1 || APPROX_FILT_BUFFER_V2  
       // Felipe: ending approximation at filtered samples buffer at FME
       removeApproxFiltBuffer();
       ApproxSS::end_level();
     #endif
   #endif
-	//</Felipe> 
+  //</Felipe> 
 
 //<Matheus>
   #if MATHEUS_INSTRUMENTATION
@@ -2739,8 +2740,8 @@ void InterSearch::xTZSearch( const CodingUnit& cu,
           // write out best match
           rcMv.set( cStruct.iBestX, cStruct.iBestY );
           ruiSAD = cStruct.uiBestSad - m_pcRdCost->getCostOfVectorWithPredictor( cStruct.iBestX, cStruct.iBestY, cStruct.imvShift );
-		  ApproxSS::end_level();
-		  ApproxSS::end_level();
+          ApproxSS::end_level();
+          ApproxSS::end_level();
           return;
         }
       }
@@ -2749,8 +2750,8 @@ void InterSearch::xTZSearch( const CodingUnit& cu,
         // write out best match
         rcMv.set( cStruct.iBestX, cStruct.iBestY );
         ruiSAD = cStruct.uiBestSad - m_pcRdCost->getCostOfVectorWithPredictor( cStruct.iBestX, cStruct.iBestY, cStruct.imvShift );
-		ApproxSS::end_level();
-		ApproxSS::end_level();
+        ApproxSS::end_level();
+        ApproxSS::end_level();
         return;
       }
     }
@@ -3024,7 +3025,7 @@ void InterSearch::xPatternSearchIntRefine(CodingUnit& cu, TZSearchStruct&  cStru
   if( uiBestDist == MAX_DISTORTION )
   {
     ruiCost = MAX_DISTORTION;
-	ApproxSS::end_level();
+    ApproxSS::end_level();
     return;
   }
 
@@ -3125,9 +3126,9 @@ void InterSearch::xPatternSearchFracDIF(
 
     ruiCost = xPatternRefinement( cStruct.pcPatternKey, baseRefMv, 1, rcMvQter, uiDistBest, patternId, &cPatternRoi, cStruct.useAltHpelIf );
 
-	//<Matheus> //TODO CHECK MV OFFSET AND WHICH COST
-	DTRACE( g_trace_ctx, D_DEEP_ME, "%d %d %d :FQPel<L%d,%d>: %d,%d,%dx%d, MV:%d,%d : %d\n", DTRACE_GET_COUNTER( g_trace_ctx, D_DEEP_ME ), cu.slice->poc, 0, ( int ) refPicList, ( int ) -1, cu.Y().x, cu.Y().y, cu.Y().width, cu.Y().height, rcMvQter.hor << 2, rcMvQter.ver << 2, ruiCost );
-	//</Matheus>
+    //<Matheus> //TODO CHECK MV OFFSET AND WHICH COST
+    DTRACE( g_trace_ctx, D_DEEP_ME, "%d %d %d :FQPel<L%d,%d>: %d,%d,%dx%d, MV:%d,%d : %d\n", DTRACE_GET_COUNTER( g_trace_ctx, D_DEEP_ME ), cu.slice->poc, 0, ( int ) refPicList, ( int ) -1, cu.Y().x, cu.Y().y, cu.Y().width, cu.Y().height, rcMvQter.hor << 2, rcMvQter.ver << 2, ruiCost );
+    //</Matheus>
   }
 
   ApproxSS::end_level();
@@ -3397,7 +3398,7 @@ void InterSearch::xExtDIFUpSamplingH(CPelBuf* pattern, bool useAltHpelIf)
 
   int intStride = width + 1;
   int dstStride = width + 1;
-  Pel* intPtr; 		//MATHEUS NOTE: approximar m_filteredBlockTmp e m_filteredBlock!!!
+  Pel* intPtr;     //MATHEUS NOTE: approximar m_filteredBlockTmp e m_filteredBlock!!!
   Pel* dstPtr;
   int filterSize     = useAltHpelIf ? ( reduceTap >= 1 ? NTAPS_AFFINE : NTAPS_LUMA )
                                     : ( reduceTap == 1 ? NTAPS_AFFINE
@@ -5146,9 +5147,9 @@ void InterSearch::xPredAffineInterSearch( CodingUnit& cu,
       // Do Affine AMVP
       bool foundPred = xEstimateAffineAMVP(cu, affiAMVPInfoTemp[refPicList], origBuf, refPicList, iRefIdxTemp, cMvPred[iRefList][iRefIdxTemp], biPDistTemp);
       if( !foundPred ) {
-		ApproxSS::end_level();
+        ApproxSS::end_level();
         return;
-	  }
+    }
 
       if (affineAmvrEnabled)
       {
@@ -5892,7 +5893,7 @@ void InterSearch::xAffineMotionEstimation(CodingUnit& cu,
   // if Bi, set to ( 2 * Org - ListX )
   if (bBi) //MATHEUS TODO: origBufTemp
   {
-	ApproxSS::start_level(ApproxInter::LevelId::xAffineMotionEstimation_removeHighFreq);
+    ApproxSS::start_level(ApproxInter::LevelId::xAffineMotionEstimation_removeHighFreq);
 
     PelUnitBuf  origBufTmp = m_tmpStorageLCU.getCompactBuf(cu);
 
@@ -5911,7 +5912,7 @@ void InterSearch::xAffineMotionEstimation(CodingUnit& cu,
     pBuf           = &origBufTmpCnst;
     fWeight        = xGetMEDistortionWeight(cu.BcwIdx, refPicList);
 
-	ApproxSS::end_level();
+    ApproxSS::end_level();
   }
 
   // pred YUV
@@ -7370,7 +7371,7 @@ bool InterSearch::searchBvIBC(const CodingUnit& cu, int xPos, int yPos, int widt
 
 
 #if FELIPE_INSTRUMENTATION
-  #if APPROX_FILT_BUFFER_V2	
+  #if APPROX_FILT_BUFFER_V2
     //<Felipe>
     void InterSearch::addApproxFiltBuffer() {
       for(uint32_t c = 0; c < MAX_NUM_COMP; c++) {

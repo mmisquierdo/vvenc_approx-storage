@@ -318,7 +318,7 @@ public:
   }
   void           getMotionCostIBC(int add) { m_dCostIBC = m_dLambdaMotionSAD + add; }
   Distortion     getBvCostMultiplePredsIBC(int x, int y, bool useIMV);
-	
+
   static Distortion xGetSAD8          ( const DistParam& pcDtParam );
   static Distortion xGetSAD16         ( const DistParam& pcDtParam ); // needs to be public for xGetSAD_MxN_SIMD ( NOTE: they are all public in vvenc )
   static void       xGetSAD16X5       ( const DistParam& pcDtParam, Distortion* cost, bool isCalCentrePos ); // needs to be public for xGetSADX5_16xN_SIMD ( NOTE: they are all public in vvenc )

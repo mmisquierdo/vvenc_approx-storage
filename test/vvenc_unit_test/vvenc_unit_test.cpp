@@ -304,7 +304,11 @@ static bool check_cpyCoeff( TCoeffOps* ref, TCoeffOps* opt, unsigned num_cases )
   // Use xMalloc to create aligned buffers for x86.
   Pel    *src     = ( Pel*    )xMalloc( Pel,    buf_size );
   TCoeff *dst_ref = ( TCoeff* )xMalloc( TCoeff, buf_size );
+  ApproxInter::UnmarkBuffer((void*) dst_ref);
+
   TCoeff *dst_opt = ( TCoeff* )xMalloc( TCoeff, buf_size );
+  ApproxInter::UnmarkBuffer((void*) dst_opt);
+
 
   bool passed = true;
 
@@ -373,7 +377,11 @@ static bool check_roundClip( TCoeffOps* ref, TCoeffOps* opt, unsigned num_cases,
 
   // Use xMalloc to create aligned buffers for x86.
   TCoeff *dst_ref = ( TCoeff* )xMalloc( TCoeff, buf_size );
+  ApproxInter::UnmarkBuffer((void*) dst_ref);
+  
   TCoeff *dst_opt = ( TCoeff* )xMalloc( TCoeff, buf_size );
+  ApproxInter::UnmarkBuffer((void*) dst_opt);
+
 
   bool passed = true;
 

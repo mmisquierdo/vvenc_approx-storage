@@ -466,7 +466,7 @@ Distortion RdCost::xGetSAD_NxN_SIMD( const DistParam &rcDtParam )
             ApproxInter::UninstrumentIfMarked((void*) approxCurr);
             #endif
             ApproxSS::end_level(); 
-	
+
             return distTemp;}
           checkExit = 3;
         }
@@ -2688,7 +2688,7 @@ Distortion RdCost::xGetHAD2SADs_SIMD( const DistParam &rcDtParam )
   Distortion distSad = 0;
 
   {
-	ApproxSS::start_level(ApproxInter::LevelId::SAD);
+    ApproxSS::start_level(ApproxInter::LevelId::SAD);
 
     const short* pSrc1   = (const short*)rcDtParam.org.buf;
     const short* pSrc2   = (const short*)rcDtParam.cur.buf;
@@ -2778,7 +2778,7 @@ Distortion RdCost::xGetSADwMask_SIMD(const DistParam &rcDtParam)
   if (rcDtParam.org.width < 4 || rcDtParam.bitDepth > 10 || rcDtParam.applyWeight)
     return RdCost::xGetSADwMask(rcDtParam); //MATHEUS: distortion metrics: already instrumented
 
-  ApproxSS::start_level(ApproxInter::LevelId::MaskedSAD);	
+  ApproxSS::start_level(ApproxInter::LevelId::MaskedSAD);
 
   const short *src1       = (const short *) rcDtParam.org.buf;
   const short *src2       = (const short *) rcDtParam.cur.buf;

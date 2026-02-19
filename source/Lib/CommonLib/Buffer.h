@@ -89,7 +89,7 @@ struct PelBufferOps
   template<X86_VEXT vext>
   void _initPelBufOpsX86();
 #endif
-	
+  
 #if ENABLE_SIMD_OPT_BUFFER && defined( TARGET_SIMD_ARM )
   void initPelBufOpsARM();
   template<ARM_VEXT vext>
@@ -1031,8 +1031,8 @@ struct CompStorage : public PelBuf
     CHECK( m_memory, "Trying to re-create an already initialized buffer" );
     m_allocSize = size.area();
     m_memory = xMalloc(Pel, m_allocSize); /*new Pel[m_allocSize];*/ //<Matheus> </Matheus>
-	ApproxInter::RemarkBuffer((void*) m_memory, ApproxInter::BufferId::CompStorage_mMemory, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
-	//JICS: instrumentar genericamente
+    ApproxInter::RemarkBuffer((void*) m_memory, ApproxInter::BufferId::CompStorage_mMemory, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
+    //JICS: instrumentar genericamente
     PelBuf::operator=( PelBuf( m_memory, size ) );
   }
   void destroy()
