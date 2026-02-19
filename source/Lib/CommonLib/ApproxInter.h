@@ -47,6 +47,7 @@
 
   #define COST_CAPTURE                                true //i'm iffy if it's corretly implemented on ARM (RdCostARM.h), actually new CostCapture should do it 
   #define LONG_DOUBLELOG                              false
+  #define COST_DOUBLELOG                              true
 
   #define INSTRUMENT_METRICS                          false
 
@@ -666,35 +667,99 @@
         constexpr int64_t MaskedSAD = 100; 
         constexpr int64_t HAD = 99;
         constexpr int64_t FastHAD = 102;
+        constexpr int64_t HAD_2SAD = 103;
+
+        constexpr std::array<const int64_t, Take::DF_TOTAL_FUNCTIONS_ACTUAL> DFunc = {
+          SSE,   //{ Take::DF_SSE,             "SSE" },
+          SSE,   //{ Take::DF_SSE2,            "SSE2" },
+          SSE,   //{ Take::DF_SSE4,            "SSE4" },
+          SSE,   //{ Take::DF_SSE8,            "SSE8" },
+          SSE,   //{ Take::DF_SSE16,           "SSE16" },
+          SSE,   //{ Take::DF_SSE32,           "SSE32" },
+          SSE,   //{ Take::DF_SSE64,           "SSE64" },
+          SSE,   //{ Take::DF_SSE128,          "SSE128" },
+
+          SAD,   //{ Take::DF_SAD,             "SAD" },
+          SAD,   //{ Take::DF_SAD2,            "SAD2" },
+          SAD,   //{ Take::DF_SAD4,            "SAD4" },
+          SAD,   //{ Take::DF_SAD8,            "SAD8" },
+          SAD,   //{ Take::DF_SAD16,           "SAD16" },
+          SAD,   //{ Take::DF_SAD32,           "SAD32" },
+          SAD,   //{ Take::DF_SAD64,           "SAD64" },
+          SAD,   //{ Take::DF_SAD128,          "SAD128" },
+
+          HAD,  //{ Take::DF_HAD,             "HAD" },
+          HAD,  //{ Take::DF_HAD2,            "HAD2" },
+          HAD,  //{ Take::DF_HAD4,            "HAD4" },
+          HAD,  //{ Take::DF_HAD8,            "HAD8" },
+          HAD,  //{ Take::DF_HAD16,           "HAD16" },
+          HAD,  //{ Take::DF_HAD32,           "HAD32" },
+          HAD,  //{ Take::DF_HAD64,           "HAD64" },
+          HAD,  //{ Take::DF_HAD128,          "HAD128" },
+
+          MaskedSAD, //{ Take::DF_SAD_MASKED,   "SAD_MASKED" },
+          MaskedSAD, //{ Take::DF_SAD_MASKED2,  "SAD_MASKED2" },
+          MaskedSAD, //{ Take::DF_SAD_MASKED4,  "SAD_MASKED4" },
+          MaskedSAD, //{ Take::DF_SAD_MASKED8,  "SAD_MASKED8" },
+          MaskedSAD, //{ Take::DF_SAD_MASKED16, "SAD_MASKED16" },
+          MaskedSAD, //{ Take::DF_SAD_MASKED32, "SAD_MASKED32" },
+          MaskedSAD, //{ Take::DF_SAD_MASKED64, "SAD_MASKED64" },
+          MaskedSAD, //{ Take::DF_SAD_MASKED128,"SAD_MASKED128" },
+
+          FastHAD, //{ Take::DF_HAD_fast,        "HAD_fast" },
+          FastHAD, //{ Take::DF_HAD2_fast,       "HAD2_fast" },
+          FastHAD, //{ Take::DF_HAD4_fast,       "HAD4_fast" },
+          FastHAD, //{ Take::DF_HAD8_fast,       "HAD8_fast" },
+          FastHAD, //{ Take::DF_HAD16_fast,      "HAD16_fast" },
+          FastHAD, //{ Take::DF_HAD32_fast,      "HAD32_fast" },
+          FastHAD, //{ Take::DF_HAD64_fast,      "HAD64_fast" },
+          FastHAD, //{ Take::DF_HAD128_fast,     "HAD128_fast" },
+
+          HAD_2SAD,      //{ Take::DF_HAD_2SAD,        "HAD_2SAD" },
+
+          -1,        //{ Take::DF_TOTAL_FUNCTIONS, "TOTAL_FUNCTIONS" },
+          WeightedSSE,  //{ Take::DF_SSE_WTD,         "SSE_WTD" }
+          WeightedSSE,  //{ Take::DF_SSE_WTD2,        "SSE_WTD" }
+          WeightedSSE,  //{ Take::DF_SSE_WTD4,        "SSE_WTD" }
+          WeightedSSE,  //{ Take::DF_SSE_WTD8,        "SSE_WTD" }
+          WeightedSSE,  //{ Take::DF_SSE_WTD16,       "SSE_WTD" }
+          WeightedSSE,  //{ Take::DF_SSE_WTD32,       "SSE_WTD" }
+          WeightedSSE,  //{ Take::DF_SSE_WTD64,       "SSE_WTD" }
+          WeightedSSE,  //{ Take::DF_SSE_WTD128,      "SSE_WTD"}
+
+          SAD,          //{ Take::DF_SAD8XN,          "SAD8XN" }
+          SAD          //{ Take::DF_SAD16XN,         "SAD16XN"}
+        };
+
       }
 
       namespace ConfigurationId {
-        static constexpr int64_t JUST_TRACKING            = 0;
-        static constexpr int64_t PRECISE_KNOB            = 2;
-        static constexpr int64_t APPROXIMATE_KNOB          = 1;
+        static constexpr int64_t JUST_TRACKING     = 0;
+        static constexpr int64_t PRECISE_KNOB      = 2;
+        static constexpr int64_t APPROXIMATE_KNOB  = 1;
 
-        constexpr int64_t OTHER = JUST_TRACKING;
+        constexpr int64_t OTHER =             JUST_TRACKING;
 
-        constexpr int64_t SAD_Orig = APPROXIMATE_KNOB;
-        constexpr int64_t SAD_Curr = APPROXIMATE_KNOB;
+        constexpr int64_t SAD_Orig =          APPROXIMATE_KNOB;
+        constexpr int64_t SAD_Curr =          APPROXIMATE_KNOB;
 
-        constexpr int64_t MaskedSAD_Orig = APPROXIMATE_KNOB;
-        constexpr int64_t MaskedSAD_Curr = APPROXIMATE_KNOB;
+        constexpr int64_t MaskedSAD_Orig =    APPROXIMATE_KNOB;
+        constexpr int64_t MaskedSAD_Curr =    APPROXIMATE_KNOB;
 
-        constexpr int64_t SSE_Orig = APPROXIMATE_KNOB;
-        constexpr int64_t SSE_Curr = APPROXIMATE_KNOB;
+        constexpr int64_t SSE_Orig =          APPROXIMATE_KNOB;
+        constexpr int64_t SSE_Curr =          APPROXIMATE_KNOB;
 
-        constexpr int64_t WeightedSSE_Orig = APPROXIMATE_KNOB;
-        constexpr int64_t WeightedSSE_Curr = APPROXIMATE_KNOB;
+        constexpr int64_t WeightedSSE_Orig =  APPROXIMATE_KNOB;
+        constexpr int64_t WeightedSSE_Curr =  APPROXIMATE_KNOB;
 
-        constexpr int64_t HAD_Orig = APPROXIMATE_KNOB;
-        constexpr int64_t HAD_Curr = APPROXIMATE_KNOB;
+        constexpr int64_t HAD_Orig =          APPROXIMATE_KNOB;
+        constexpr int64_t HAD_Curr =          APPROXIMATE_KNOB;
 
-        constexpr int64_t FastHAD_Orig = APPROXIMATE_KNOB;
-        constexpr int64_t FastHAD_Curr = APPROXIMATE_KNOB;
+        constexpr int64_t FastHAD_Orig =      APPROXIMATE_KNOB;
+        constexpr int64_t FastHAD_Curr =      APPROXIMATE_KNOB;
 
-        constexpr int64_t HAD_2SAD_Orig = APPROXIMATE_KNOB;
-        constexpr int64_t HAD_2SAD_Curr = APPROXIMATE_KNOB;
+        constexpr int64_t HAD_2SAD_Orig =     APPROXIMATE_KNOB;
+        constexpr int64_t HAD_2SAD_Curr =     APPROXIMATE_KNOB;
 
         constexpr std::array<const int64_t, Take::DF_TOTAL_FUNCTIONS_ACTUAL> DFunc_Orig = {
           SSE_Orig,   //{ Take::DF_SSE,             "SSE" },
