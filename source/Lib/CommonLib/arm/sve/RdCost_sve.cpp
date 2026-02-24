@@ -143,7 +143,18 @@ Distortion xGetSADwMask_sve( const DistParam& rcDtParam )
 template<>
 void RdCost::_initRdCostARM<SVE>()
 {
-  m_afpDistortFunc[0][DF_SAD_WITH_MASK] = xGetSADwMask_sve;
+  //<Matheus>
+  //m_afpDistortFunc[0][DF_SAD_WITH_MASK] = xGetSADwMask_sve;
+  m_afpDistortFunc[0][DF_SAD_MASKED]    = xGetSADwMask_sve;
+  m_afpDistortFunc[0][DF_SAD_MASKED2]   = xGetSADwMask_sve;
+  m_afpDistortFunc[0][DF_SAD_MASKED4]   = xGetSADwMask_sve;
+  m_afpDistortFunc[0][DF_SAD_MASKED8]   = xGetSADwMask_sve;
+  m_afpDistortFunc[0][DF_SAD_MASKED16]  = xGetSADwMask_sve;
+  m_afpDistortFunc[0][DF_SAD_MASKED32]  = xGetSADwMask_sve;
+  m_afpDistortFunc[0][DF_SAD_MASKED64]  = xGetSADwMask_sve;
+  m_afpDistortFunc[0][DF_SAD_MASKED128] = xGetSADwMask_sve;
+  //</Matheus>
+
 }
 
 #endif // defined( TARGET_SIMD_ARM )

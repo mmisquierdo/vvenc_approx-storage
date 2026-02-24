@@ -1820,7 +1820,17 @@ void RdCost::_initRdCostARM<NEON>()
 {
   m_afpDistortFuncX5[1] = xGetSADX5_16xN_neon;
 
-  m_afpDistortFunc[0][DF_SAD_WITH_MASK] = xGetSADwMask_neon;
+  //<Matheus>
+  //m_afpDistortFunc[0][DF_SAD_WITH_MASK] = xGetSADwMask_neon;
+  m_afpDistortFunc[0][DF_SAD_MASKED]    = xGetSADwMask_neon;
+  m_afpDistortFunc[0][DF_SAD_MASKED2]   = xGetSADwMask_neon;
+  m_afpDistortFunc[0][DF_SAD_MASKED4]   = xGetSADwMask_neon;
+  m_afpDistortFunc[0][DF_SAD_MASKED8]   = xGetSADwMask_neon;
+  m_afpDistortFunc[0][DF_SAD_MASKED16]  = xGetSADwMask_neon;
+  m_afpDistortFunc[0][DF_SAD_MASKED32]  = xGetSADwMask_neon;
+  m_afpDistortFunc[0][DF_SAD_MASKED64]  = xGetSADwMask_neon;
+  m_afpDistortFunc[0][DF_SAD_MASKED128] = xGetSADwMask_neon;
+  //</Matheus>
   m_afpDistortFunc[0][DF_HAD_2SAD ] = xGetHAD2SADs_neon;
 
 #if defined( TARGET_SIMD_X86 )
