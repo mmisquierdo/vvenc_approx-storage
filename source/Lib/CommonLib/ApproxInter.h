@@ -1060,7 +1060,7 @@
 
       template <typename... Args>
       void Log(const Args&... args) {
-        ((std::cout << std::forward<const Args&>(args) << " "), ...);
+        ((std::cout << std::forward<const Args&>(args)), ...);
       }
       #endif
 
