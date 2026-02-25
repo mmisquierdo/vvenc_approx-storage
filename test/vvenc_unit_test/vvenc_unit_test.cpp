@@ -1436,8 +1436,8 @@ static bool check_SADwMask( RdCost* ref, RdCost* opt, unsigned num_cases, int wi
     std::generate( orgBuf.begin(), orgBuf.end(), g10 );
     std::generate( curBuf.begin(), curBuf.end(), g10 );
 
-    Distortion sum_ref = ref->m_afpDistortFunc[0][DF_SAD_WITH_MASK]( dtParam );
-    Distortion sum_opt = opt->m_afpDistortFunc[0][DF_SAD_WITH_MASK]( dtParam );
+    Distortion sum_ref = ref->m_afpDistortFunc[0][DF_SAD_MASKED/*DF_SAD_WITH_MASK*/]( dtParam ); //<MATHEUS>
+    Distortion sum_opt = opt->m_afpDistortFunc[0][DF_SAD_MASKED/*DF_SAD_WITH_MASK*/]( dtParam );
     passed = compare_value( sstm.str(), sum_ref, sum_opt ) && passed;
   }
   return passed;

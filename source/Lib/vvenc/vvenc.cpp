@@ -127,9 +127,10 @@ VVENC_DECL void vvenc_YUVBuffer_free_buffer( vvencYUVBuffer *yuvBuffer )
 
   for ( int i = 0; i < 3; i++ )
   {
-    if( yuvBuffer->planes[ i ].ptr )
+    if( yuvBuffer->planes[ i ].ptr ) {
       ApproxInter::UnmarkBuffer((void*) yuvBuffer->planes[ i ].ptr, (void*) &yuvBuffer->planes[ i ].ptr[yuvBuffer->planes[ i ].stride * yuvBuffer->planes[ i ].height]);
       delete [] yuvBuffer->planes[ i ].ptr;
+    }
   }
 }
 
