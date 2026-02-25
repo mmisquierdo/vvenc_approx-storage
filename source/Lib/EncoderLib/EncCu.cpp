@@ -728,6 +728,10 @@ void xCheckFastCuChromaSplitting( CodingStructure*& tempCS, CodingStructure*& be
 void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Partitioner& partitioner )
 {
   const Area& lumaArea = tempCS->area.Y();
+  
+  #if COST_CAPTURE
+    ApproxInter::Log("B:", tempCS->area.lwidth(), tempCS->area.lheight());
+  #endif
 
   Slice&   slice      = *tempCS->slice;
   const PPS &pps      = *tempCS->pps;

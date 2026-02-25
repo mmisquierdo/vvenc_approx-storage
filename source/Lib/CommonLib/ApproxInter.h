@@ -9,6 +9,7 @@
   #include <unordered_map>
   #include <cstdint>
   #include <functional>
+  #include <utility>
   #include "approx.h"
 
   #define MATHEUS_INSTRUMENTATION       false
@@ -1058,7 +1059,9 @@
       void ProcessTake(const uint8_t takeId, const uint8_t funcId, const uint64_t cost);
 
       template <typename... Args>
-      void Log(const Args&... args);
+      void Log(const Args&... args) {
+        ((std::cout << std::forward<const Args&>(args) << " "), ...);
+      }
       #endif
 
     #if FELIPE_INSTRUMENTATION
