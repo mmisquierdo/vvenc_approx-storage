@@ -124,6 +124,11 @@ void ApproxInter::UninstrumentIfMarked(void * const address, const bool giveAway
 void ApproxInter::ProcessTake(const uint8_t takeId, const uint8_t funcId, const uint64_t cost) {
   std::cout << Take::DFuncNames.at(funcId) << Take::Names[takeId] <<  cost << std::endl;
 }
+
+template <typename... Args>
+void ApproxInter::Log(const Args&... args) {
+  ((std::cout << std::forward<Args>(args) << " "), ...);
+}
 #endif
 
 void ApproxInter::PrintMacroState(const std::string& macroName, const bool macroStatus, const std::string& tab /*= "\t"*/) {
