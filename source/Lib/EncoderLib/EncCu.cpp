@@ -730,7 +730,7 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
   const Area& lumaArea = tempCS->area.Y();
 
   #if COST_CAPTURE
-    ApproxInter::Log("B:", tempCS->area.lwidth(), 'x', tempCS->area.lheight(), '\n');
+    ApproxInter::Log(">Block:", lumaArea.width, 'x', lumaArea.height, '@', lumaArea.x, ',', lumaArea.y, '\n');
   #endif
 
   Slice&   slice      = *tempCS->slice;
@@ -1156,6 +1156,9 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
   if( bestCS->cus.empty() )
   {
     m_modeCtrl.finishCULevel( partitioner );
+    #if COST_CAPTURE
+      ApproxInter::Log("<Block");
+    #endif
     return;
   }
 
@@ -1202,6 +1205,10 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
   CHECK( bestCS->cus.empty()                                   , "No possible encoding found" );
   CHECK( bestCS->cus[0]->predMode == NUMBER_OF_PREDICTION_MODES, "No possible encoding found" );
   CHECK( bestCS->cost             == MAX_DOUBLE                , "No possible encoding found" );
+
+  #if COST_CAPTURE
+    ApproxInter::Log("<Block");
+  #endif
 }
 
 

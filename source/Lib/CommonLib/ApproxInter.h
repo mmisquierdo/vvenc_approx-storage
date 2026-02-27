@@ -92,6 +92,8 @@
       extern uint32_t fme_uiDirecBest;
 
       extern int lastFuncId;
+      extern int lastBlockWidth;
+      extern int lastBlockHeight;
 
     //public:
       #if COST_CAPTURE

@@ -11,9 +11,10 @@ AllocatedBuffersSet ApproxInter::allocatedBuffers{};
 std::mutex ApproxInter::allocatedBuffersMutex;
 
 int ApproxInter::lastFuncId = -1;
+int ApproxInter::lastBlockWidth = -1;
+int ApproxInter::lastBlockHeight = -1;
 
 uint64_t ApproxInter::Take::CurrentTake = ApproxInter::Take::Precise;
-
 
 //FME_BEST_MV_COST_RECALC
 uint32_t ApproxInter::fme_uiDirecBest = 0;

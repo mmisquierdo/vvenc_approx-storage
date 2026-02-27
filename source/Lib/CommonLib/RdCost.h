@@ -130,9 +130,11 @@ typedef void      ( *FpDistFuncX5 )( const DistParam&, Distortion*, bool );
           const Distortion precDist   = this->GetDistortion(args...);
           ApproxSS::enable_global_injection();
 
-          if (ApproxInter::lastFuncId != this->m_funcId) {
+          if ((ApproxInter::lastFuncId != this->m_funcId) || (ApproxInter::lastBlockHeight != distParam.org.height) || (ApproxInter::lastBlockWidth != distParam.org.width)) {
             ApproxInter::lastFuncId = this->m_funcId;
-            std::cout << "DF_" << ApproxInter::Take::DFuncNames.at(m_funcId) << ":\n";
+            ApproxInter::lastBlockWidth = distParam.org.width;
+            ApproxInter::lastBlockHeight = distParam.org.height;
+            std::cout << "DF_" << ApproxInter::Take::DFuncNames.at(m_funcId) << '_' << ApproxInter::lastBlockWidth << 'x' << ApproxInter::lastBlockHeight << ":\n";
           }
                   
           const double rel = ((static_cast<double>(approxDist)/static_cast<double>(precDist)-1.0)*100.0);
