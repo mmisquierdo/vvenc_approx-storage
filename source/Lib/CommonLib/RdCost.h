@@ -118,8 +118,8 @@ typedef void      ( *FpDistFuncX5 )( const DistParam&, Distortion*, bool );
         #if CAPTURED_METRIC_INSTRUMENTATION
           Pel const * const approxOrig = distParam.org.buf;
           Pel const * const approxCurr = distParam.cur.buf;
-          ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::DFunc_Orig[this->m_funcId], ApproxInter::ConfigurationId::DFunc_Orig[this->m_funcId]);
-          ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::DFunc_Curr[this->m_funcId], ApproxInter::ConfigurationId::DFunc_Curr[this->m_funcId]);
+          ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::offsetBufferId(ApproxInter::BufferId::DFunc_Orig[this->m_funcId], distParam.org.height), ApproxInter::ConfigurationId::DFunc_Orig[this->m_funcId]);
+          ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::offsetBufferId(ApproxInter::BufferId::DFunc_Curr[this->m_funcId], distParam.org.height), ApproxInter::ConfigurationId::DFunc_Curr[this->m_funcId]);
         #endif
 
 
@@ -137,11 +137,11 @@ typedef void      ( *FpDistFuncX5 )( const DistParam&, Distortion*, bool );
             std::cout << "DF_" << ApproxInter::Take::DFuncNames.at(m_funcId) << '_' << ApproxInter::lastBlockWidth << 'x' << ApproxInter::lastBlockHeight << ":\n";
           }
                   
-          const double rel = ((static_cast<double>(approxDist)/static_cast<double>(precDist)-1.0)*100.0);
+          //const double rel = ((static_cast<double>(approxDist)/static_cast<double>(precDist)-1.0)*100.0);
 
-          std::cout << std::fixed << std::setprecision(2);
-          std::cout << '=' << precDist << '~' << (rel > 0? "+" : "") << rel << "%\n";
-          std::cout << std::defaultfloat << std::setprecision(6);
+          //std::cout << std::fixed << std::setprecision(2);
+          std::cout << '=' << precDist << '~'  << approxDist << '\n'; //(rel > 0? "+" : "") << rel << "%\n";
+          //std::cout << std::defaultfloat << std::setprecision(6);
 
           const Distortion returnedDist   = precDist;
         #else

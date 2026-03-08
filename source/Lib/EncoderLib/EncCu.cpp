@@ -920,13 +920,13 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
             ApproxSS::enable_global_injection();
 
             #if COST_CAPTURE
-              ApproxInter::Log(">MERGE\n"); 
+              ApproxInter::Log(">>MERGE\n"); 
             #endif
 
             xCheckRDCostUnifiedMerge(tempCS, bestCS, partitioner, encTestModeSkip);
 
             #if COST_CAPTURE
-              ApproxInter::Log("<MERGE\n"); 
+              ApproxInter::Log("<<MERGE\n"); 
             #endif
 
             ApproxSS::disable_global_injection();
@@ -944,13 +944,13 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
             ApproxSS::enable_global_injection();
 
             #if COST_CAPTURE
-              ApproxInter::Log(">INTER\n"); 
+              ApproxInter::Log(">>INTER\n"); 
             #endif
 
             xCheckRDCostInter(tempCS, bestCS, partitioner, encTestMode); //MATHEUS NOTE: important
 
             #if COST_CAPTURE
-              ApproxInter::Log("<INTER\n"); 
+              ApproxInter::Log("<<INTER\n"); 
             #endif
 
             ApproxSS::disable_global_injection();
@@ -971,13 +971,13 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
                 ApproxSS::enable_global_injection();
 
                 #if COST_CAPTURE
-                  ApproxInter::Log(">INTERIMV\n"); 
+                  ApproxInter::Log(">>INTERIMV\n"); 
                 #endif
 
                 xCheckRDCostInterIMV(tempCS, bestCS, partitioner, encTestMode ); //MATHEUS NOTE: important
 
                 #if COST_CAPTURE
-                  ApproxInter::Log("<INTERIMV\n"); 
+                  ApproxInter::Log("<<INTERIMV\n"); 
                 #endif
 
                 ApproxSS::disable_global_injection();
@@ -996,13 +996,13 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
             ApproxSS::enable_global_injection();
 
             #if COST_CAPTURE
-              ApproxInter::Log(">IBCMERGE\n"); 
+              ApproxInter::Log(">>IBCMERGE\n"); 
             #endif
 
             xCheckRDCostIBCModeMerge2Nx2N(tempCS, bestCS, partitioner, encTestModeIBCMerge);
 
             #if COST_CAPTURE
-              ApproxInter::Log("<IBCMERGE\n"); 
+              ApproxInter::Log("<<IBCMERGE\n"); 
             #endif
 
             ApproxSS::disable_global_injection();
@@ -1016,13 +1016,13 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
             ApproxSS::enable_global_injection();
 
             #if COST_CAPTURE
-              ApproxInter::Log(">IBC\n"); 
+              ApproxInter::Log(">>IBC\n"); 
             #endif
 
             xCheckRDCostIBCMode(tempCS, bestCS, partitioner, encTestModeIBC);
 
             #if COST_CAPTURE
-              ApproxInter::Log("<IBC\n"); 
+              ApproxInter::Log("<<IBC\n"); 
             #endif
 
             ApproxSS::disable_global_injection();
@@ -1044,13 +1044,13 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
           ApproxSS::enable_global_injection();
 
           #if COST_CAPTURE
-            ApproxInter::Log(">INTRA\n"); 
+            ApproxInter::Log(">>INTRA\n"); 
           #endif
 
           xCheckRDCostIntra( tempCS, bestCS, partitioner, encTestMode ); //MATHEUS NOTE: important
 
           #if COST_CAPTURE
-            ApproxInter::Log("<INTRA\n"); 
+            ApproxInter::Log("<<INTRA\n"); 
           #endif
 
           ApproxSS::disable_global_injection();
@@ -1157,7 +1157,7 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
   {
     m_modeCtrl.finishCULevel( partitioner );
     #if COST_CAPTURE
-      ApproxInter::Log("<Block");
+      ApproxInter::Log("<Block\n");
     #endif
     return;
   }
@@ -1207,7 +1207,7 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
   CHECK( bestCS->cost             == MAX_DOUBLE                , "No possible encoding found" );
 
   #if COST_CAPTURE
-    ApproxInter::Log("<Block");
+    ApproxInter::Log("<Block\n");
   #endif
 }
 
@@ -3669,7 +3669,7 @@ void EncCu::xCalDebCost( CodingStructure &cs, Partitioner &partitioner )
   ApproxSS::enable_global_injection();
 
   #if COST_CAPTURE
-    ApproxInter::Log(">CALCDEBT\n");
+    ApproxInter::Log(">>CALCDEBT\n");
   #endif
 
   const ChromaFormat format = cs.area.chromaFormat;
@@ -3683,7 +3683,7 @@ void EncCu::xCalDebCost( CodingStructure &cs, Partitioner &partitioner )
     ApproxSS::disable_global_injection();
     ApproxSS::end_level();
     #if COST_CAPTURE
-      ApproxInter::Log("<CALCDEBT\n");
+      ApproxInter::Log("<<CALCDEBT\n");
     #endif
     return;
   }
@@ -3711,7 +3711,7 @@ void EncCu::xCalDebCost( CodingStructure &cs, Partitioner &partitioner )
       ApproxSS::disable_global_injection();
       ApproxSS::end_level();
       #if COST_CAPTURE
-        ApproxInter::Log("<CALCDEBT\n");
+        ApproxInter::Log("<<CALCDEBT\n");
       #endif
       return;
     }
@@ -3861,7 +3861,7 @@ void EncCu::xCalDebCost( CodingStructure &cs, Partitioner &partitioner )
   cs.costDbOffset = distTmp < 0 ? -m_cRdCost.calcRdCost( 0, -distTmp ) : m_cRdCost.calcRdCost( 0, distTmp );
 
   #if COST_CAPTURE
-    ApproxInter::Log("<CALCDEBT\n");
+    ApproxInter::Log("<<CALCDEBT\n");
   #endif
   ApproxSS::disable_global_injection();
   ApproxSS::end_level();
