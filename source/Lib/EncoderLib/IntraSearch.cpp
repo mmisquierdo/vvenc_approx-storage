@@ -211,7 +211,7 @@ void IntraSearch::xEstimateLumaRdModeList(int& numModesForFullRD,
   {
     piOrg = cu.cs->getRspOrgBuf();
   }
-  DistParam distParam    = m_pcRdCost->setDistParam( piOrg, piPred, sps.bitDepths[ CH_L ], DF_HAD); //DF_HAD_2SAD); // Use HAD (SATD) cost
+  DistParam distParam    = m_pcRdCost->setDistParam( piOrg, piPred, sps.bitDepths[ CH_L ], INSTRUMENT_HAD2SAD ? DF_HAD_2SAD : DF_HAD); //DF_HAD_2SAD); // Use HAD (SATD) cost
 
   const int numHadCand = (testMip ? 2 : 1) * 3;
 

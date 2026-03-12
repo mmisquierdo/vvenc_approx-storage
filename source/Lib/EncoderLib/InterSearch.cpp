@@ -272,19 +272,19 @@ void InterSearch::init( const VVEncCfg& encCfg, TrQuant* pTrQuant, RdCost* pRdCo
   m_tmpStorageLCU.RemarkBuffers(ApproxInter::BufferId::InterSearch_m_tmpStorageLCU);
 
   m_pTempPel = xMalloc(Pel, ctuSize * ctuSize); //new Pel[ctuSize * ctuSize];
-  ApproxInter::RemarkBuffer((void*) m_pTempPel, ApproxInter::BufferId::InterSearch_m_pTempPel, ApproxInter::ConfigurationId::PRECISE_KNOB, sizeof(Pel));
+  ApproxInter::RemarkBuffer((void*) m_pTempPel, ApproxInter::BufferId::InterSearch_m_pTempPel, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
 
   m_tmpAffiStorage.create(UnitArea(cform, Area(0, 0, ctuSize, ctuSize + 2)));  // allow overread by 2 samples
   m_tmpAffiStorage.RemarkBuffers(ApproxInter::BufferId::InterSearch_m_tmpAffiStorage);
 
   m_tmpAffiError = xMalloc(Pel, ctuSize * ctuSize); //new Pel[ctuSize * ctuSize];
-  ApproxInter::RemarkBuffer((void*) m_tmpAffiError, ApproxInter::BufferId::InterSearch_m_tmpAffiError, ApproxInter::ConfigurationId::PRECISE_KNOB, sizeof(Pel));
+  ApproxInter::RemarkBuffer((void*) m_tmpAffiError, ApproxInter::BufferId::InterSearch_m_tmpAffiError, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
 
   m_tmpAffiDeri[0] = xMalloc(Pel, ctuSize * ctuSize); //new Pel[ctuSize * ctuSize];
-  ApproxInter::RemarkBuffer((void*) m_tmpAffiDeri[0], ApproxInter::BufferId::InterSearch_m_tmpAffiDeri0, ApproxInter::ConfigurationId::PRECISE_KNOB, sizeof(Pel));
+  ApproxInter::RemarkBuffer((void*) m_tmpAffiDeri[0], ApproxInter::BufferId::InterSearch_m_tmpAffiDeri0, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
 
   m_tmpAffiDeri[1] = xMalloc(Pel, ctuSize * ctuSize); //new Pel[ctuSize * ctuSize];
-  ApproxInter::RemarkBuffer((void*) m_tmpAffiDeri[1], ApproxInter::BufferId::InterSearch_m_tmpAffiDeri1, ApproxInter::ConfigurationId::PRECISE_KNOB, sizeof(Pel));
+  ApproxInter::RemarkBuffer((void*) m_tmpAffiDeri[1], ApproxInter::BufferId::InterSearch_m_tmpAffiDeri1, ApproxInter::ConfigurationId::JUST_TRACKING, sizeof(Pel));
 
   CompArea chromaArea( COMP_Cb, cform, Area( 0, 0, encCfg.m_CTUSize, encCfg.m_CTUSize ), true );
   for( int i = 0; i < 4; i++ )

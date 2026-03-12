@@ -1866,10 +1866,27 @@ Distortion RdCost::xGetHAD2SADs( const DistParam &rcDtParam )
     THROW(" no support");
   }
 
+  #if INSTRUMENT_HAD2SAD
+    ApproxSS::start_level(ApproxInter::LevelId::DFunc[ApproxInter::Take::DF_HAD]);
+    if (ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_HAD]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.org.buf, ApproxInter::BufferId::DFunc_Orig[ApproxInter::Take::DF_HAD], ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_HAD]);}
+    if (ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_HAD]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.cur.buf, ApproxInter::BufferId::DFunc_Curr[ApproxInter::Take::DF_HAD], ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_HAD]);}
+  #endif
+
   Distortion distHad = xGetHADs<false>( rcDtParam );
+
+  #if INSTRUMENT_HAD2SAD
+    ApproxSS::end_level();
+    if (ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_HAD]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.org.buf);}
+    if (ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_HAD]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.cur.buf);}
+  #endif
 
   Distortion distSad = 0;
   {
+    #if INSTRUMENT_HAD2SAD
+      ApproxSS::start_level(ApproxInter::LevelId::DFunc[ApproxInter::Take::DF_SAD]);
+      if (ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_SAD]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.org.buf, ApproxInter::BufferId::DFunc_Orig[ApproxInter::Take::DF_SAD], ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_SAD]);}
+      if (ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_SAD]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.cur.buf, ApproxInter::BufferId::DFunc_Curr[ApproxInter::Take::DF_SAD], ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_SAD]);}
+    #endif
 
     CHECKD( (rcDtParam.org.width != rcDtParam.org.stride) || (rcDtParam.cur.stride != rcDtParam.org.stride) , "this functions assumes compact, aligned buffering");
 
@@ -1907,9 +1924,15 @@ Distortion RdCost::xGetHAD2SADs( const DistParam &rcDtParam )
     }
 
     distSad = (uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth));
-  }  
+
+    #if INSTRUMENT_HAD2SAD
+      ApproxSS::end_level();
+      if (ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_SAD]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.org.buf);}
+      if (ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_SAD]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.cur.buf);}
+    #endif
+  }
   
-  #if CAPTURED_METRIC_INSTRUMENTATION
+  #if PRINT_HAD2HAD_COMPARISON
     std::cout << '(' << ApproxInter::Take::Names[ApproxInter::Take::CurrentTake] << distHad << ',' << 2*distSad << ")\n"; //<< std::endl;
   #endif
 

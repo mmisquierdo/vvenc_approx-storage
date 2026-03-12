@@ -2581,11 +2581,29 @@ static uint32_t xCalcHAD8x16_AVX2( const Pel* piOrg, const Pel* piCur, const int
 template<X86_VEXT vext >
 Distortion RdCost::xGetHAD2SADs_SIMD( const DistParam &rcDtParam )
 {
+  #if INSTRUMENT_HAD2SAD
+    ApproxSS::start_level(ApproxInter::LevelId::DFunc[ApproxInter::Take::DF_HAD]);
+    if (ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_HAD]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.org.buf, ApproxInter::BufferId::DFunc_Orig[ApproxInter::Take::DF_HAD], ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_HAD]);}
+    if (ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_HAD]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.cur.buf, ApproxInter::BufferId::DFunc_Curr[ApproxInter::Take::DF_HAD], ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_HAD]);}
+  #endif
+
   Distortion distHad = xGetHADs_SIMD<vext, false>( rcDtParam );
+
+  #if INSTRUMENT_HAD2SAD
+    ApproxSS::end_level();
+    if (ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_HAD]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.org.buf);}
+    if (ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_HAD]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.cur.buf);}
+  #endif
 
   Distortion distSad = 0;
 
   {
+    #if INSTRUMENT_HAD2SAD
+      ApproxSS::start_level(ApproxInter::LevelId::DFunc[ApproxInter::Take::DF_SAD]);
+      if (ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_SAD]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.org.buf, ApproxInter::BufferId::DFunc_Orig[ApproxInter::Take::DF_SAD], ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_SAD]);}
+      if (ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_SAD]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.cur.buf, ApproxInter::BufferId::DFunc_Curr[ApproxInter::Take::DF_SAD], ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_SAD]);}
+    #endif
+
     const short* pSrc1   = (const short*)rcDtParam.org.buf;
     const short* pSrc2   = (const short*)rcDtParam.cur.buf;
 
@@ -2646,9 +2664,15 @@ Distortion RdCost::xGetHAD2SADs_SIMD( const DistParam &rcDtParam )
       uiSum =  _mm_cvtsi128_si32( vsum32 );
     }
     distSad = uiSum >> DISTORTION_PRECISION_ADJUSTMENT(rcDtParam.bitDepth);
+
+    #if INSTRUMENT_HAD2SAD
+      ApproxSS::end_level();
+      if (ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_SAD]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.org.buf);}
+      if (ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_SAD]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.cur.buf);}
+    #endif
   }
 
-  #if CAPTURED_METRIC_INSTRUMENTATION
+  #if PRINT_HAD2HAD_COMPARISON
     std::cout << '(' << ApproxInter::Take::Names[ApproxInter::Take::CurrentTake] << distHad << ',' << 2*distSad << ")\n"; //<< std::endl;
   #endif
 

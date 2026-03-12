@@ -116,12 +116,11 @@ typedef void      ( *FpDistFuncX5 )( const DistParam&, Distortion*, bool );
         ApproxSS::start_level(ApproxInter::LevelId::DFunc[this->m_funcId]);
 
         #if CAPTURED_METRIC_INSTRUMENTATION
-          Pel const * const approxOrig = distParam.org.buf;
-          Pel const * const approxCurr = distParam.cur.buf;
-          ApproxInter::InstrumentIfMarked((void*) approxOrig, ApproxInter::BufferId::offsetBufferId(ApproxInter::BufferId::DFunc_Orig[this->m_funcId], distParam.org.height), ApproxInter::ConfigurationId::DFunc_Orig[this->m_funcId]);
-          ApproxInter::InstrumentIfMarked((void*) approxCurr, ApproxInter::BufferId::offsetBufferId(ApproxInter::BufferId::DFunc_Curr[this->m_funcId], distParam.org.height), ApproxInter::ConfigurationId::DFunc_Curr[this->m_funcId]);
+          if (!INSTRUMENT_HAD2SAD || this->m_funcId != ApproxInter::Take::DF_HAD_2SAD) {
+            if (ApproxInter::ConfigurationId::DFunc_Orig[this->m_funcId]) {ApproxInter::InstrumentIfMarked((void*) distParam.org.buf, ApproxInter::offsetApproxId(ApproxInter::BufferId::DFunc_Orig[this->m_funcId], distParam.org.height), ApproxInter::ConfigurationId::DFunc_Orig[this->m_funcId]);}
+            if (ApproxInter::ConfigurationId::DFunc_Curr[this->m_funcId]) {ApproxInter::InstrumentIfMarked((void*) distParam.cur.buf, ApproxInter::offsetApproxId(ApproxInter::BufferId::DFunc_Curr[this->m_funcId], distParam.org.height), ApproxInter::ConfigurationId::DFunc_Curr[this->m_funcId]);}
+          }
         #endif
-
 
         #if COST_DOUBLELOG
           ApproxSS::enable_global_injection();
@@ -137,11 +136,7 @@ typedef void      ( *FpDistFuncX5 )( const DistParam&, Distortion*, bool );
             std::cout << "DF_" << ApproxInter::Take::DFuncNames.at(m_funcId) << '_' << ApproxInter::lastBlockWidth << 'x' << ApproxInter::lastBlockHeight << ":\n";
           }
                   
-          //const double rel = ((static_cast<double>(approxDist)/static_cast<double>(precDist)-1.0)*100.0);
-
-          //std::cout << std::fixed << std::setprecision(2);
-          std::cout << '=' << precDist << '~'  << approxDist << '\n'; //(rel > 0? "+" : "") << rel << "%\n";
-          //std::cout << std::defaultfloat << std::setprecision(6);
+          std::cout << '=' << precDist << '~'  << approxDist << '\n';
 
           const Distortion returnedDist   = precDist;
         #else
@@ -149,8 +144,10 @@ typedef void      ( *FpDistFuncX5 )( const DistParam&, Distortion*, bool );
         #endif
 
         #if CAPTURED_METRIC_INSTRUMENTATION
-          ApproxInter::UninstrumentIfMarked((void*) approxOrig);
-          ApproxInter::UninstrumentIfMarked((void*) approxCurr);
+          if (!INSTRUMENT_HAD2SAD || this->m_funcId != ApproxInter::Take::DF_HAD_2SAD) {
+            if (ApproxInter::ConfigurationId::DFunc_Orig[this->m_funcId]) {ApproxInter::UninstrumentIfMarked((void*) distParam.org.buf);}
+            if (ApproxInter::ConfigurationId::DFunc_Curr[this->m_funcId]) {ApproxInter::UninstrumentIfMarked((void*) distParam.cur.buf);}
+          }
         #endif
 
         ApproxSS::end_level();

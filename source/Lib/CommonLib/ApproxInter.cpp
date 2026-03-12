@@ -90,7 +90,7 @@ void ApproxInter::InstrumentIfMarked(void * const address, const int64_t bufferI
   const AllocatedBuffersSet::const_iterator it = ApproxInter::allocatedBuffers.find(accessBuffer);
 
   if (it != ApproxInter::allocatedBuffers.cend()) {
-    ApproxSS::add_approx(it->m_initialAddress, it->m_endAddress, ApproxInter::BufferId::offsetBufferId(bufferIdPrefix, it->m_bufferId), configurationId, it->m_dataSizeInBytes);
+    ApproxSS::add_approx(it->m_initialAddress, it->m_endAddress, ApproxInter::offsetApproxId(bufferIdPrefix, it->m_bufferId), configurationId, it->m_dataSizeInBytes);
   } else {
     std::cout << "ApproxInter WARNING: buffer not marked for add_approx." << std::endl;
   }
