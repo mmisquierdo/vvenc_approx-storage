@@ -58,6 +58,8 @@
 
   #define INSTRUMENT_HAD2SAD                          true
 
+  #define APPROX_LOG                                  false
+
   /*#define APPROX_FME_HP_RECO              true
   #define APPROX_FME_HP_ORIG              true
   #define APPROX_FME_QP_RECO              true
@@ -736,6 +738,10 @@
         
         constexpr int64_t xCalDebCost = 18;
 
+        constexpr int64_t xReuseCachedResult = 76;
+        constexpr int64_t xCheckFastCuChromaSplitting = 77;
+        constexpr int64_t FinishingCU = 78;
+
         constexpr int64_t MSE = 96;
         constexpr int64_t SSE = 97;
         constexpr int64_t WeightedSSE = 101;
@@ -827,20 +833,20 @@
       }
 
       namespace ConfigurationId {
-        static constexpr int64_t JUST_TRACKING     = 0;
+        static constexpr int64_t NO_TRACKING       = 0;
         static constexpr int64_t PRECISE_KNOB      = 2;
         static constexpr int64_t APPROXIMATE_KNOB  = 1;
 
-        constexpr int64_t OTHER =             JUST_TRACKING;
+        constexpr int64_t OTHER =             NO_TRACKING;
 
         constexpr int64_t SAD_Orig =          APPROXIMATE_KNOB;
         constexpr int64_t SAD_Curr =          APPROXIMATE_KNOB;
 
-        constexpr int64_t SSE_Orig =          APPROXIMATE_KNOB;
-        constexpr int64_t SSE_Curr =          APPROXIMATE_KNOB;
+        constexpr int64_t SSE_Orig =          PRECISE_KNOB;
+        constexpr int64_t SSE_Curr =          PRECISE_KNOB;
 
-        constexpr int64_t HAD_Orig =          APPROXIMATE_KNOB;
-        constexpr int64_t HAD_Curr =          APPROXIMATE_KNOB;
+        constexpr int64_t HAD_Orig =          PRECISE_KNOB;
+        constexpr int64_t HAD_Curr =          PRECISE_KNOB;
 
         constexpr int64_t MaskedSAD_Orig =    SAD_Orig; //APPROXIMATE_KNOB;
         constexpr int64_t MaskedSAD_Curr =    SAD_Curr; //APPROXIMATE_KNOB;
@@ -851,8 +857,8 @@
         constexpr int64_t FastHAD_Orig =      HAD_Orig; //APPROXIMATE_KNOB;
         constexpr int64_t FastHAD_Curr =      HAD_Curr; //APPROXIMATE_KNOB;
 
-        constexpr int64_t HAD_2SAD_Orig =     APPROXIMATE_KNOB;
-        constexpr int64_t HAD_2SAD_Curr =     APPROXIMATE_KNOB;
+        constexpr int64_t HAD_2SAD_Orig =     PRECISE_KNOB;
+        constexpr int64_t HAD_2SAD_Curr =     PRECISE_KNOB;
 
         constexpr std::array<const int64_t, Take::DF_TOTAL_FUNCTIONS_ACTUAL> DFunc_Orig = {
           SSE_Orig,   //{ Take::DF_SSE,             "SSE" },
@@ -1008,38 +1014,38 @@
           SAD_Curr           //{ Take::DF_SAD16XN128,       "SAD16XN128"},
         };
 
-        /*constexpr int64_t RECO_MOTION_ESTIMATION           = JUST_TRACKING;
-        constexpr int64_t RECO_AFFINE_MOTION_ESTIMATION       = JUST_TRACKING;
-        constexpr int64_t ORIG_MOTION_ESTIMATION           = JUST_TRACKING;
-        constexpr int64_t TEMP_ORIG_MOTION_ESTIMATION         = JUST_TRACKING;
-        constexpr int64_t ORIG_AFFINE_MOTION_ESTIMATION       = JUST_TRACKING;
-        constexpr int64_t TEMP_ORIG_AFFINE_MOTION_ESTIMATION    = JUST_TRACKING;
-        constexpr int64_t FILT_MOTION_ESTIMATION_TEMP         = JUST_TRACKING;
-        constexpr int64_t FILT_MOTION_ESTIMATION           = JUST_TRACKING;
-        constexpr int64_t PRED_AFFINE_MOTION_ESTIMATION       = JUST_TRACKING;*/
+        /*constexpr int64_t RECO_MOTION_ESTIMATION           = NO_TRACKING;
+        constexpr int64_t RECO_AFFINE_MOTION_ESTIMATION       = NO_TRACKING;
+        constexpr int64_t ORIG_MOTION_ESTIMATION           = NO_TRACKING;
+        constexpr int64_t TEMP_ORIG_MOTION_ESTIMATION         = NO_TRACKING;
+        constexpr int64_t ORIG_AFFINE_MOTION_ESTIMATION       = NO_TRACKING;
+        constexpr int64_t TEMP_ORIG_AFFINE_MOTION_ESTIMATION    = NO_TRACKING;
+        constexpr int64_t FILT_MOTION_ESTIMATION_TEMP         = NO_TRACKING;
+        constexpr int64_t FILT_MOTION_ESTIMATION           = NO_TRACKING;
+        constexpr int64_t PRED_AFFINE_MOTION_ESTIMATION       = NO_TRACKING;*/
 
         //constexpr int64_t RECO_MOTION_ESTIMATION_MVP         = 0;
         //constexpr int64_t RECO_MOTION_ESTIMATION_PATTERN       = 0;
-        /*constexpr int64_t RECO_MOTION_ESTIMATION_MVP_AND_PATTERN  = JUST_TRACKING;
-        constexpr int64_t RECO_MOTION_ESTIMATION_TZ         = JUST_TRACKING;
-        constexpr int64_t RECO_MOTION_ESTIMATION_FAST         = JUST_TRACKING;
-        constexpr int64_t RECO_MOTION_ESTIMATION_FRACTIONAL     = JUST_TRACKING;
-        constexpr int64_t RECO_MOTION_ESTIMATION_REFINEMENT     = JUST_TRACKING;
+        /*constexpr int64_t RECO_MOTION_ESTIMATION_MVP_AND_PATTERN  = NO_TRACKING;
+        constexpr int64_t RECO_MOTION_ESTIMATION_TZ         = NO_TRACKING;
+        constexpr int64_t RECO_MOTION_ESTIMATION_FAST         = NO_TRACKING;
+        constexpr int64_t RECO_MOTION_ESTIMATION_FRACTIONAL     = NO_TRACKING;
+        constexpr int64_t RECO_MOTION_ESTIMATION_REFINEMENT     = NO_TRACKING;
 
-        constexpr int64_t ORIG_MOTION_ESTIMATION_IME         = JUST_TRACKING;
-        constexpr int64_t ORIG_MOTION_ESTIMATION_FRACTIONAL     = JUST_TRACKING;
-        constexpr int64_t ORIG_MOTION_ESTIMATION_REFINEMENT     = JUST_TRACKING;
+        constexpr int64_t ORIG_MOTION_ESTIMATION_IME         = NO_TRACKING;
+        constexpr int64_t ORIG_MOTION_ESTIMATION_FRACTIONAL     = NO_TRACKING;
+        constexpr int64_t ORIG_MOTION_ESTIMATION_REFINEMENT     = NO_TRACKING;
 
         constexpr int64_t FME_RECO                   = RECO_MOTION_ESTIMATION_FRACTIONAL;
         constexpr int64_t FME_ORIG                   = ORIG_MOTION_ESTIMATION_FRACTIONAL;*/
 
-        /*constexpr int64_t FME_RECO_HR                = JUST_TRACKING;
-        constexpr int64_t FME_RECO_QR                = JUST_TRACKING;
-        constexpr int64_t FME_ORIG_HR                = JUST_TRACKING;
-        constexpr int64_t FME_ORIG_QR                = JUST_TRACKING;*/
+        /*constexpr int64_t FME_RECO_HR                = NO_TRACKING;
+        constexpr int64_t FME_RECO_QR                = NO_TRACKING;
+        constexpr int64_t FME_ORIG_HR                = NO_TRACKING;
+        constexpr int64_t FME_ORIG_QR                = NO_TRACKING;*/
 
-        /*constexpr int64_t FME_FILT                  = JUST_TRACKING;  
-        constexpr int64_t FME_FILT_TEMP                = JUST_TRACKING;*/
+        /*constexpr int64_t FME_FILT                  = NO_TRACKING;  
+        constexpr int64_t FME_FILT_TEMP                = NO_TRACKING;*/
       }
 
 
@@ -1070,7 +1076,9 @@
 
       template <typename... Args>
       void Log(const Args&... args) {
-        ((std::cout << std::forward<const Args&>(args)), ...);
+        #if APPROX_LOG
+          ((std::cout << std::forward<const Args&>(args)), ...);
+        #endif
       }
       #endif
 

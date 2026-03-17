@@ -899,7 +899,13 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
 
       if( isReuseCU )
       {
+        ApproxSS::start_level(ApproxInter::LevelId::xReuseCachedResult);
+        //ApproxSS::enable_global_injection();
+
         xReuseCachedResult( tempCS, bestCS, partitioner );
+
+        ApproxSS::end_level();
+        //ApproxSS::disable_global_injection();
       }
       else
       { 
@@ -1082,7 +1088,13 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
 
     if( ( m_pcEncCfg->m_IntraPeriod == 1 ) && ( partitioner.chType == CH_C ) )
     {
+      ApproxSS::start_level(ApproxInter::LevelId::xCheckFastCuChromaSplitting);
+      //ApproxSS::enable_global_injection();
+
       xCheckFastCuChromaSplitting( tempCS, bestCS, partitioner, *m_modeCtrl.comprCUCtx );
+
+      ApproxSS::end_level();
+      //ApproxSS::disable_global_injection();
     }
     //////////////////////////////////////////////////////////////////////////
     // split modes
@@ -1162,6 +1174,8 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
     return;
   }
 
+  ApproxSS::start_level(ApproxInter::LevelId::FinishingCU);
+
   //////////////////////////////////////////////////////////////////////////
   // Finishing CU
   // set context states
@@ -1205,6 +1219,8 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
   CHECK( bestCS->cus.empty()                                   , "No possible encoding found" );
   CHECK( bestCS->cus[0]->predMode == NUMBER_OF_PREDICTION_MODES, "No possible encoding found" );
   CHECK( bestCS->cost             == MAX_DOUBLE                , "No possible encoding found" );
+
+  ApproxSS::end_level();
 
   #if COST_CAPTURE
     ApproxInter::Log("<Block\n");
