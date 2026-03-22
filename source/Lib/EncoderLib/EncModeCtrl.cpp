@@ -938,6 +938,8 @@ bool EncModeCtrl::trySplit( const EncTestMode& encTestmode, const CodingStructur
 
 bool EncModeCtrl::tryMode( const EncTestMode& encTestmode, const CodingStructure &cs, Partitioner& partitioner )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::tryMode);
+
   CHECK( isModeSplit( encTestmode ), "wrong method");
 
   ComprCUCtx& cuECtx = m_ComprCUCtxList.back();
@@ -964,17 +966,20 @@ bool EncModeCtrl::tryMode( const EncTestMode& encTestmode, const CodingStructure
       if (bestCS && (bestCS->slice->TLayer > (m_pcEncCfg->m_maxTLayer - (m_pcEncCfg->m_FastInferMerge & 7)))
         && (bestCS->bestParent != nullptr) && bestCS->bestParent->cus.size() && (bestCS->bestParent->cus[0]->skip))
       {
+        ApproxSS::end_level();
         return false;
       }
     }
 
     if( lumaArea.width > cs.sps->getMaxTbSize() || lumaArea.height > cs.sps->getMaxTbSize() )
     {
+      ApproxSS::end_level();
       return false;
     }
 
     if (m_pcEncCfg->m_usePbIntraFast && (!cs.slice->isIntra() || cs.slice->sps->IBC) && cuECtx.interHad == 0 && cuECtx.bestCU && !CU::isIntra(*cuECtx.bestCU))
     {
+      ApproxSS::end_level();
       return false;
     }
 
@@ -1001,6 +1006,7 @@ bool EncModeCtrl::tryMode( const EncTestMode& encTestmode, const CodingStructure
            ( ( numComp > COMP_Cr ) && cuECtx.bestTU->cbf[2] != 0 )  // avoid very complex intra if it is unlikely
          ) ) ) )
     {
+      ApproxSS::end_level();
       return false;
     }
     else
@@ -1020,6 +1026,7 @@ bool EncModeCtrl::tryMode( const EncTestMode& encTestmode, const CodingStructure
       && (!cuECtx.bestCU->Cb().valid() || cuECtx.bestTU->cbf[1] == 0)
       && (!cuECtx.bestCU->Cr().valid() || cuECtx.bestTU->cbf[2] == 0))
     {
+      ApproxSS::end_level();
       return false;
     }
     if (m_pcEncCfg->m_FastIntraTools)
@@ -1050,11 +1057,13 @@ bool EncModeCtrl::tryMode( const EncTestMode& encTestmode, const CodingStructure
           if (bestCS && (bestCS->slice->TLayer > (m_pcEncCfg->m_maxTLayer - (m_pcEncCfg->m_FastInferMerge & 7)))
             && (bestCS->bestParent != nullptr) && bestCS->bestParent->cus.size() && (bestCS->bestParent->cus[0]->skip))
           {
+            ApproxSS::end_level();
             return false;
           }
         }
         if( relatedCU.isSkip || relatedCU.isIntra )
         {
+          ApproxSS::end_level();
           return false;
         }
       }
@@ -1069,23 +1078,28 @@ bool EncModeCtrl::tryMode( const EncTestMode& encTestmode, const CodingStructure
         ((numComp > COMP_Cr) && cuECtx.bestTU->cbf[2] != 0)  // avoid very complex intra if it is unlikely
         ))))
     {
+      ApproxSS::end_level();
       return false;
     }
     if ((m_pcEncCfg->m_IBCFastMethod > 3) &&(lumaArea.width == 4 && lumaArea.height == 4 && !slice.isIntra()))
     {
+      ApproxSS::end_level();
       return false;
     }
     // IBC MODES
+    ApproxSS::end_level();
     return slice.sps->IBC && (partitioner.currArea().lumaSize().width < 128 && partitioner.currArea().lumaSize().height < 128);
   }
   else
   {
     THROW("problem");
+    ApproxSS::end_level();
     return false;
   }
 
   STAT_COUNT_CU_MODES( partitioner.chType == CH_L, g_cuCounters1D[CU_MODES_TRIED][0][!cs.slice->isIntra() + cs.slice->depth] );
   STAT_COUNT_CU_MODES( partitioner.chType == CH_L && !cs.slice->isIntra(), g_cuCounters2D[CU_MODES_TRIED][Log2( cs.area.lheight() )][Log2( cs.area.lwidth() )] );
+  ApproxSS::end_level();
   return true;
 }
 

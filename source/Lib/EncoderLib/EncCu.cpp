@@ -2730,6 +2730,8 @@ void EncCu::addGpmCandsToPruningList( const MergeCtx &mergeCtx, const UnitArea &
 bool EncCu::prepareGpmComboList( const MergeCtx &mergeCtx, const UnitArea &localUnitArea, double sqrtLambdaForFirstPass,
                                  GeoComboCostList& comboList, MergeBufVector& geoBuffer, CodingUnit& pu )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::prepareGpmComboList);
+
           sqrtLambdaForFirstPass /= FRAC_BITS_SCALE;
   const int bitsForPartitionIdx   = floorLog2(GEO_NUM_PARTITION_MODE);
   const int maxNumMergeCandidates = std::min( ( int ) pu.cs->sps->maxNumGeoCand, MRG_MAX_NUM_CANDS );
@@ -2828,6 +2830,7 @@ bool EncCu::prepareGpmComboList( const MergeCtx &mergeCtx, const UnitArea &local
   }
   if( allCandsAreSame )
   {
+    ApproxSS::end_level();
     return false;
   }
 
@@ -2964,10 +2967,12 @@ bool EncCu::prepareGpmComboList( const MergeCtx &mergeCtx, const UnitArea &local
 
   if( comboList.list.empty() )
   {
+    ApproxSS::end_level();
     return false;
   }
 
   comboList.sortByCost();
+  ApproxSS::end_level();
   return true;
 }
 
@@ -3885,6 +3890,8 @@ void EncCu::xCalDebCost( CodingStructure &cs, Partitioner &partitioner )
 
 Distortion EncCu::xGetDistortionDb(CodingStructure &cs, CPelBuf& org, CPelBuf& reco, const CompArea& compArea, bool beforeDb)
 {
+  ApproxSS::start_level(ApproxInter::LevelId::xGetDistortionDb);
+
   Distortion dist;
   const ReshapeData& reshapeData = cs.picture->reshapeData;
   const ComponentID compID = compArea.compID;
@@ -3923,6 +3930,7 @@ Distortion EncCu::xGetDistortionDb(CodingStructure &cs, CPelBuf& org, CPelBuf& r
 //      CPelBuf orgLuma = cs.picture->getFilteredOrigBuffer().valid() ? cs.picture->getRspOrigBuf( cs.area.blocks[COMP_Y] ): cs.picture->getOrigBuf( cs.area.blocks[COMP_Y] );
       dist = m_cRdCost.getDistPart( org, reco, cs.sps->bitDepths[toChannelType( compID )], compID, DF_SSE_WTD, &orgLuma );
     }
+    ApproxSS::end_level();
     return dist;
   }
 
@@ -3931,9 +3939,11 @@ Distortion EncCu::xGetDistortionDb(CodingStructure &cs, CPelBuf& org, CPelBuf& r
     PelBuf tmpLmcs = m_aTmpStorageLCU[0].getCompactBuf( compArea );
     tmpLmcs.rspSignal( reco, reshapeData.getFwdLUT() );
     dist = m_cRdCost.getDistPart( org, tmpLmcs, cs.sps->bitDepths[CH_L], compID, DF_SSE );
+    ApproxSS::end_level();
     return dist;
   }
   dist = m_cRdCost.getDistPart(org, reco, cs.sps->bitDepths[toChannelType(compID)], compID, DF_SSE);
+  ApproxSS::end_level();
   return dist;
 }
 
@@ -4359,6 +4369,8 @@ uint64_t EncCu::xCalcPuMeBits( const CodingUnit &cu )
 
 double EncCu::xCalcDistortion(CodingStructure *&cur_CS, ChannelType chType, int BitDepth, int imv)
 {
+  ApproxSS::start_level(ApproxInter::LevelId::xCalcDistortion);
+
   const auto currDist1 = m_cRdCost.getDistPart(cur_CS->getOrgBuf( COMP_Y ), cur_CS->getPredBuf( COMP_Y ), BitDepth, COMP_Y, m_pcEncCfg->m_fastHad ? DF_HAD_fast : DF_HAD );
   unsigned int uiMvBits = 0;
   unsigned imvShift = imv == IMV_HPEL ? 1 : (imv << 1);
@@ -4371,6 +4383,8 @@ double EncCu::xCalcDistortion(CodingStructure *&cur_CS, ChannelType chType, int 
   {
     uiMvBits += m_cRdCost.getBitsOfVectorWithPredictor(cu.mvd[1][0].hor, cu.mvd[1][0].ver, imvShift + MV_FRACTIONAL_BITS_DIFF);
   }
+
+  ApproxSS::end_level();
   return (double(currDist1) + (double)m_cRdCost.getCost(uiMvBits));
 }
 

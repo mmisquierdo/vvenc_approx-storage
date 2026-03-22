@@ -1093,6 +1093,8 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
 
     unsigned imvShift = cu.imv == IMV_HPEL ? 1 : (cu.imv << 1);
 
+    ApproxSS::start_level(ApproxInter::LevelId::UniDirectionalPrediction);
+
     //  Uni-directional prediction
     for ( int iRefList = 0; iRefList < iNumPredDir; iRefList++ )
     {
@@ -1216,10 +1218,14 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
       {
         m_skipPROF = false;
         m_encOnly = false;
-        ApproxSS::end_level();
+        ApproxSS::end_level(); //UniDirectionalPrediction
+        ApproxSS::end_level(); //predInterSearch
         return true;
       }
     }
+
+    ApproxSS::end_level(); //UniDirectionalPrediction
+    ApproxSS::start_level(ApproxInter::LevelId::BiDirectionalPrediction);
 
     //  Bi-predictive Motion estimation
     if( cs.slice->isInterB() && !CU::isBipredRestriction( cu ) && (cu.slice->checkLDC || BcwIdx == BCW_DEFAULT  || !m_affineModeSelected || m_pcEncCfg->m_BCW != 2 ) )
@@ -1403,6 +1409,7 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
         } // for loop-iter
       }
 
+      ApproxSS::start_level(ApproxInter::LevelId::SMVD);
       // SMVD
       if( cs.slice->biDirPred )
       {
@@ -1582,7 +1589,13 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
         //</Matheus>
         }
       }
+      
+      ApproxSS::end_level();
     } // if (B_SLICE)
+
+    ApproxSS::end_level(); //BiDirectionalPrediction
+
+
 
       //  Clear Motion Field
     cu.mv [REF_PIC_LIST_0][0] = Mv();
@@ -1667,6 +1680,9 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
         }
       }
     }
+
+    ApproxSS::start_level(ApproxInter::LevelId::checkAffine);
+
     if( checkAffine && cu.Y().width > 8 && cu.Y().height > 8 && m_pcEncCfg->m_Affine > 0 )
     {
       // Based on:
@@ -1707,6 +1723,7 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
         checkAffine = false;
       }
     }
+
     if (cu.Y().width > 8 && cu.Y().height > 8 && cu.slice->sps->Affine && checkAffine)
     {
       PROFILER_SCOPE_AND_STAGE_EXT( 1, _TPROF, P_INTER_MVD_SEARCH_AFFINE, &cs, partitioner.chType );
@@ -1845,6 +1862,8 @@ bool InterSearch::predInterSearch(CodingUnit& cu, Partitioner& partitioner, doub
         uiLastMode = uiLastModeTemp;
       }
     }
+
+    ApproxSS::end_level();
 
     if( cu.interDir == 3 && !cu.mergeFlag )
     {
@@ -3201,6 +3220,8 @@ void InterSearch::xPatternSearchFracDIF(
 
 Distortion InterSearch::xGetSymCost( const CodingUnit& cu, CPelUnitBuf& origBuf, RefPicList eCurRefPicList, const MvField& cCurMvField, MvField& cTarMvField, int BcwIdx )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::xGetSymCost);
+
   Distortion cost = MAX_DISTORTION;
   RefPicList eTarRefPicList = (RefPicList)(1 - (int)eCurRefPicList);
 
@@ -3226,6 +3247,7 @@ Distortion InterSearch::xGetSymCost( const CodingUnit& cu, CPelUnitBuf& origBuf,
   // calc distortion
   cost = ( Distortion ) floor( fWeight * ( double ) m_pcRdCost->getDistPart( bufTmp.Y(), predBufB.Y(), cu.cs->sps->bitDepths[ CH_L ], COMP_Y, DF_HAD ) );
 
+  ApproxSS::end_level();
   return(cost);
 }
 
@@ -3660,6 +3682,8 @@ void InterSearch::xExtDIFUpSamplingQ( CPelBuf* pattern, Mv halfPelRef, int& patt
 
 void InterSearch::xEncodeInterResidualQT(CodingStructure &cs, Partitioner &partitioner, const ComponentID compID)
 {
+  ApproxSS::start_level(ApproxInter::LevelId::xEncodeInterResidualQT);
+
   const UnitArea& currArea    = partitioner.currArea();
   const TransformUnit& currTU = *cs.getTU(isLuma(partitioner.chType) ? currArea.lumaPos() : currArea.chromaPos(), partitioner.chType);
   const CodingUnit &cu        = *currTU.cu;
@@ -3751,10 +3775,14 @@ void InterSearch::xEncodeInterResidualQT(CodingStructure &cs, Partitioner &parti
       partitioner.exitCurrSplit();
     }
   }
+
+  ApproxSS::end_level();
 }
 
 void InterSearch::xCalcMinDistSbt( CodingStructure &cs, const CodingUnit& cu, const uint8_t sbtAllowed )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::xCalcMinDistSbt);
+
   if( !sbtAllowed )
   {
     m_estMinDistSbt[NUMBER_SBT_MODE] = 0;
@@ -3765,6 +3793,7 @@ void InterSearch::xCalcMinDistSbt( CodingStructure &cs, const CodingUnit& cu, co
       CPelBuf org  = cs.getOrgBuf( compID );
       m_estMinDistSbt[NUMBER_SBT_MODE] += m_pcRdCost->getDistPart( org, pred, cs.sps->bitDepths[ toChannelType( compID ) ], compID, DF_SSE );
     }
+    ApproxSS::end_level();
     return;
   }
 
@@ -3839,6 +3868,7 @@ void InterSearch::xCalcMinDistSbt( CodingStructure &cs, const CodingUnit& cu, co
   if( m_pcRdCost->calcRdCost( 0, m_estMinDistSbt[NUMBER_SBT_MODE] ) < m_pcRdCost->calcRdCost( minNonZeroResiFracBits, 0 ) )
   {
     m_skipSbtAll = true;
+    ApproxSS::end_level();
     return;
   }
 
@@ -3945,6 +3975,8 @@ void InterSearch::xCalcMinDistSbt( CodingStructure &cs, const CodingUnit& cu, co
     }
     temp[m_sbtRdoOrder[i]] = MAX_DISTORTION;
   }
+
+  ApproxSS::end_level();
 }
 
 uint8_t InterSearch::skipSbtByRDCost( int width, int height, int mtDepth, uint8_t sbtIdx, uint8_t sbtPos, double bestCost, Distortion distSbtOff, double costSbtOff, bool rootCbfSbtOff )
@@ -4000,6 +4032,8 @@ uint8_t InterSearch::skipSbtByRDCost( int width, int height, int mtDepth, uint8_
 
 void InterSearch::xEstimateInterResidualQT(CodingStructure &cs, Partitioner &partitioner, Distortion *puiZeroDist /*= NULL*/)
 {
+  ApproxSS::start_level(ApproxInter::LevelId::xEstimateInterResidualQT);
+
   const UnitArea& currArea = partitioner.currArea();
   const SPS &sps           = *cs.sps;
 
@@ -4596,10 +4630,14 @@ void InterSearch::xEstimateInterResidualQT(CodingStructure &cs, Partitioner &par
       csSplit->cost     = m_pcRdCost->calcRdCost(csSplit->fracBits, csSplit->dist);
     }
   }
+
+  ApproxSS::end_level();
 }
 
 void InterSearch::encodeResAndCalcRdInterCU(CodingStructure &cs, Partitioner &partitioner, const bool skipResidual )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::encodeResAndCalcRdInterCU);
+
   CodingUnit &cu = *cs.getCU( partitioner.chType, partitioner.treeType );
   bool luma      = true;
   bool chroma    = cs.pcv->chrFormat != VVENC_CHROMA_400;
@@ -4668,6 +4706,7 @@ void InterSearch::encodeResAndCalcRdInterCU(CodingStructure &cs, Partitioner &pa
     cs.dist     = distortion;
     cs.cost     = m_pcRdCost->calcRdCost(cs.fracBits, cs.dist);
 
+    ApproxSS::end_level();
     return;
   }
 
@@ -4817,6 +4856,8 @@ void InterSearch::encodeResAndCalcRdInterCU(CodingStructure &cs, Partitioner &pa
   cs.cost     = m_pcRdCost->calcRdCost(cs.fracBits, cs.dist);
 
   CHECK(cs.tus.size() == 0, "No TUs present");
+
+  ApproxSS::end_level();
 }
 
 uint64_t InterSearch::xGetSymbolFracBitsInter(CodingStructure &cs, Partitioner &partitioner)
@@ -4929,6 +4970,8 @@ void InterSearch::xSymMvdCheckBestMvp(
   bool skip
 )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::xSymMvdCheckBestMvp);
+
   RefPicList tarRefList = (RefPicList)(1 - curRefList);
   int32_t refIdxCur = cu.slice->symRefIdx[curRefList];
   int32_t refIdxTar = cu.slice->symRefIdx[tarRefList];
@@ -4997,6 +5040,8 @@ void InterSearch::xSymMvdCheckBestMvp(
       }
     }
   }
+
+  ApproxSS::end_level();
 }
 
 void InterSearch::resetSavedAffineMotion()
@@ -5697,6 +5742,8 @@ void InterSearch::xPredAffineInterSearch( CodingUnit& cu,
 
 Distortion InterSearch::xGetAffineTemplateCost(CodingUnit& cu, CPelUnitBuf& origBuf, PelUnitBuf& predBuf, Mv acMvCand[3], int iMVPIdx, int iMVPNum, RefPicList refPicList, int iRefIdx)
 {
+  ApproxSS::start_level(ApproxInter::LevelId::xGetAffineTemplateCost);
+
   Distortion uiCost = MAX_DISTORTION;
 
   const Picture* picRef = cu.slice->getRefPic(refPicList, iRefIdx);
@@ -5707,6 +5754,7 @@ Distortion InterSearch::xGetAffineTemplateCost(CodingUnit& cu, CPelUnitBuf& orig
 
   if( m_pcEncCfg->m_ifpLines && !xIsAffineMvInRangeFPP( cu, mv, m_pcEncCfg->m_ifpLines ) )
   {
+    ApproxSS::end_level();
     return MAX_DISTORTION>>1;  
   }
 
@@ -5717,6 +5765,7 @@ Distortion InterSearch::xGetAffineTemplateCost(CodingUnit& cu, CPelUnitBuf& orig
   uiCost += m_pcRdCost->getCost(m_auiMVPIdxCost[iMVPIdx][iMVPNum]);
 
   DTRACE(g_trace_ctx, D_COMMON, " (%d) affineTemplateCost=%d\n", DTRACE_GET_COUNTER(g_trace_ctx, D_COMMON), uiCost);
+  ApproxSS::end_level();
   return uiCost;
 }
 

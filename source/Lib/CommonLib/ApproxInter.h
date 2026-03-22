@@ -686,11 +686,11 @@
         constexpr int64_t xCheckRDCostIBCMode = 15;
         constexpr int64_t xCheckRDCostIntra = 16;
           constexpr int64_t estIntraPredLumaQT = 50;
-            constexpr int64_t xIntraCodingLumaQT = 51;
+            constexpr int64_t xIntraCodingLumaQT = 51; //maybe some residual
             constexpr int64_t xIntraChromaCodingQT = 52;
             constexpr int64_t predIntraChromaLM = 53;
             constexpr int64_t predIntraAng = 54;
-            constexpr int64_t xIntraCodingTUBlock = 55;
+            constexpr int64_t xIntraCodingTUBlock = 55; //residual
           constexpr int64_t estIntraPredChromaQT = 51;
 
         constexpr int64_t xCheckRDCostInterIMV = 13;
@@ -736,11 +736,29 @@
             
           constexpr int64_t motionCompensationIBC = 44;
         
-        constexpr int64_t xCalDebCost = 18;
+        constexpr int64_t xCalDebCost = 18; //filter and maybe residual
 
         constexpr int64_t xReuseCachedResult = 76;
         constexpr int64_t xCheckFastCuChromaSplitting = 77;
         constexpr int64_t FinishingCU = 78;
+
+        constexpr int64_t xEncodeInterResidualQT = 79; //residual
+        constexpr int64_t encodeResAndCalcRdInterCU = 80; //residual
+        constexpr int64_t xCalcMinDistSbt = 81; // residual
+        constexpr int64_t xEstimateInterResidualQT = 82; //residual
+        constexpr int64_t xGetDistortionDb = 83; // ????
+        constexpr int64_t xGetAffineTemplateCost = 84;
+        constexpr int64_t xGetSymCost = 85;
+        constexpr int64_t xCalcDistortion = 86;
+        constexpr int64_t prepareGpmComboList = 87;
+        constexpr int64_t xEstimateLumaRdModeList = 88;
+        constexpr int64_t xSymMvdCheckBestMvp = 89;
+        constexpr int64_t tryMode = 90;
+        constexpr int64_t UniDirectionalPrediction = 91;
+        constexpr int64_t BiDirectionalPrediction = 92;
+        constexpr int64_t SMVD = 93;
+        constexpr int64_t checkAffine = 94;       
+
 
         constexpr int64_t MSE = 96;
         constexpr int64_t SSE = 97;

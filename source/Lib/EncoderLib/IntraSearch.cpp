@@ -175,6 +175,8 @@ void IntraSearch::xEstimateLumaRdModeList(int& numModesForFullRD,
   static_vector<double, FAST_UDI_MAX_RDMODE_NUM>& CandCostList,
   static_vector<double, FAST_UDI_MAX_RDMODE_NUM>& CandHadList, CodingUnit& cu, bool testMip )
 {
+  ApproxSS::start_level(ApproxInter::LevelId::xEstimateLumaRdModeList);
+
   PROFILER_SCOPE_AND_STAGE_EXT( 1, _TPROF, P_INTRA_EST_RD_CAND, cu.cs, CH_L );
   const uint16_t intra_ctx_size = Ctx::IntraLumaMpmFlag.size() + Ctx::IntraLumaPlanarFlag.size() + Ctx::MultiRefLineIdx.size() + Ctx::ISPMode.size() + Ctx::MipFlag.size();
   const TempCtx  ctxStartIntraCtx(m_CtxCache, SubCtx(CtxSet(Ctx::IntraLumaMpmFlag(), intra_ctx_size), m_CABACEstimator->getCtx()));
@@ -412,6 +414,8 @@ void IntraSearch::xEstimateLumaRdModeList(int& numModesForFullRD,
       }
     }
   }
+
+  ApproxSS::end_level();
 }
 
 bool IntraSearch::estIntraPredLumaQT(CodingUnit &cu, Partitioner &partitioner, double bestCost)
@@ -1397,7 +1401,7 @@ void IntraSearch::xIntraCodingTUBlock(TransformUnit &tu, const ComponentID compI
     {
       // ISP has to have at least one non-zero CBF
       ruiDist = MAX_INT;
-    ApproxSS::end_level();
+      ApproxSS::end_level();
       return;
     }
     //--- inverse transform ---
