@@ -660,116 +660,140 @@
       }
 
       namespace LevelId {
-        constexpr int64_t OTHER = 10;
-        constexpr int64_t xCheckRDCostMerge = 11;
-          constexpr int64_t xCheckRDCostMerge_start = 46;
-          constexpr int64_t xCheckRDCostMerge_SATDCost = 47;
-          constexpr int64_t xCheckRDCostMerge_RDChecking = 48;
-          constexpr int64_t generateMergePrediction = 49;
-          constexpr int64_t generateMergePrediction_REGULAR = 80;
-          constexpr int64_t generateMergePrediction_CIIP = 81;
-          constexpr int64_t generateMergePrediction_MMVD = 82;
-          constexpr int64_t generateMergePrediction_SBTMVP = 83;
-          constexpr int64_t generateMergePrediction_AFFINE = 84;
-          constexpr int64_t generateMergePrediction_GPM = 85;
+        constexpr int64_t OTHER = 1000;
 
-          constexpr int64_t addCandsToPruningList_REGULAR = 86;
-          constexpr int64_t addCandsToPruningList_CIIP = 87;
-          constexpr int64_t addCandsToPruningList_MMVD = 88;
-          constexpr int64_t addCandsToPruningList_AFFINE = 89;
-          constexpr int64_t addCandsToPruningList_GPM = 90;
+        // --- MERGE & GPM BLOCK (2000s) ---
+        constexpr int64_t xCheckRDCostMerge = 2000;
+          constexpr int64_t xCheckRDCostMerge_start = 2010;
+          constexpr int64_t xCheckRDCostMerge_SATDCost = 2020;
+          constexpr int64_t xCheckRDCostMerge_RDChecking = 2030;
+          
+          constexpr int64_t generateMergePrediction = 2100;
+          constexpr int64_t generateMergePrediction_REGULAR = 2110;
+          constexpr int64_t generateMergePrediction_CIIP = 2120;
+          constexpr int64_t generateMergePrediction_MMVD = 2130;
+          constexpr int64_t generateMergePrediction_SBTMVP = 2140;
+          constexpr int64_t generateMergePrediction_AFFINE = 2150;
+          constexpr int64_t generateMergePrediction_GPM = 2160;
 
-          constexpr int64_t merge_RD_copyFrom = 91; //last added
+          constexpr int64_t addCandsToPruningList_REGULAR = 2210;
+          constexpr int64_t addCandsToPruningList_CIIP = 2220;
+          constexpr int64_t addCandsToPruningList_MMVD = 2230;
+          constexpr int64_t addCandsToPruningList_AFFINE = 2240;
+          constexpr int64_t addCandsToPruningList_GPM = 2250;
+          
+          constexpr int64_t prepareGpmComboList = 2260; 
+          constexpr int64_t merge_RD_copyFrom = 2300; 
 
-        constexpr int64_t xCheckRDCostMergeGeo = 12;
-        constexpr int64_t xCheckRDCostIBCModeMerge2Nx2N = 14;
-        constexpr int64_t xCheckRDCostIBCMode = 15;
-        constexpr int64_t xCheckRDCostIntra = 16;
-          constexpr int64_t estIntraPredLumaQT = 50;
-            constexpr int64_t xIntraCodingLumaQT = 51; //maybe some residual
-            constexpr int64_t xIntraChromaCodingQT = 52;
-            constexpr int64_t predIntraChromaLM = 53;
-            constexpr int64_t predIntraAng = 54;
-            constexpr int64_t xIntraCodingTUBlock = 55; //residual
-          constexpr int64_t estIntraPredChromaQT = 51;
+        // --- GEO & IBC BLOCK (3000s) ---
+        constexpr int64_t xCheckRDCostMergeGeo = 3000;
+        constexpr int64_t xCheckRDCostIBCModeMerge2Nx2N = 3100;
+        constexpr int64_t xCheckRDCostIBCMode = 3200;
 
-        constexpr int64_t xCheckRDCostInterIMV = 13;
-        constexpr int64_t xCheckRDCostInter = 17;
-          constexpr int64_t xEncodeInterResidual = 20;
-          constexpr int64_t predInterSearch = 21;
-          constexpr int64_t xEstimateMvPredAMVP = 70;
-          constexpr int64_t xGetTemplateCost = 71;
-            constexpr int64_t xMotionEstimation = 22;
-              constexpr int64_t xMotionEstimation_removeHighFreq = 75; 
-              constexpr int64_t Full_Search_MPV = 23;
-              constexpr int64_t xPatternSearch = 24;
-              constexpr int64_t xTZSearch = 25;
-                constexpr int64_t xTZSearch_MVP = 26;
-                constexpr int64_t xTZSearch_Start_Search = 27;
-                constexpr int64_t xTZSearch_Raster = 28;
-                constexpr int64_t xTZSearch_RasterRefinement = 45; 
-                constexpr int64_t xTZSearch_Refinement = 29;
-              constexpr int64_t xPatternSearchFracDIF = 30;
-                constexpr int64_t xPatternSearchFracDIF_HalfPixel = 31;
-                  constexpr int64_t xExtDIFUpSamplingH = 61;
-                constexpr int64_t xPatternSearchFracDIF_QuarterPixel = 32;
-                  constexpr int64_t xExtDIFUpSamplingQ = 62;
-                
-                constexpr int64_t m_fastSubPel = 63;
+        // --- INTRA PREDICTION BLOCK (4000s) ---
+        constexpr int64_t xCheckRDCostIntra = 4000;
+          constexpr int64_t xEstimateLumaRdModeList = 4010; 
+          constexpr int64_t estIntraPredLumaQT = 4100;
+            constexpr int64_t predIntraAng = 4110;
+            constexpr int64_t predIntraChromaLM = 4120;
+          constexpr int64_t estIntraPredChromaQT = 4200;
 
-              constexpr int64_t xPatternSearchIntRefine = 33;
-
-            constexpr int64_t xPredAffineInterSearch = 34;  //DO NOT TRUST FOR JICS 2025, WAS NOT PROPERLY MARKEK
-              constexpr int64_t predInterSearch_AFFINEMODEL_4PARAM = 72;
-              constexpr int64_t predInterSearch_AFFINEMODEL_6PARAM = 73;
-              constexpr int64_t xAffineMotionEstimation = 35;
-              constexpr int64_t xAffineMotionEstimation_removeHighFreq = 74;
-
-          constexpr int64_t motionCompensation = 36;
-            constexpr int64_t xPredInterUni = 37;
-              constexpr int64_t xPredAffineBlk = 38;   //DO NOT TRUST FOR JICS 2025, WAS NOT PROPERLY MARKEK
-              constexpr int64_t xPredInterBlk = 39;
-            constexpr int64_t xPredInterBi = 40;
-              constexpr int64_t xWeightedAverage = 41;
-            constexpr int64_t xSubPuBDOF = 42;
-            constexpr int64_t xProcessDMVR = 43;
+        // --- INTER & MOTION ESTIMATION BLOCK (5000s) ---
+        constexpr int64_t xCheckRDCostInterIMV = 5000;
+        constexpr int64_t xCheckRDCostInter = 5100;
+          
+          constexpr int64_t predInterSearch = 5200;
+          constexpr int64_t xEstimateMvPredAMVP = 5210;
+          constexpr int64_t xGetTemplateCost = 5220;
             
-          constexpr int64_t motionCompensationIBC = 44;
+            constexpr int64_t xMotionEstimation = 5300;
+              constexpr int64_t xMotionEstimation_removeHighFreq = 5301; 
+              constexpr int64_t Full_Search_MPV = 5310;
+              constexpr int64_t xPatternSearch = 5320;
+              
+              constexpr int64_t xTZSearch = 5400;
+                constexpr int64_t xTZSearch_MVP = 5410;
+                constexpr int64_t xTZSearch_Start_Search = 5420;
+                constexpr int64_t xTZSearch_Raster = 5430;
+                constexpr int64_t xTZSearch_RasterRefinement = 5440; 
+                constexpr int64_t xTZSearch_Refinement = 5450;
+              
+              constexpr int64_t xPatternSearchFracDIF = 5500;
+                constexpr int64_t xPatternSearchFracDIF_HalfPixel = 5510;
+                  constexpr int64_t xExtDIFUpSamplingH = 5511;
+                constexpr int64_t xPatternSearchFracDIF_QuarterPixel = 5520;
+                  constexpr int64_t xExtDIFUpSamplingQ = 5521;
+                
+                constexpr int64_t m_fastSubPel = 5530;
+              constexpr int64_t xPatternSearchIntRefine = 5540;
+
+            constexpr int64_t checkAffine = 5600; 
+            constexpr int64_t xPredAffineInterSearch = 5610;  // DO NOT TRUST FOR JICS 2025
+              constexpr int64_t predInterSearch_AFFINEMODEL_4PARAM = 5611;
+              constexpr int64_t predInterSearch_AFFINEMODEL_6PARAM = 5612;
+              constexpr int64_t xAffineMotionEstimation = 5620;
+              constexpr int64_t xAffineMotionEstimation_removeHighFreq = 5621;
+              constexpr int64_t xGetAffineTemplateCost = 5630;
+            
+            constexpr int64_t SMVD = 5640;
+            constexpr int64_t xSymMvdCheckBestMvp = 5650;
+            constexpr int64_t xGetSymCost = 5660;
+
+          constexpr int64_t motionCompensation = 5700;
+            constexpr int64_t UniDirectionalPrediction = 5710;
+            constexpr int64_t xPredInterUni = 5711;
+              constexpr int64_t xPredAffineBlk = 5712;   // DO NOT TRUST FOR JICS 2025
+              constexpr int64_t xPredInterBlk = 5713;
+            
+            constexpr int64_t BiDirectionalPrediction = 5720;
+            constexpr int64_t xPredInterBi = 5721;
+              constexpr int64_t xWeightedAverage = 5722;
+            
+            constexpr int64_t xSubPuBDOF = 5730;
+            constexpr int64_t xProcessDMVR = 5740;
+            
+          constexpr int64_t motionCompensationIBC = 5800;
+
+        // --- RESIDUAL & TRANSFORM BLOCK (6000s) ---
+          // Inter Residuals
+          constexpr int64_t encodeResAndCalcRdInterCU = 6000; 
+          constexpr int64_t xEstimateInterResidualQT = 6010; 
+          constexpr int64_t xEncodeInterResidual = 6020;
+          constexpr int64_t xEncodeInterResidualQT = 6030; 
+          
+          // Intra Residuals & TUs
+          constexpr int64_t xIntraCodingLumaQT = 6100; 
+          constexpr int64_t xIntraChromaCodingQT = 6110;
+          constexpr int64_t xIntraCodingTUBlock = 6120; 
+
+          // Sub-Block / Other Transforms
+          constexpr int64_t xCalcMinDistSbt = 6200; // SBT = Sub-Block Transform
         
-        constexpr int64_t xCalDebCost = 18; //filter and maybe residual
+        // --- DEBLOCKING & LOOP FILTERS (7000s) ---
+        constexpr int64_t xCalDebCost = 7000; 
+        constexpr int64_t xGetDistortionDb = 7100; 
 
-        constexpr int64_t xReuseCachedResult = 76;
-        constexpr int64_t xCheckFastCuChromaSplitting = 77;
-        constexpr int64_t FinishingCU = 78;
+        // --- METRICS & DISTORTIONS (8000s) ---
+        constexpr int64_t xCalcDistortion = 8000;
 
-        constexpr int64_t xEncodeInterResidualQT = 79; //residual
-        constexpr int64_t encodeResAndCalcRdInterCU = 80; //residual
-        constexpr int64_t xCalcMinDistSbt = 81; // residual
-        constexpr int64_t xEstimateInterResidualQT = 82; //residual
-        constexpr int64_t xGetDistortionDb = 83; // ????
-        constexpr int64_t xGetAffineTemplateCost = 84;
-        constexpr int64_t xGetSymCost = 85;
-        constexpr int64_t xCalcDistortion = 86;
-        constexpr int64_t prepareGpmComboList = 87;
-        constexpr int64_t xEstimateLumaRdModeList = 88;
-        constexpr int64_t xSymMvdCheckBestMvp = 89;
-        constexpr int64_t tryMode = 90;
-        constexpr int64_t UniDirectionalPrediction = 91;
-        constexpr int64_t BiDirectionalPrediction = 92;
-        constexpr int64_t SMVD = 93;
-        constexpr int64_t checkAffine = 94;       
+        constexpr int64_t MSE = 8100;
+        constexpr int64_t SSE = 8110;
+        constexpr int64_t WeightedSSE = 8120;
+        
+        constexpr int64_t SAD = 8200;
+        constexpr int64_t MaskedSAD = 8210; 
+        constexpr int64_t SAD8XN = 8220;
+        constexpr int64_t SAD16XN = 8230;
+        
+        constexpr int64_t HAD = 8300;
+        constexpr int64_t FastHAD = 8310;
+        constexpr int64_t HAD_2SAD = 8320;
 
-
-        constexpr int64_t MSE = 96;
-        constexpr int64_t SSE = 97;
-        constexpr int64_t WeightedSSE = 101;
-        constexpr int64_t SAD = 98;
-        constexpr int64_t MaskedSAD = 100; 
-        constexpr int64_t HAD = 99;
-        constexpr int64_t FastHAD = 102;
-        constexpr int64_t HAD_2SAD = 103;
-        constexpr int64_t SAD8XN = 104;
-        constexpr int64_t SAD16XN = 105;
+        // --- GENERAL CODING & MISC (9000s) ---
+        constexpr int64_t xReuseCachedResult = 9000;
+        constexpr int64_t xCheckFastCuChromaSplitting = 9100;
+        constexpr int64_t FinishingCU = 9200;
+        constexpr int64_t tryMode = 9300;
 
         constexpr std::array<const int64_t, Take::DF_TOTAL_FUNCTIONS_ACTUAL> DFunc = {
           SSE, //offsetApproxId(SSE, 1),      //{ Take::DF_SSE,             "SSE" },

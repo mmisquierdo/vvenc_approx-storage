@@ -2025,7 +2025,7 @@ ChromaCbfs IntraSearch::xIntraChromaCodingQT(CodingStructure& cs, Partitioner& p
   {
     if (!currArea.Cb().valid() || !currArea.Cr().valid())
     {
-    ApproxSS::end_level();
+      ApproxSS::end_level();
       return cbfs;
     }
 
