@@ -1520,30 +1520,30 @@ Distortion xGetHAD2SADs_neon( const DistParam& rcDtParam )
 {
   #if INSTRUMENT_HAD2SAD
     ApproxSS::start_level(ApproxInter::LevelId::DFunc[ApproxInter::Take::DF_HAD]);
-    if (ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_HAD]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.org.buf, ApproxInter::BufferId::DFunc_Orig[ApproxInter::Take::DF_HAD], ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_HAD]);}
-    if (ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_HAD]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.cur.buf, ApproxInter::BufferId::DFunc_Curr[ApproxInter::Take::DF_HAD], ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_HAD]);}
+    //if (ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_HAD]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.org.buf, ApproxInter::BufferId::DFunc_Orig[ApproxInter::Take::DF_HAD], ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_HAD]);}
+    //if (ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_HAD]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.cur.buf, ApproxInter::BufferId::DFunc_Curr[ApproxInter::Take::DF_HAD], ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_HAD]);}
   #endif
 
   Distortion distHad = xGetHADs_neon<false>( rcDtParam );
 
   #if INSTRUMENT_HAD2SAD
     ApproxSS::end_level();
-    if (ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_HAD]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.org.buf);}
-    if (ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_HAD]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.cur.buf);}
+    //if (ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_HAD]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.org.buf);}
+    //if (ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_HAD]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.cur.buf);}
   #endif
 
   #if INSTRUMENT_HAD2SAD
     ApproxSS::start_level(ApproxInter::LevelId::DFunc[ApproxInter::Take::DF_SAD]);
-    if (ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_SAD]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.org.buf, ApproxInter::BufferId::DFunc_Orig[ApproxInter::Take::DF_SAD], ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_SAD]);}
-    if (ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_SAD]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.cur.buf, ApproxInter::BufferId::DFunc_Curr[ApproxInter::Take::DF_SAD], ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_SAD]);}
+    //if (ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_SAD]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.org.buf, ApproxInter::BufferId::DFunc_Orig[ApproxInter::Take::DF_SAD], ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_SAD]);}
+    //if (ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_SAD]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.cur.buf, ApproxInter::BufferId::DFunc_Curr[ApproxInter::Take::DF_SAD], ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_SAD]);}
   #endif
 
   Distortion distSad = xGetSAD_generic_neon( rcDtParam, rcDtParam.org.width );
 
   #if INSTRUMENT_HAD2SAD
     ApproxSS::end_level();
-    if (ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_SAD]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.org.buf);}
-    if (ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_SAD]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.cur.buf);}
+    //if (ApproxInter::ConfigurationId::DFunc_Orig[ApproxInter::Take::DF_SAD]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.org.buf);}
+    //if (ApproxInter::ConfigurationId::DFunc_Curr[ApproxInter::Take::DF_SAD]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.cur.buf);}
   #endif
 
   return std::min( distHad, 2 * distSad );

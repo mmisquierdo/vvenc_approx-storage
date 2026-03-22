@@ -64,7 +64,7 @@ AdaptiveLoopFilter::AdaptiveLoopFilter( bool enableOpt )
   , m_filterShapes     { AlfFilterShape(           7 ), AlfFilterShape(           5 ) }
   , m_classifier( nullptr )
 {
-  ApproxInter::MarkBuffer((void*) &m_alfClippingValues[0], (void*) &m_alfClippingValues[MAX_NUM_CH-1][MaxAlfNumClippingValues], ApproxInter::BufferId::AdaptiveLoopFilter_m_alfClippingValues, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
+  ApproxSS::add_approx((void*) &m_alfClippingValues[0], (void*) &m_alfClippingValues[MAX_NUM_CH-1][MaxAlfNumClippingValues], ApproxInter::BufferId::AdaptiveLoopFilter_m_alfClippingValues, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
 
   for( int compIdx = 0; compIdx < MAX_NUM_COMP; compIdx++ )
   {

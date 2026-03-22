@@ -656,7 +656,7 @@ void FGAnalyzer::init ( const int width,
   m_inputChromaFormat           = inputChroma;
   // Allocate memory for m_coeffBuf and m_dctGrainBlockList
   m_coeffBuf = (TCoeff*)xMalloc( TCoeff, width * height );
-  ApproxInter::UnmarkBuffer((void*) m_coeffBuf);
+  ApproxInter::UninstrumentIfMarked((void*) m_coeffBuf);
 
   int N = (width * height) / (DATA_BASE_SIZE * DATA_BASE_SIZE);
   m_dctGrainBlockList = new CoeffBuf[N];
@@ -756,12 +756,12 @@ void FGAnalyzer::init ( const int width,
   if ( !m_DCTinout )
   {
     m_DCTinout = ( TCoeff* ) xMalloc( TCoeff, DATA_BASE_SIZE * DATA_BASE_SIZE );
-    ApproxInter::UnmarkBuffer((void*) m_DCTinout);
+    ApproxInter::UninstrumentIfMarked((void*) m_DCTinout);
   }
   if ( !m_DCTtemp )
   {
     m_DCTtemp = ( TCoeff* ) xMalloc( TCoeff, DATA_BASE_SIZE * DATA_BASE_SIZE );
-    ApproxInter::UnmarkBuffer((void*) m_DCTtemp);
+    ApproxInter::UninstrumentIfMarked((void*) m_DCTtemp);
   }
 
   calcVar=calcVarCore;

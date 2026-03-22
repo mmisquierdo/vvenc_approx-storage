@@ -100,7 +100,7 @@ public:
   static constexpr int m_ALF_UNUSED_TRANSPOSIDX  = 255;
 
   AdaptiveLoopFilter( bool enableOpt = true );
-  virtual ~AdaptiveLoopFilter() { ApproxInter::UnmarkBuffer((void*) &m_alfClippingValues[0], (void*) &m_alfClippingValues[MAX_NUM_CH-1][MaxAlfNumClippingValues]); }
+  virtual ~AdaptiveLoopFilter() { ApproxSS::remove_approx((void*) &m_alfClippingValues[0], (void*) &m_alfClippingValues[MAX_NUM_CH-1][MaxAlfNumClippingValues]); }
   void        reconstructCoeffAPSs    ( CodingStructure& cs, bool luma, bool chroma, bool isRdo);
   void        reconstructCoeffFixedAPSs(CodingStructure& cs, bool luma, bool chroma, bool isRdo);
   void        reconstructCoeff(AlfParam& alfParam, ChannelType channel, const bool isRdo, const bool isRedo = false);

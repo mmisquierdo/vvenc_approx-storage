@@ -117,8 +117,8 @@ typedef void      ( *FpDistFuncX5 )( const DistParam&, Distortion*, bool );
 
         #if CAPTURED_METRIC_INSTRUMENTATION
           if (!INSTRUMENT_HAD2SAD || this->m_funcId != ApproxInter::Take::DF_HAD_2SAD) {
-            if (ApproxInter::ConfigurationId::DFunc_Orig[this->m_funcId]) {ApproxInter::InstrumentIfMarked((void*) distParam.org.buf, ApproxInter::offsetApproxId(ApproxInter::BufferId::DFunc_Orig[this->m_funcId], distParam.org.height), ApproxInter::ConfigurationId::DFunc_Orig[this->m_funcId]);}
-            if (ApproxInter::ConfigurationId::DFunc_Curr[this->m_funcId]) {ApproxInter::InstrumentIfMarked((void*) distParam.cur.buf, ApproxInter::offsetApproxId(ApproxInter::BufferId::DFunc_Curr[this->m_funcId], distParam.org.height), ApproxInter::ConfigurationId::DFunc_Curr[this->m_funcId]);}
+            //if (ApproxInter::ConfigurationId::DFunc_Orig[this->m_funcId]) {ApproxInter::InstrumentIfMarked((void*) distParam.org.buf, ApproxInter::offsetApproxId(ApproxInter::BufferId::DFunc_Orig[this->m_funcId], distParam.org.height), ApproxInter::ConfigurationId::DFunc_Orig[this->m_funcId]);}
+            //if (ApproxInter::ConfigurationId::DFunc_Curr[this->m_funcId]) {ApproxInter::InstrumentIfMarked((void*) distParam.cur.buf, ApproxInter::offsetApproxId(ApproxInter::BufferId::DFunc_Curr[this->m_funcId], distParam.org.height), ApproxInter::ConfigurationId::DFunc_Curr[this->m_funcId]);}
           }
         #endif
 
@@ -145,8 +145,8 @@ typedef void      ( *FpDistFuncX5 )( const DistParam&, Distortion*, bool );
 
         #if CAPTURED_METRIC_INSTRUMENTATION
           if (!INSTRUMENT_HAD2SAD || this->m_funcId != ApproxInter::Take::DF_HAD_2SAD) {
-            if (ApproxInter::ConfigurationId::DFunc_Orig[this->m_funcId]) {ApproxInter::UninstrumentIfMarked((void*) distParam.org.buf);}
-            if (ApproxInter::ConfigurationId::DFunc_Curr[this->m_funcId]) {ApproxInter::UninstrumentIfMarked((void*) distParam.cur.buf);}
+            //if (ApproxInter::ConfigurationId::DFunc_Orig[this->m_funcId]) {ApproxInter::UninstrumentIfMarked((void*) distParam.org.buf);}
+            //if (ApproxInter::ConfigurationId::DFunc_Curr[this->m_funcId]) {ApproxInter::UninstrumentIfMarked((void*) distParam.cur.buf);}
           }
         #endif
 

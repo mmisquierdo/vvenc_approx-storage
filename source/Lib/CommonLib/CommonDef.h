@@ -634,7 +634,7 @@ namespace ApproxSignaling {
     T const * const bufferEnd = bufferStart + elementCount;
     ApproxInter::MarkBuffer(BufferRange((uint8_t*) bufferStart, (uint8_t*) bufferEnd));
 
-  //ApproxInter::InstrumentIfMarked(bufferStart, ApproxInter::BufferId::OTHERS, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(T));
+    ApproxInter::InstrumentIfMarked(bufferStart, ApproxInter::BufferId::OTHERS, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(T));
     
     return bufferStart;
   }
@@ -644,17 +644,17 @@ namespace ApproxSignaling {
     T * const bufferStart = (T*) allocFunction(sizeof(T)*(len));
 
     T const * const bufferEnd = bufferStart + len;
-    ApproxInter::MarkBuffer(BufferRange((uint8_t*) bufferStart, (uint8_t*) bufferEnd));
+     ApproxInter::MarkBuffer(BufferRange((uint8_t*) bufferStart, (uint8_t*) bufferEnd));
 
-  //ApproxInter::InstrumentIfMarked(bufferStart, ApproxInter::BufferId::OTHERS, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(T));
+    ApproxInter::InstrumentIfMarked(bufferStart, ApproxInter::BufferId::OTHERS, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(T));
 
     return bufferStart;
   }
 
   static void free(void (*freeFunction)(void * const), void * const prt) noexcept {
-  //ApproxInter::UninstrumentIfMarked(prt, false);
+    ApproxInter::UninstrumentIfMarked(prt, false);
 
-    ApproxInter::UnmarkBuffer(prt);
+     ApproxInter::UnmarkBuffer(prt);
 
     freeFunction(prt);
   }

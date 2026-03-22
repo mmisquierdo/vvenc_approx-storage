@@ -113,7 +113,7 @@ VVENC_DECL void vvenc_YUVBuffer_alloc_buffer( vvencYUVBuffer *yuvBuffer, const v
     const int size  = yuvPlane.stride * yuvPlane.height;
     yuvPlane.ptr    = ( size > 0 ) ? new int16_t[ size ] : nullptr;
 
-    if(yuvPlane.ptr) {ApproxInter::MarkBuffer((void*) yuvPlane.ptr, (void*) &yuvPlane.ptr[size], ApproxInter::BufferId::vvenc_YUVBuffer_alloc_buffer_yuvPlane_int16, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(int16_t));}
+    if(yuvPlane.ptr) {ApproxSS::add_approx((void*) yuvPlane.ptr, (void*) &yuvPlane.ptr[size], ApproxInter::BufferId::vvenc_YUVBuffer_alloc_buffer_yuvPlane_int16, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(int16_t));}
     //JICS: yuvPlane_i
   }
 }
@@ -128,7 +128,7 @@ VVENC_DECL void vvenc_YUVBuffer_free_buffer( vvencYUVBuffer *yuvBuffer )
   for ( int i = 0; i < 3; i++ )
   {
     if( yuvBuffer->planes[ i ].ptr ) {
-      ApproxInter::UnmarkBuffer((void*) yuvBuffer->planes[ i ].ptr, (void*) &yuvBuffer->planes[ i ].ptr[yuvBuffer->planes[ i ].stride * yuvBuffer->planes[ i ].height]);
+      ApproxSS::remove_approx((void*) yuvBuffer->planes[ i ].ptr, (void*) &yuvBuffer->planes[ i ].ptr[yuvBuffer->planes[ i ].stride * yuvBuffer->planes[ i ].height]);
       delete [] yuvBuffer->planes[ i ].ptr;
     }
   }

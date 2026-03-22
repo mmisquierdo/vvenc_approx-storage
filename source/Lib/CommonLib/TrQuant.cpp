@@ -223,16 +223,16 @@ TrQuant::TrQuant() : m_scalingListEnabled(false), m_quant( nullptr )
   m_blk         = ( TCoeff* ) xMalloc( TCoeff, MAX_TB_SIZEY * MAX_TB_SIZEY );
 
   //<Matheus
-  ApproxInter::UnmarkBuffer(m_plTempCoeff);
-  ApproxInter::UnmarkBuffer(m_tmp);
-  ApproxInter::UnmarkBuffer(m_blk);
+  ApproxInter::UninstrumentIfMarked(m_plTempCoeff);
+  ApproxInter::UninstrumentIfMarked(m_tmp);
+  ApproxInter::UninstrumentIfMarked(m_blk);
   //Matheus>
 
   for( int i = 0; i < NUM_TRAFO_MODES_MTS; i++ )
   {
     m_mtsCoeffs[i] = ( TCoeff* ) xMalloc( TCoeff, MAX_TB_SIZEY * MAX_TB_SIZEY );
     //<Matheus
-    ApproxInter::UnmarkBuffer(m_mtsCoeffs[i]);
+    ApproxInter::UninstrumentIfMarked(m_mtsCoeffs[i]);
     //Matheus>
   }
 

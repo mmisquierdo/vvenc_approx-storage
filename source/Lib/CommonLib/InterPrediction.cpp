@@ -692,12 +692,12 @@ InterPredInterpolation::InterPredInterpolation()
   , m_isBi(false)
   , m_ifpLines(0)
 {
-  ApproxInter::MarkBuffer((void*) &m_gradBuf[0], (void*) &m_gradBuf[2-1][(AFFINE_MIN_BLOCK_SIZE + 2) * (AFFINE_MIN_BLOCK_SIZE + 2)], ApproxInter::BufferId::InterPredInterpolation_m_gradBuf, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
+  ApproxSS::add_approx((void*) &m_gradBuf[0], (void*) &m_gradBuf[2-1][(AFFINE_MIN_BLOCK_SIZE + 2) * (AFFINE_MIN_BLOCK_SIZE + 2)], ApproxInter::BufferId::InterPredInterpolation_m_gradBuf, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel));
 }
 
 InterPredInterpolation::~InterPredInterpolation()
 {
-  ApproxInter::UnmarkBuffer((void*) &m_gradBuf[0], (void*) &m_gradBuf[2-1][(AFFINE_MIN_BLOCK_SIZE + 2) * (AFFINE_MIN_BLOCK_SIZE + 2)]);
+  ApproxSS::remove_approx((void*) &m_gradBuf[0], (void*) &m_gradBuf[2-1][(AFFINE_MIN_BLOCK_SIZE + 2) * (AFFINE_MIN_BLOCK_SIZE + 2)]);
   destroy();
 }
 
@@ -768,7 +768,7 @@ void InterPredInterpolation::init( bool enableOpt )
     for( uint32_t i = 0; i < LUMA_INTERPOLATION_FILTER_SUB_SAMPLE_POSITIONS_SIGNAL; i++ )
     {
       m_filteredBlockTmp[i][c] = ( Pel* ) xMalloc( Pel, ( extWidth + 4 ) * ( extHeight + 7 + 4 ) );
-      ApproxInter::RemarkBuffer((void*) m_filteredBlockTmp[i][c], ApproxInter::BufferId::InterPredInterpolation_m_filteredBlockTmp, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
+      ApproxInter::ReinstrumentIfMarked((void*) m_filteredBlockTmp[i][c], ApproxInter::BufferId::InterPredInterpolation_m_filteredBlockTmp, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
       //JICS: instrumentar como FILT_TEMP
       VALGRIND_MEMCLEAR( m_filteredBlockTmp[i][c], sizeof( Pel ) * (extWidth + 4) * (extHeight + 7 + 4) );
 
@@ -783,7 +783,7 @@ void InterPredInterpolation::init( bool enableOpt )
       for( uint32_t j = 0; j < LUMA_INTERPOLATION_FILTER_SUB_SAMPLE_POSITIONS_SIGNAL; j++ )
       {
         m_filteredBlock[i][j][c] = ( Pel* ) xMalloc( Pel, extWidth * extHeight );
-        ApproxInter::RemarkBuffer((void*) m_filteredBlock[i][j][c], ApproxInter::BufferId::InterPredInterpolation_m_filteredBlock, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
+        ApproxInter::ReinstrumentIfMarked((void*) m_filteredBlock[i][j][c], ApproxInter::BufferId::InterPredInterpolation_m_filteredBlock, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
         //JICS: instrumentar como FILT
         VALGRIND_MEMCLEAR( m_filteredBlock[i][j][c], sizeof( Pel ) * extWidth * extHeight );
 
@@ -803,10 +803,10 @@ void InterPredInterpolation::init( bool enableOpt )
   m_gradX1 = (Pel*)xMalloc(Pel, BDOF_TEMP_BUFFER_SIZE);
   m_gradY1 = (Pel*)xMalloc(Pel, BDOF_TEMP_BUFFER_SIZE);
 
-  ApproxInter::RemarkBuffer((void*) m_gradX0, ApproxInter::BufferId::InterPredInterpolation_m_gradX0, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
-  ApproxInter::RemarkBuffer((void*) m_gradY0, ApproxInter::BufferId::InterPredInterpolation_m_gradY0, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
-  ApproxInter::RemarkBuffer((void*) m_gradX1, ApproxInter::BufferId::InterPredInterpolation_m_gradX1, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
-  ApproxInter::RemarkBuffer((void*) m_gradY1, ApproxInter::BufferId::InterPredInterpolation_m_gradY1, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
+  ApproxInter::ReinstrumentIfMarked((void*) m_gradX0, ApproxInter::BufferId::InterPredInterpolation_m_gradX0, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
+  ApproxInter::ReinstrumentIfMarked((void*) m_gradY0, ApproxInter::BufferId::InterPredInterpolation_m_gradY0, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
+  ApproxInter::ReinstrumentIfMarked((void*) m_gradX1, ApproxInter::BufferId::InterPredInterpolation_m_gradX1, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
+  ApproxInter::ReinstrumentIfMarked((void*) m_gradY1, ApproxInter::BufferId::InterPredInterpolation_m_gradY1, ApproxInter::ConfigurationId::APPROXIMATE_KNOB, sizeof(Pel)); 
   //JICS: Iinstrumentar como BDOF...
 
   VALGRIND_MEMCLEAR( m_gradX0, sizeof( Pel ) * BDOF_TEMP_BUFFER_SIZE );

@@ -881,8 +881,8 @@
 
         constexpr int64_t OTHER =             NO_TRACKING;
 
-        constexpr int64_t SAD_Orig =          APPROXIMATE_KNOB;
-        constexpr int64_t SAD_Curr =          APPROXIMATE_KNOB;
+        constexpr int64_t SAD_Orig =          PRECISE_KNOB;
+        constexpr int64_t SAD_Curr =          PRECISE_KNOB;
 
         constexpr int64_t SSE_Orig =          PRECISE_KNOB;
         constexpr int64_t SSE_Curr =          PRECISE_KNOB;
