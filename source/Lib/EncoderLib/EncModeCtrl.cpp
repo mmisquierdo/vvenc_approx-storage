@@ -947,6 +947,7 @@ bool EncModeCtrl::tryMode( const EncTestMode& encTestmode, const CodingStructure
   if( cuECtx.minDepth > partitioner.currQtDepth && partitioner.canSplit( CU_QUAD_SPLIT, cs ) )
   {
     // enforce QT
+    ApproxSS::end_level();
     return false;
   }
 
