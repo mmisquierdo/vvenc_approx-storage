@@ -73,11 +73,11 @@
       uint8_t const * const m_endAddress;
       const int64_t m_bufferId;
       const int64_t m_configurationId;
-      const uint32_t m_dataSizeInBytes;
+      const uint64_t m_dataSizeInBytes;
 
       BufferRange(uint8_t * const initialAddress, uint8_t const * const endAddress);
 
-      BufferRange(uint8_t * const initialAddress, uint8_t const * const endAddress, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
+      BufferRange(uint8_t * const initialAddress, uint8_t const * const endAddress, const int64_t bufferId, const int64_t configurationId, const uint64_t dataSizeInBytes);
 
       //overlapping ranges are considered equivalent
       friend bool operator<(const BufferRange& lhv, const BufferRange& rhv) {  
@@ -881,14 +881,14 @@
 
         constexpr int64_t OTHER =             NO_TRACKING;
 
-        constexpr int64_t SAD_Orig =          APPROXIMATE_KNOB;
-        constexpr int64_t SAD_Curr =          APPROXIMATE_KNOB;
+        constexpr int64_t SAD_Orig =          PRECISE_KNOB;
+        constexpr int64_t SAD_Curr =          PRECISE_KNOB;
 
         constexpr int64_t SSE_Orig =          PRECISE_KNOB;
         constexpr int64_t SSE_Curr =          PRECISE_KNOB;
 
-        constexpr int64_t HAD_Orig =          PRECISE_KNOB;
-        constexpr int64_t HAD_Curr =          PRECISE_KNOB;
+        constexpr int64_t HAD_Orig =          APPROXIMATE_KNOB;
+        constexpr int64_t HAD_Curr =          APPROXIMATE_KNOB;
 
         constexpr int64_t MaskedSAD_Orig =    SAD_Orig; //APPROXIMATE_KNOB;
         constexpr int64_t MaskedSAD_Curr =    SAD_Curr; //APPROXIMATE_KNOB;
@@ -1097,14 +1097,14 @@
 
 
       void MarkBuffer(const BufferRange& toMark);
-      void MarkBuffer(void * const initialAddress, void const * const endAddress, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
-      void RemarkBuffer(void * const initialAddress/*, void const * const endAddress*/, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
+      void MarkBuffer(void * const initialAddress, void const * const endAddress, const int64_t bufferId, const int64_t configurationId, const uint64_t dataSizeInBytes);
+      void RemarkBuffer(void * const initialAddress/*, void const * const endAddress*/, const int64_t bufferId, const int64_t configurationId, const uint64_t dataSizeInBytes);
       void UnmarkBuffer(const BufferRange& toUnmark);
       void UnmarkBuffer(void const * const address);
       void UnmarkBuffer(void const * const start_address, void const * const endAddress);
-      void InstrumentIfMarked(void * const address, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
+      void InstrumentIfMarked(void * const address, const int64_t bufferId, const int64_t configurationId, const uint64_t dataSizeInBytes);
       void InstrumentIfMarked(void * const address, const int64_t bufferIdPrefix, const int64_t configurationId);
-      void ReinstrumentIfMarked(void * const address, const int64_t bufferId, const int64_t configurationId, const uint32_t dataSizeInBytes);
+      void ReinstrumentIfMarked(void * const address, const int64_t bufferId, const int64_t configurationId, const uint64_t dataSizeInBytes);
       void UninstrumentIfMarked(void * const address, const bool giveAwayRecords = true);
 
       void PrintMacrosStates();
