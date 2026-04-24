@@ -877,18 +877,24 @@
       namespace ConfigurationId {
         static constexpr int64_t NO_TRACKING       = 0;
         static constexpr int64_t PRECISE_KNOB      = 2;
-        static constexpr int64_t APPROXIMATE_KNOB  = 1;
+        static constexpr int64_t APPROXIMATE_KNOB  = 10;
 
         constexpr int64_t OTHER =             NO_TRACKING;
 
-        constexpr int64_t SAD_Orig =          PRECISE_KNOB;
-        constexpr int64_t SAD_Curr =          PRECISE_KNOB;
+        constexpr int64_t SAD_Orig =          APPROXIMATE_KNOB;
+        constexpr int64_t SAD_Curr =          APPROXIMATE_KNOB;
+
+        constexpr int64_t SAD8XN_Orig =       SAD_Orig;
+        constexpr int64_t SAD8XN_Curr =       SAD_Curr;
+
+        constexpr int64_t SAD16XN_Orig =      SAD_Orig;
+        constexpr int64_t SAD16XN_Curr =      SAD_Curr;
 
         constexpr int64_t SSE_Orig =          PRECISE_KNOB;
         constexpr int64_t SSE_Curr =          PRECISE_KNOB;
 
-        constexpr int64_t HAD_Orig =          APPROXIMATE_KNOB;
-        constexpr int64_t HAD_Curr =          APPROXIMATE_KNOB;
+        constexpr int64_t HAD_Orig =          PRECISE_KNOB;
+        constexpr int64_t HAD_Curr =          PRECISE_KNOB;
 
         constexpr int64_t MaskedSAD_Orig =    SAD_Orig; //APPROXIMATE_KNOB;
         constexpr int64_t MaskedSAD_Curr =    SAD_Curr; //APPROXIMATE_KNOB;
@@ -902,6 +908,10 @@
         constexpr int64_t HAD_2SAD_Orig =     PRECISE_KNOB;
         constexpr int64_t HAD_2SAD_Curr =     PRECISE_KNOB;
 
+        inline constexpr int64_t IncOffsetApproxCfg(const int64_t baseId, const int64_t increment) {
+          return (baseId == PRECISE_KNOB ? baseId : (baseId + increment));
+        }
+
         constexpr std::array<const int64_t, Take::DF_TOTAL_FUNCTIONS_ACTUAL> DFunc_Orig = {
           SSE_Orig,   //{ Take::DF_SSE,             "SSE" },
           SSE_Orig,   //{ Take::DF_SSE2,            "SSE2" },
@@ -912,41 +922,41 @@
           SSE_Orig,   //{ Take::DF_SSE64,           "SSE64" },
           SSE_Orig,   //{ Take::DF_SSE128,          "SSE128" },
 
-          SAD_Orig,   //{ Take::DF_SAD,             "SAD" },
-          SAD_Orig,   //{ Take::DF_SAD2,            "SAD2" },
-          SAD_Orig,   //{ Take::DF_SAD4,            "SAD4" },
-          SAD_Orig,   //{ Take::DF_SAD8,            "SAD8" },
-          SAD_Orig,   //{ Take::DF_SAD16,           "SAD16" },
-          SAD_Orig,   //{ Take::DF_SAD32,           "SAD32" },
-          SAD_Orig,   //{ Take::DF_SAD64,           "SAD64" },
-          SAD_Orig,   //{ Take::DF_SAD128,          "SAD128" },
+          IncOffsetApproxCfg(SAD_Orig, 0),   //{ Take::DF_SAD,             "SAD" },
+          IncOffsetApproxCfg(SAD_Orig, 1),   //{ Take::DF_SAD2,            "SAD2" },
+          IncOffsetApproxCfg(SAD_Orig, 2),   //{ Take::DF_SAD4,            "SAD4" },
+          IncOffsetApproxCfg(SAD_Orig, 3),   //{ Take::DF_SAD8,            "SAD8" },
+          IncOffsetApproxCfg(SAD_Orig, 4),   //{ Take::DF_SAD16,           "SAD16" },
+          IncOffsetApproxCfg(SAD_Orig, 5),   //{ Take::DF_SAD32,           "SAD32" },
+          IncOffsetApproxCfg(SAD_Orig, 6),   //{ Take::DF_SAD64,           "SAD64" },
+          IncOffsetApproxCfg(SAD_Orig, 7),   //{ Take::DF_SAD128,          "SAD128" },
 
-          HAD_Orig,  //{ Take::DF_HAD,             "HAD" },
-          HAD_Orig,  //{ Take::DF_HAD2,            "HAD2" },
-          HAD_Orig,  //{ Take::DF_HAD4,            "HAD4" },
-          HAD_Orig,  //{ Take::DF_HAD8,            "HAD8" },
-          HAD_Orig,  //{ Take::DF_HAD16,           "HAD16" },
-          HAD_Orig,  //{ Take::DF_HAD32,           "HAD32" },
-          HAD_Orig,  //{ Take::DF_HAD64,           "HAD64" },
-          HAD_Orig,  //{ Take::DF_HAD128,          "HAD128" },
+          IncOffsetApproxCfg(HAD_Orig, 0),  //{ Take::DF_HAD,             "HAD" },
+          IncOffsetApproxCfg(HAD_Orig, 1),  //{ Take::DF_HAD2,            "HAD2" },
+          IncOffsetApproxCfg(HAD_Orig, 2),  //{ Take::DF_HAD4,            "HAD4" },
+          IncOffsetApproxCfg(HAD_Orig, 3),  //{ Take::DF_HAD8,            "HAD8" },
+          IncOffsetApproxCfg(HAD_Orig, 4),  //{ Take::DF_HAD16,           "HAD16" },
+          IncOffsetApproxCfg(HAD_Orig, 5),  //{ Take::DF_HAD32,           "HAD32" },
+          IncOffsetApproxCfg(HAD_Orig, 6),  //{ Take::DF_HAD64,           "HAD64" },
+          IncOffsetApproxCfg(HAD_Orig, 7),  //{ Take::DF_HAD128,          "HAD128" },
 
-          MaskedSAD_Orig, //{ Take::DF_SAD_MASKED,   "SAD_MASKED" },
-          MaskedSAD_Orig, //{ Take::DF_SAD_MASKED2,  "SAD_MASKED2" },
-          MaskedSAD_Orig, //{ Take::DF_SAD_MASKED4,  "SAD_MASKED4" },
-          MaskedSAD_Orig, //{ Take::DF_SAD_MASKED8,  "SAD_MASKED8" },
-          MaskedSAD_Orig, //{ Take::DF_SAD_MASKED16, "SAD_MASKED16" },
-          MaskedSAD_Orig, //{ Take::DF_SAD_MASKED32, "SAD_MASKED32" },
-          MaskedSAD_Orig, //{ Take::DF_SAD_MASKED64, "SAD_MASKED64" },
-          MaskedSAD_Orig, //{ Take::DF_SAD_MASKED128,"SAD_MASKED128" },
+          IncOffsetApproxCfg(MaskedSAD_Orig, 0), //{ Take::DF_SAD_MASKED,   "SAD_MASKED" },
+          IncOffsetApproxCfg(MaskedSAD_Orig, 1), //{ Take::DF_SAD_MASKED2,  "SAD_MASKED2" },
+          IncOffsetApproxCfg(MaskedSAD_Orig, 2), //{ Take::DF_SAD_MASKED4,  "SAD_MASKED4" },
+          IncOffsetApproxCfg(MaskedSAD_Orig, 3), //{ Take::DF_SAD_MASKED8,  "SAD_MASKED8" },
+          IncOffsetApproxCfg(MaskedSAD_Orig, 4), //{ Take::DF_SAD_MASKED16, "SAD_MASKED16" },
+          IncOffsetApproxCfg(MaskedSAD_Orig, 5), //{ Take::DF_SAD_MASKED32, "SAD_MASKED32" },
+          IncOffsetApproxCfg(MaskedSAD_Orig, 6), //{ Take::DF_SAD_MASKED64, "SAD_MASKED64" },
+          IncOffsetApproxCfg(MaskedSAD_Orig, 7), //{ Take::DF_SAD_MASKED128,"SAD_MASKED128" },
 
-          FastHAD_Orig, //{ Take::DF_HAD_fast,        "HAD_fast" },
-          FastHAD_Orig, //{ Take::DF_HAD2_fast,       "HAD2_fast" },
-          FastHAD_Orig, //{ Take::DF_HAD4_fast,       "HAD4_fast" },
-          FastHAD_Orig, //{ Take::DF_HAD8_fast,       "HAD8_fast" },
-          FastHAD_Orig, //{ Take::DF_HAD16_fast,      "HAD16_fast" },
-          FastHAD_Orig, //{ Take::DF_HAD32_fast,      "HAD32_fast" },
-          FastHAD_Orig, //{ Take::DF_HAD64_fast,      "HAD64_fast" },
-          FastHAD_Orig, //{ Take::DF_HAD128_fast,     "HAD128_fast" },
+          IncOffsetApproxCfg(FastHAD_Orig, 0), //{ Take::DF_HAD_fast,        "HAD_fast" },
+          IncOffsetApproxCfg(FastHAD_Orig, 1), //{ Take::DF_HAD2_fast,       "HAD2_fast" },
+          IncOffsetApproxCfg(FastHAD_Orig, 2), //{ Take::DF_HAD4_fast,       "HAD4_fast" },
+          IncOffsetApproxCfg(FastHAD_Orig, 3), //{ Take::DF_HAD8_fast,       "HAD8_fast" },
+          IncOffsetApproxCfg(FastHAD_Orig, 4), //{ Take::DF_HAD16_fast,      "HAD16_fast" },
+          IncOffsetApproxCfg(FastHAD_Orig, 5), //{ Take::DF_HAD32_fast,      "HAD32_fast" },
+          IncOffsetApproxCfg(FastHAD_Orig, 6), //{ Take::DF_HAD64_fast,      "HAD64_fast" },
+          IncOffsetApproxCfg(FastHAD_Orig, 7), //{ Take::DF_HAD128_fast,     "HAD128_fast" },
 
           HAD_2SAD_Orig,  //{ Take::DF_HAD_2SAD,        "HAD_2SAD" }, // PREFERABLY NOT TO BE USED
 
@@ -960,23 +970,23 @@
           WeightedSSE_Orig,  //{ Take::DF_SSE_WTD64,        "SSE_WTD" }
           WeightedSSE_Orig,  //{ Take::DF_SSE_WTD128,       "SSE_WTD" }
 
-          SAD_Orig,          //{ Take::DF_SAD8XN,           "SAD8XN"},
-          SAD_Orig,          //{ Take::DF_SAD8XN2,          "SAD8XN2"},
-          SAD_Orig,          //{ Take::DF_SAD8XN4,          "SAD8XN4"},
-          SAD_Orig,          //{ Take::DF_SAD8XN8,          "SAD8XN8"},
-          SAD_Orig,          //{ Take::DF_SAD8XN16,         "SAD8XN16"},
-          SAD_Orig,          //{ Take::DF_SAD8XN32,         "SAD8XN32"},
-          SAD_Orig,          //{ Take::DF_SAD8XN64,         "SAD8XN64"},
-          SAD_Orig,          //{ Take::DF_SAD8XN128,        "SAD8XN128"},
+          IncOffsetApproxCfg(SAD8XN_Orig, 0),          //{ Take::DF_SAD8XN,           "SAD8XN"},
+          IncOffsetApproxCfg(SAD8XN_Orig, 1),          //{ Take::DF_SAD8XN2,          "SAD8XN2"},
+          IncOffsetApproxCfg(SAD8XN_Orig, 2),          //{ Take::DF_SAD8XN4,          "SAD8XN4"},
+          IncOffsetApproxCfg(SAD8XN_Orig, 3),          //{ Take::DF_SAD8XN8,          "SAD8XN8"},
+          IncOffsetApproxCfg(SAD8XN_Orig, 4),          //{ Take::DF_SAD8XN16,         "SAD8XN16"},
+          IncOffsetApproxCfg(SAD8XN_Orig, 5),          //{ Take::DF_SAD8XN32,         "SAD8XN32"},
+          IncOffsetApproxCfg(SAD8XN_Orig, 6),          //{ Take::DF_SAD8XN64,         "SAD8XN64"},
+          IncOffsetApproxCfg(SAD8XN_Orig, 7),          //{ Take::DF_SAD8XN128,        "SAD8XN128"},
 
-          SAD_Orig,          //{ Take::DF_SAD16XN,          "SAD16XN"},
-          SAD_Orig,          //{ Take::DF_SAD16XN2,         "SAD16XN2"},
-          SAD_Orig,          //{ Take::DF_SAD16XN4,         "SAD16XN4"},
-          SAD_Orig,          //{ Take::DF_SAD16XN8,         "SAD16XN8"},
-          SAD_Orig,          //{ Take::DF_SAD16XN16,        "SAD16XN16"},
-          SAD_Orig,          //{ Take::DF_SAD16XN32,        "SAD16XN32"},
-          SAD_Orig,          //{ Take::DF_SAD16XN64,        "SAD16XN64"},
-          SAD_Orig           //{ Take::DF_SAD16XN128,       "SAD16XN128"},
+          IncOffsetApproxCfg(SAD16XN_Orig, 0),          //{ Take::DF_SAD16XN,          "SAD16XN"},
+          IncOffsetApproxCfg(SAD16XN_Orig, 1),          //{ Take::DF_SAD16XN2,         "SAD16XN2"},
+          IncOffsetApproxCfg(SAD16XN_Orig, 2),          //{ Take::DF_SAD16XN4,         "SAD16XN4"},
+          IncOffsetApproxCfg(SAD16XN_Orig, 3),          //{ Take::DF_SAD16XN8,         "SAD16XN8"},
+          IncOffsetApproxCfg(SAD16XN_Orig, 4),          //{ Take::DF_SAD16XN16,        "SAD16XN16"},
+          IncOffsetApproxCfg(SAD16XN_Orig, 5),          //{ Take::DF_SAD16XN32,        "SAD16XN32"},
+          IncOffsetApproxCfg(SAD16XN_Orig, 6),          //{ Take::DF_SAD16XN64,        "SAD16XN64"},
+          IncOffsetApproxCfg(SAD16XN_Orig, 7)           //{ Take::DF_SAD16XN128,       "SAD16XN128"},
         };
 
         constexpr std::array<const int64_t, Take::DF_TOTAL_FUNCTIONS_ACTUAL> DFunc_Curr = {
@@ -989,41 +999,41 @@
           SSE_Curr,   //{ Take::DF_SSE64,           "SSE64" },
           SSE_Curr,   //{ Take::DF_SSE128,          "SSE128" },
 
-          SAD_Curr,   //{ Take::DF_SAD,             "SAD" },
-          SAD_Curr,   //{ Take::DF_SAD2,            "SAD2" },
-          SAD_Curr,   //{ Take::DF_SAD4,            "SAD4" },
-          SAD_Curr,   //{ Take::DF_SAD8,            "SAD8" },
-          SAD_Curr,   //{ Take::DF_SAD16,           "SAD16" },
-          SAD_Curr,   //{ Take::DF_SAD32,           "SAD32" },
-          SAD_Curr,   //{ Take::DF_SAD64,           "SAD64" },
-          SAD_Curr,   //{ Take::DF_SAD128,          "SAD128" },
+          IncOffsetApproxCfg(SAD_Curr, 0),   //{ Take::DF_SAD,             "SAD" },
+          IncOffsetApproxCfg(SAD_Curr, 1),   //{ Take::DF_SAD2,            "SAD2" },
+          IncOffsetApproxCfg(SAD_Curr, 2),   //{ Take::DF_SAD4,            "SAD4" },
+          IncOffsetApproxCfg(SAD_Curr, 3),   //{ Take::DF_SAD8,            "SAD8" },
+          IncOffsetApproxCfg(SAD_Curr, 4),   //{ Take::DF_SAD16,           "SAD16" },
+          IncOffsetApproxCfg(SAD_Curr, 5),   //{ Take::DF_SAD32,           "SAD32" },
+          IncOffsetApproxCfg(SAD_Curr, 6),   //{ Take::DF_SAD64,           "SAD64" },
+          IncOffsetApproxCfg(SAD_Curr, 7),   //{ Take::DF_SAD128,          "SAD128" },
 
-          HAD_Curr,  //{ Take::DF_HAD,             "HAD" },
-          HAD_Curr,  //{ Take::DF_HAD2,            "HAD2" },
-          HAD_Curr,  //{ Take::DF_HAD4,            "HAD4" },
-          HAD_Curr,  //{ Take::DF_HAD8,            "HAD8" },
-          HAD_Curr,  //{ Take::DF_HAD16,           "HAD16" },
-          HAD_Curr,  //{ Take::DF_HAD32,           "HAD32" },
-          HAD_Curr,  //{ Take::DF_HAD64,           "HAD64" },
-          HAD_Curr,  //{ Take::DF_HAD128,          "HAD128" },
+          IncOffsetApproxCfg(HAD_Curr, 0),  //{ Take::DF_HAD,             "HAD" },
+          IncOffsetApproxCfg(HAD_Curr, 1),  //{ Take::DF_HAD2,            "HAD2" },
+          IncOffsetApproxCfg(HAD_Curr, 2),  //{ Take::DF_HAD4,            "HAD4" },
+          IncOffsetApproxCfg(HAD_Curr, 3),  //{ Take::DF_HAD8,            "HAD8" },
+          IncOffsetApproxCfg(HAD_Curr, 4),  //{ Take::DF_HAD16,           "HAD16" },
+          IncOffsetApproxCfg(HAD_Curr, 5),  //{ Take::DF_HAD32,           "HAD32" },
+          IncOffsetApproxCfg(HAD_Curr, 6),  //{ Take::DF_HAD64,           "HAD64" },
+          IncOffsetApproxCfg(HAD_Curr, 7),  //{ Take::DF_HAD128,          "HAD128" },
 
-          MaskedSAD_Curr, //{ Take::DF_SAD_MASKED,   "SAD_MASKED" },
-          MaskedSAD_Curr, //{ Take::DF_SAD_MASKED2,  "SAD_MASKED2" },
-          MaskedSAD_Curr, //{ Take::DF_SAD_MASKED4,  "SAD_MASKED4" },
-          MaskedSAD_Curr, //{ Take::DF_SAD_MASKED8,  "SAD_MASKED8" },
-          MaskedSAD_Curr, //{ Take::DF_SAD_MASKED16, "SAD_MASKED16" },
-          MaskedSAD_Curr, //{ Take::DF_SAD_MASKED32, "SAD_MASKED32" },
-          MaskedSAD_Curr, //{ Take::DF_SAD_MASKED64, "SAD_MASKED64" },
-          MaskedSAD_Curr, //{ Take::DF_SAD_MASKED128,"SAD_MASKED128" },
+          IncOffsetApproxCfg(MaskedSAD_Curr, 0), //{ Take::DF_SAD_MASKED,   "SAD_MASKED" },
+          IncOffsetApproxCfg(MaskedSAD_Curr, 1), //{ Take::DF_SAD_MASKED2,  "SAD_MASKED2" },
+          IncOffsetApproxCfg(MaskedSAD_Curr, 2), //{ Take::DF_SAD_MASKED4,  "SAD_MASKED4" },
+          IncOffsetApproxCfg(MaskedSAD_Curr, 3), //{ Take::DF_SAD_MASKED8,  "SAD_MASKED8" },
+          IncOffsetApproxCfg(MaskedSAD_Curr, 4), //{ Take::DF_SAD_MASKED16, "SAD_MASKED16" },
+          IncOffsetApproxCfg(MaskedSAD_Curr, 5), //{ Take::DF_SAD_MASKED32, "SAD_MASKED32" },
+          IncOffsetApproxCfg(MaskedSAD_Curr, 6), //{ Take::DF_SAD_MASKED64, "SAD_MASKED64" },
+          IncOffsetApproxCfg(MaskedSAD_Curr, 7), //{ Take::DF_SAD_MASKED128,"SAD_MASKED128" },
 
-          FastHAD_Curr, //{ Take::DF_HAD_fast,        "HAD_fast" },
-          FastHAD_Curr, //{ Take::DF_HAD2_fast,       "HAD2_fast" },
-          FastHAD_Curr, //{ Take::DF_HAD4_fast,       "HAD4_fast" },
-          FastHAD_Curr, //{ Take::DF_HAD8_fast,       "HAD8_fast" },
-          FastHAD_Curr, //{ Take::DF_HAD16_fast,      "HAD16_fast" },
-          FastHAD_Curr, //{ Take::DF_HAD32_fast,      "HAD32_fast" },
-          FastHAD_Curr, //{ Take::DF_HAD64_fast,      "HAD64_fast" },
-          FastHAD_Curr, //{ Take::DF_HAD128_fast,     "HAD128_fast" },
+          IncOffsetApproxCfg(FastHAD_Curr, 0), //{ Take::DF_HAD_fast,        "HAD_fast" },
+          IncOffsetApproxCfg(FastHAD_Curr, 1), //{ Take::DF_HAD2_fast,       "HAD2_fast" },
+          IncOffsetApproxCfg(FastHAD_Curr, 2), //{ Take::DF_HAD4_fast,       "HAD4_fast" },
+          IncOffsetApproxCfg(FastHAD_Curr, 3), //{ Take::DF_HAD8_fast,       "HAD8_fast" },
+          IncOffsetApproxCfg(FastHAD_Curr, 4), //{ Take::DF_HAD16_fast,      "HAD16_fast" },
+          IncOffsetApproxCfg(FastHAD_Curr, 5), //{ Take::DF_HAD32_fast,      "HAD32_fast" },
+          IncOffsetApproxCfg(FastHAD_Curr, 6), //{ Take::DF_HAD64_fast,      "HAD64_fast" },
+          IncOffsetApproxCfg(FastHAD_Curr, 7), //{ Take::DF_HAD128_fast,     "HAD128_fast" },
 
           HAD_2SAD_Curr,  //{ Take::DF_HAD_2SAD,        "HAD_2SAD" }, // PREFERABLY NOT TO BE USED
 
@@ -1037,23 +1047,23 @@
           WeightedSSE_Curr,  //{ Take::DF_SSE_WTD64,        "SSE_WTD" }
           WeightedSSE_Curr,  //{ Take::DF_SSE_WTD128,       "SSE_WTD" }
 
-          SAD_Curr,          //{ Take::DF_SAD8XN,           "SAD8XN"},
-          SAD_Curr,          //{ Take::DF_SAD8XN2,          "SAD8XN2"},
-          SAD_Curr,          //{ Take::DF_SAD8XN4,          "SAD8XN4"},
-          SAD_Curr,          //{ Take::DF_SAD8XN8,          "SAD8XN8"},
-          SAD_Curr,          //{ Take::DF_SAD8XN16,         "SAD8XN16"},
-          SAD_Curr,          //{ Take::DF_SAD8XN32,         "SAD8XN32"},
-          SAD_Curr,          //{ Take::DF_SAD8XN64,         "SAD8XN64"},
-          SAD_Curr,          //{ Take::DF_SAD8XN128,        "SAD8XN128"},
+          IncOffsetApproxCfg(SAD8XN_Curr, 0),          //{ Take::DF_SAD8XN,           "SAD8XN"},
+          IncOffsetApproxCfg(SAD8XN_Curr, 1),          //{ Take::DF_SAD8XN2,          "SAD8XN2"},
+          IncOffsetApproxCfg(SAD8XN_Curr, 2),          //{ Take::DF_SAD8XN4,          "SAD8XN4"},
+          IncOffsetApproxCfg(SAD8XN_Curr, 3),          //{ Take::DF_SAD8XN8,          "SAD8XN8"},
+          IncOffsetApproxCfg(SAD8XN_Curr, 4),          //{ Take::DF_SAD8XN16,         "SAD8XN16"},
+          IncOffsetApproxCfg(SAD8XN_Curr, 5),          //{ Take::DF_SAD8XN32,         "SAD8XN32"},
+          IncOffsetApproxCfg(SAD8XN_Curr, 6),          //{ Take::DF_SAD8XN64,         "SAD8XN64"},
+          IncOffsetApproxCfg(SAD8XN_Curr, 7),          //{ Take::DF_SAD8XN128,        "SAD8XN128"},
 
-          SAD_Curr,          //{ Take::DF_SAD16XN,          "SAD16XN"},
-          SAD_Curr,          //{ Take::DF_SAD16XN2,         "SAD16XN2"},
-          SAD_Curr,          //{ Take::DF_SAD16XN4,         "SAD16XN4"},
-          SAD_Curr,          //{ Take::DF_SAD16XN8,         "SAD16XN8"},
-          SAD_Curr,          //{ Take::DF_SAD16XN16,        "SAD16XN16"},
-          SAD_Curr,          //{ Take::DF_SAD16XN32,        "SAD16XN32"},
-          SAD_Curr,          //{ Take::DF_SAD16XN64,        "SAD16XN64"},
-          SAD_Curr           //{ Take::DF_SAD16XN128,       "SAD16XN128"},
+          IncOffsetApproxCfg(SAD16XN_Curr, 0),          //{ Take::DF_SAD16XN,          "SAD16XN"},
+          IncOffsetApproxCfg(SAD16XN_Curr, 1),          //{ Take::DF_SAD16XN2,         "SAD16XN2"},
+          IncOffsetApproxCfg(SAD16XN_Curr, 2),          //{ Take::DF_SAD16XN4,         "SAD16XN4"},
+          IncOffsetApproxCfg(SAD16XN_Curr, 3),          //{ Take::DF_SAD16XN8,         "SAD16XN8"},
+          IncOffsetApproxCfg(SAD16XN_Curr, 4),          //{ Take::DF_SAD16XN16,        "SAD16XN16"},
+          IncOffsetApproxCfg(SAD16XN_Curr, 5),          //{ Take::DF_SAD16XN32,        "SAD16XN32"},
+          IncOffsetApproxCfg(SAD16XN_Curr, 6),          //{ Take::DF_SAD16XN64,        "SAD16XN64"},
+          IncOffsetApproxCfg(SAD16XN_Curr, 7)           //{ Take::DF_SAD16XN128,       "SAD16XN128"},
         };
 
         /*constexpr int64_t RECO_MOTION_ESTIMATION           = NO_TRACKING;
