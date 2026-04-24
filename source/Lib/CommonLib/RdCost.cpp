@@ -190,7 +190,7 @@ void RdCost::setDistParam( DistParam &rcDP, const CPelBuf& org, const Pel* piRef
   if( !useHadamard )
   {
     #if COST_CAPTURE //<Matheus>
-      rcDP.distFunc = CostCapture<>(m_afpDistortFunc[base][ DF_SAD + Log2( org.width ) ], DF_SAD + Log2( org.width ));
+      rcDP.distFunc = CostCapture<>(m_afpDistortFunc[base][ DF_SAD + Log2( org.width ) ], DF_SAD + Log2( std::min(org.width, org.height) ));
     #else
       rcDP.distFunc = m_afpDistortFunc[base][ DF_SAD + Log2( org.width ) ];
     #endif
@@ -198,7 +198,7 @@ void RdCost::setDistParam( DistParam &rcDP, const CPelBuf& org, const Pel* piRef
   else
   {
     #if COST_CAPTURE //<Matheus>
-      rcDP.distFunc = CostCapture<>(m_afpDistortFunc[base][( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( org.width ) ], ( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( org.width ));
+      rcDP.distFunc = CostCapture<>(m_afpDistortFunc[base][( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( org.width ) ], ( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( std::min(org.width, org.height) ));
     #else
       rcDP.distFunc = m_afpDistortFunc[base][( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( org.width ) ];
     #endif
@@ -245,7 +245,7 @@ DistParam RdCost::setDistParam( const CPelBuf& org, const CPelBuf& cur, int bitD
   return rcDP;
 #else
   #if COST_CAPTURE
-    return DistParam( org, cur, CostCapture<>(m_afpDistortFunc[base][index], index), bitDepth, 0, COMP_Y );
+    return DistParam( org, cur, CostCapture<>(m_afpDistortFunc[base][index], index - Log2(org.width) + std::min(org.width, org.height) ), bitDepth, 0, COMP_Y );
   #else
     return DistParam( org, cur, m_afpDistortFunc[base][index], bitDepth, 0, COMP_Y );
   #endif
@@ -273,7 +273,7 @@ DistParam RdCost::setDistParam( const Pel* pOrg, const Pel* piRefY, int iOrgStri
   const int base = (rcDP.bitDepth > 10) ? 1 : 0;
 
   #if COST_CAPTURE //<Matheus>
-    rcDP.distFunc = CostCapture<>(m_afpDistortFunc[base][ DF_SAD + Log2( width ) ], DF_SAD + Log2( width ));
+    rcDP.distFunc = CostCapture<>(m_afpDistortFunc[base][ DF_SAD + Log2( width ) ], DF_SAD + Log2( std::min(width, height) ));
   #else
     rcDP.distFunc = m_afpDistortFunc[base][ DF_SAD + Log2( width ) ];
   #endif
@@ -282,7 +282,7 @@ DistParam RdCost::setDistParam( const Pel* pOrg, const Pel* piRefY, int iOrgStri
   if( isDMVR )
   {
     #if COST_CAPTURE
-      rcDP.dmvrSadX5 = CostCapture<FpDistFuncX5>(m_afpDistortFuncX5[Log2( width ) - 3], ((Log2( width ) - 3) == 0 ? ApproxInter::Take::DF_SAD8XN : ApproxInter::Take::DF_SAD16XN) + Log2( width ));
+      rcDP.dmvrSadX5 = CostCapture<FpDistFuncX5>(m_afpDistortFuncX5[Log2( width ) - 3], ((Log2( width ) - 3) == 0 ? ApproxInter::Take::DF_SAD8XN : ApproxInter::Take::DF_SAD16XN) + Log2( std::min(width, height) ));
     #else
       rcDP.dmvrSadX5 = m_afpDistortFuncX5[Log2( width ) - 3]; 
     #endif
@@ -318,7 +318,7 @@ Distortion RdCost::getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitD
     dp.orgLuma  = orgLuma;
 
     #if COST_CAPTURE
-      dist = CostCapture<const RdCost&>(*this, DF_SSE_WTD + Log2(org.width))( dp );
+      dist = CostCapture<const RdCost&>(*this, DF_SSE_WTD + Log2( std::min(org.width, org.height) ))( dp );
     #else
       dist = RdCost::xGetSSE_WTD( dp );
     #endif
@@ -328,7 +328,7 @@ Distortion RdCost::getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitD
     if( ( org.width == 1 ) )
     {
       #if COST_CAPTURE
-      dist = CostCapture<>(xGetSSE, DF_SSE + Log2(org.width))( dp );
+      dist = CostCapture<>(xGetSSE, DF_SSE + Log2( std::min(org.width, org.height) ))( dp );
       #else
       dist = xGetSSE( dp );
       #endif
@@ -337,7 +337,7 @@ Distortion RdCost::getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitD
     {
       const int base = (bitDepth > 10) ? 1 : 0;
       #if COST_CAPTURE
-      dist = CostCapture<>(m_afpDistortFunc[base][eDFunc + Log2(org.width)], eDFunc + Log2(org.width))(dp);
+      dist = CostCapture<>(m_afpDistortFunc[base][eDFunc + Log2(org.width)], eDFunc + Log2( std::min(org.width, org.height) ))(dp);
       #else
       dist = m_afpDistortFunc[base][eDFunc + Log2(org.width)](dp);
       #endif
@@ -2247,7 +2247,7 @@ void RdCost::setDistParamGeo(DistParam &rcDP, const CPelBuf &org, const Pel *piR
   // set Cost function for motion estimation with Mask
 
   #if COST_CAPTURE //<Matheus>
-    rcDP.distFunc = CostCapture<>(m_afpDistortFunc[0][DF_SAD_MASKED + Log2(org.width)], DF_SAD_MASKED + Log2(org.width));
+    rcDP.distFunc = CostCapture<>(m_afpDistortFunc[0][DF_SAD_MASKED + Log2(org.width)], DF_SAD_MASKED + Log2( std::min(org.width, org.height) ));
   #else
     rcDP.distFunc = m_afpDistortFunc[0][DF_SAD_MASKED];
   #endif
