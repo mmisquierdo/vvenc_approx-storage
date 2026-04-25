@@ -191,6 +191,7 @@ void RdCost::setDistParam( DistParam &rcDP, const CPelBuf& org, const Pel* piRef
   {
     #if COST_CAPTURE //<Matheus>
       rcDP.distFunc = CostCapture<>(m_afpDistortFunc[base][ DF_SAD + Log2( org.width ) ], DF_SAD + Log2( std::min(org.width, org.height) ));
+      //std::cout << "setDistParam 1: " << DF_SAD + Log2( std::min(org.width, org.height) ) << std::endl;
     #else
       rcDP.distFunc = m_afpDistortFunc[base][ DF_SAD + Log2( org.width ) ];
     #endif
@@ -199,6 +200,7 @@ void RdCost::setDistParam( DistParam &rcDP, const CPelBuf& org, const Pel* piRef
   {
     #if COST_CAPTURE //<Matheus>
       rcDP.distFunc = CostCapture<>(m_afpDistortFunc[base][( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( org.width ) ], ( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( std::min(org.width, org.height) ));
+      //std::cout << "setDistParam 2: " << ( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( std::min(org.width, org.height) ) << std::endl;
     #else
       rcDP.distFunc = m_afpDistortFunc[base][( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( org.width ) ];
     #endif
@@ -245,7 +247,7 @@ DistParam RdCost::setDistParam( const CPelBuf& org, const CPelBuf& cur, int bitD
   return rcDP;
 #else
   #if COST_CAPTURE
-    return DistParam( org, cur, CostCapture<>(m_afpDistortFunc[base][index], index - Log2(org.width) + std::min(org.width, org.height) ), bitDepth, 0, COMP_Y );
+    return DistParam( org, cur, CostCapture<>(m_afpDistortFunc[base][index], index - Log2(org.width) + Log2(std::min(org.width, org.height)) ), bitDepth, 0, COMP_Y );
   #else
     return DistParam( org, cur, m_afpDistortFunc[base][index], bitDepth, 0, COMP_Y );
   #endif

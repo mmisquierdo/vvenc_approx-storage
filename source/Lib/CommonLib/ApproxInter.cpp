@@ -76,6 +76,7 @@ void ApproxInter::InstrumentIfMarked(void * const address, const int64_t bufferI
   const AllocatedBuffersSet::const_iterator it = ApproxInter::allocatedBuffers.find(accessBuffer);
 
   if (it != ApproxInter::allocatedBuffers.cend()) {
+    //std::cout << "1, Initial Address: " << it->m_initialAddress << ", End Address: " << it->m_endAddress << ", Buffer ID: " << bufferId << ", Configuration ID: " << configurationId << ", Data Size (Bytes): " << dataSizeInBytes << std::endl;
     ApproxSS::add_approx(it->m_initialAddress, it->m_endAddress, bufferId, configurationId, dataSizeInBytes, configurationId == ApproxInter::ConfigurationId::PRECISE_KNOB);
   } else {
     std::cout << "ApproxInter WARNING: buffer not marked for add_approx." << std::endl;
@@ -90,6 +91,7 @@ void ApproxInter::InstrumentIfMarked(void * const address, const int64_t bufferI
   const AllocatedBuffersSet::const_iterator it = ApproxInter::allocatedBuffers.find(accessBuffer);
 
   if (it != ApproxInter::allocatedBuffers.cend()) {
+    //std::cout << "2, Initial Address: " << it->m_initialAddress << ", End Address: " << it->m_endAddress << ", Buffer ID: " << ApproxInter::offsetApproxId(bufferIdPrefix, it->m_bufferId) << ", Configuration ID: " << configurationId << ", Data Size (Bytes): " << it->m_dataSizeInBytes << std::endl;
     ApproxSS::add_approx(it->m_initialAddress, it->m_endAddress, ApproxInter::offsetApproxId(bufferIdPrefix, it->m_bufferId), configurationId, it->m_dataSizeInBytes, configurationId == ApproxInter::ConfigurationId::PRECISE_KNOB);
   } else {
     std::cout << "ApproxInter WARNING: buffer not marked for add_approx." << std::endl;

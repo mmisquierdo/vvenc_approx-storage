@@ -876,7 +876,7 @@
 
       namespace ConfigurationId {
         static constexpr int64_t NO_TRACKING       = 0;
-        static constexpr int64_t PRECISE_KNOB      = 2;
+        static constexpr int64_t PRECISE_KNOB      = 1;
         static constexpr int64_t APPROXIMATE_KNOB  = 10;
 
         constexpr int64_t OTHER =             NO_TRACKING;
