@@ -190,7 +190,7 @@ void RdCost::setDistParam( DistParam &rcDP, const CPelBuf& org, const Pel* piRef
   if( !useHadamard )
   {
     #if COST_CAPTURE //<Matheus>
-      rcDP.distFunc = CostCapture<>(m_afpDistortFunc[base][ DF_SAD + Log2( org.width ) ], DF_SAD + Log2( std::min(org.width, org.height) ));
+      rcDP.distFunc = CostCapture<>(m_afpDistortFunc[base][DF_SAD + Log2(org.width)], DF_SAD, org.width, org.height);
       //std::cout << "setDistParam 1: " << DF_SAD + Log2( std::min(org.width, org.height) ) << std::endl;
     #else
       rcDP.distFunc = m_afpDistortFunc[base][ DF_SAD + Log2( org.width ) ];
@@ -199,7 +199,7 @@ void RdCost::setDistParam( DistParam &rcDP, const CPelBuf& org, const Pel* piRef
   else
   {
     #if COST_CAPTURE //<Matheus>
-      rcDP.distFunc = CostCapture<>(m_afpDistortFunc[base][( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( org.width ) ], ( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( std::min(org.width, org.height) ));
+      rcDP.distFunc = CostCapture<>(m_afpDistortFunc[base][(useHadamard == 1 ? DF_HAD : DF_HAD_fast) + Log2(org.width)], (useHadamard == 1 ? DF_HAD : DF_HAD_fast), org.width, org.height);
       //std::cout << "setDistParam 2: " << ( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( std::min(org.width, org.height) ) << std::endl;
     #else
       rcDP.distFunc = m_afpDistortFunc[base][( useHadamard == 1 ? DF_HAD : DF_HAD_fast ) + Log2( org.width ) ];
@@ -247,7 +247,7 @@ DistParam RdCost::setDistParam( const CPelBuf& org, const CPelBuf& cur, int bitD
   return rcDP;
 #else
   #if COST_CAPTURE
-    return DistParam( org, cur, CostCapture<>(m_afpDistortFunc[base][index], (dfunc == DF_HAD_2SAD ? dfunc : (dfunc + Log2(std::min(org.width, org.height)))) ), bitDepth, 0, COMP_Y );
+    return DistParam( org, cur, CostCapture<>(m_afpDistortFunc[base][index], dfunc, org.width, org.height), bitDepth, 0, COMP_Y );
   #else
     return DistParam( org, cur, m_afpDistortFunc[base][index], bitDepth, 0, COMP_Y );
   #endif
@@ -275,7 +275,7 @@ DistParam RdCost::setDistParam( const Pel* pOrg, const Pel* piRefY, int iOrgStri
   const int base = (rcDP.bitDepth > 10) ? 1 : 0;
 
   #if COST_CAPTURE //<Matheus>
-    rcDP.distFunc = CostCapture<>(m_afpDistortFunc[base][ DF_SAD + Log2( width ) ], DF_SAD + Log2( std::min(width, height) ));
+    rcDP.distFunc = CostCapture<>(m_afpDistortFunc[base][DF_SAD + Log2(width)], DF_SAD, width, height);
   #else
     rcDP.distFunc = m_afpDistortFunc[base][ DF_SAD + Log2( width ) ];
   #endif
@@ -284,7 +284,7 @@ DistParam RdCost::setDistParam( const Pel* pOrg, const Pel* piRefY, int iOrgStri
   if( isDMVR )
   {
     #if COST_CAPTURE
-      rcDP.dmvrSadX5 = CostCapture<FpDistFuncX5>(m_afpDistortFuncX5[Log2( width ) - 3], ((Log2( width ) - 3) == 0 ? ApproxInter::Take::DF_SAD8XN : ApproxInter::Take::DF_SAD16XN) + Log2( std::min(width, height) ));
+      rcDP.dmvrSadX5 = CostCapture<FpDistFuncX5>(m_afpDistortFuncX5[Log2( width ) - 3], (DFunc) ((Log2( width ) - 3) == 0 ? ApproxInter::Take::DF_SAD8XN : ApproxInter::Take::DF_SAD16XN), width, height);
     #else
       rcDP.dmvrSadX5 = m_afpDistortFuncX5[Log2( width ) - 3]; 
     #endif
@@ -320,7 +320,7 @@ Distortion RdCost::getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitD
     dp.orgLuma  = orgLuma;
 
     #if COST_CAPTURE
-      dist = CostCapture<const RdCost&>(*this, DF_SSE_WTD + Log2( std::min(org.width, org.height) ))( dp );
+      dist = CostCapture<const RdCost&>(*this, DF_SSE_WTD, org.width, org.height)( dp );
     #else
       dist = RdCost::xGetSSE_WTD( dp );
     #endif
@@ -330,7 +330,7 @@ Distortion RdCost::getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitD
     if( ( org.width == 1 ) )
     {
       #if COST_CAPTURE
-      dist = CostCapture<>(xGetSSE, DF_SSE + Log2( std::min(org.width, org.height) ))( dp );
+      dist = CostCapture<>(xGetSSE, DF_SSE, org.width, org.height)( dp );
       #else
       dist = xGetSSE( dp );
       #endif
@@ -339,7 +339,7 @@ Distortion RdCost::getDistPart( const CPelBuf& org, const CPelBuf& cur, int bitD
     {
       const int base = (bitDepth > 10) ? 1 : 0;
       #if COST_CAPTURE
-      dist = CostCapture<>(m_afpDistortFunc[base][eDFunc + Log2(org.width)], eDFunc + Log2( std::min(org.width, org.height) ))(dp);
+      dist = CostCapture<>(m_afpDistortFunc[base][eDFunc + Log2(org.width)], eDFunc, org.width, org.height)(dp);
       #else
       dist = m_afpDistortFunc[base][eDFunc + Log2(org.width)](dp);
       #endif
@@ -1870,26 +1870,28 @@ Distortion RdCost::xGetHAD2SADs( const DistParam &rcDtParam )
 
   #if INSTRUMENT_HAD2SAD
     ApproxSS::start_level(ApproxInter::LevelId::DFunc[ApproxInter::Take::DF_HAD]);
-    int dFunc = DFunc::DF_HAD + Log2(std::min(rcDtParam.org.width, rcDtParam.org.height));
-    if (ApproxInter::ConfigurationId::DFunc_Orig[dFunc]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.org.buf, ApproxInter::BufferId::DFunc_Orig[dFunc], ApproxInter::ConfigurationId::DFunc_Orig[dFunc]);}
-    if (ApproxInter::ConfigurationId::DFunc_Curr[dFunc]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.cur.buf, ApproxInter::BufferId::DFunc_Curr[dFunc], ApproxInter::ConfigurationId::DFunc_Curr[dFunc]);}
+    int dFuncId = DFunc::DF_HAD + Log2(rcDtParam.org.width);
+    int dFuncCfg = DFunc::DF_HAD + Log2(std::min(rcDtParam.org.width, rcDtParam.org.height));
+    if (ApproxInter::ConfigurationId::DFunc_Orig[dFuncCfg]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.org.buf, ApproxInter::offsetApproxId(ApproxInter::BufferId::DFunc_Orig[dFuncId], rcDtParam.org.height), ApproxInter::ConfigurationId::DFunc_Orig[dFuncCfg]);}
+    if (ApproxInter::ConfigurationId::DFunc_Curr[dFuncCfg]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.cur.buf, ApproxInter::offsetApproxId(ApproxInter::BufferId::DFunc_Curr[dFuncId], rcDtParam.org.height), ApproxInter::ConfigurationId::DFunc_Curr[dFuncCfg]);}
   #endif
 
   Distortion distHad = xGetHADs<false>( rcDtParam );
 
   #if INSTRUMENT_HAD2SAD
     ApproxSS::end_level();
-    if (ApproxInter::ConfigurationId::DFunc_Orig[dFunc]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.org.buf);}
-    if (ApproxInter::ConfigurationId::DFunc_Curr[dFunc]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.cur.buf);}
+    if (ApproxInter::ConfigurationId::DFunc_Orig[dFuncCfg]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.org.buf);}
+    if (ApproxInter::ConfigurationId::DFunc_Curr[dFuncCfg]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.cur.buf);}
   #endif
 
   Distortion distSad = 0;
   {
     #if INSTRUMENT_HAD2SAD
       ApproxSS::start_level(ApproxInter::LevelId::DFunc[ApproxInter::Take::DF_SAD]);
-      dFunc = DFunc::DF_SAD + Log2(std::min(rcDtParam.org.width, rcDtParam.org.height));
-      if (ApproxInter::ConfigurationId::DFunc_Orig[dFunc]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.org.buf, ApproxInter::BufferId::DFunc_Orig[dFunc], ApproxInter::ConfigurationId::DFunc_Orig[dFunc]);}
-      if (ApproxInter::ConfigurationId::DFunc_Curr[dFunc]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.cur.buf, ApproxInter::BufferId::DFunc_Curr[dFunc], ApproxInter::ConfigurationId::DFunc_Curr[dFunc]);}
+      dFuncId = DFunc::DF_SAD + Log2(rcDtParam.org.width);
+      dFuncCfg = DFunc::DF_SAD + Log2(std::min(rcDtParam.org.width, rcDtParam.org.height));
+      if (ApproxInter::ConfigurationId::DFunc_Orig[dFuncCfg]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.org.buf, ApproxInter::offsetApproxId(ApproxInter::BufferId::DFunc_Orig[dFuncId], rcDtParam.org.height), ApproxInter::ConfigurationId::DFunc_Orig[dFuncCfg]);}
+      if (ApproxInter::ConfigurationId::DFunc_Curr[dFuncCfg]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.cur.buf, ApproxInter::offsetApproxId(ApproxInter::BufferId::DFunc_Curr[dFuncId], rcDtParam.org.height), ApproxInter::ConfigurationId::DFunc_Curr[dFuncCfg]);}
     #endif
 
     CHECKD( (rcDtParam.org.width != rcDtParam.org.stride) || (rcDtParam.cur.stride != rcDtParam.org.stride) , "this functions assumes compact, aligned buffering");
@@ -1931,8 +1933,8 @@ Distortion RdCost::xGetHAD2SADs( const DistParam &rcDtParam )
 
     #if INSTRUMENT_HAD2SAD
       ApproxSS::end_level();
-      if (ApproxInter::ConfigurationId::DFunc_Orig[dFunc]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.org.buf);}
-      if (ApproxInter::ConfigurationId::DFunc_Curr[dFunc]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.cur.buf);}
+      if (ApproxInter::ConfigurationId::DFunc_Orig[dFuncCfg]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.org.buf);}
+      if (ApproxInter::ConfigurationId::DFunc_Curr[dFuncCfg]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.cur.buf);}
     #endif
   }
   
@@ -2251,7 +2253,7 @@ void RdCost::setDistParamGeo(DistParam &rcDP, const CPelBuf &org, const Pel *piR
   // set Cost function for motion estimation with Mask
 
   #if COST_CAPTURE //<Matheus>
-    rcDP.distFunc = CostCapture<>(m_afpDistortFunc[0][DF_SAD_MASKED + Log2(org.width)], DF_SAD_MASKED + Log2( std::min(org.width, org.height) ));
+    rcDP.distFunc = CostCapture<>(m_afpDistortFunc[0][DF_SAD_MASKED + Log2(org.width)], DF_SAD_MASKED, org.width, org.height);
   #else
     rcDP.distFunc = m_afpDistortFunc[0][DF_SAD_MASKED];
   #endif

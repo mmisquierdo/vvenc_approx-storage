@@ -2583,17 +2583,18 @@ Distortion RdCost::xGetHAD2SADs_SIMD( const DistParam &rcDtParam )
 {
   #if INSTRUMENT_HAD2SAD
     ApproxSS::start_level(ApproxInter::LevelId::DFunc[ApproxInter::Take::DF_HAD]);
-    int dFunc = DFunc::DF_HAD + Log2(std::min(rcDtParam.org.width, rcDtParam.org.height));
-    if (ApproxInter::ConfigurationId::DFunc_Orig[dFunc]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.org.buf, ApproxInter::BufferId::DFunc_Orig[dFunc], ApproxInter::ConfigurationId::DFunc_Orig[dFunc]);}
-    if (ApproxInter::ConfigurationId::DFunc_Curr[dFunc]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.cur.buf, ApproxInter::BufferId::DFunc_Curr[dFunc], ApproxInter::ConfigurationId::DFunc_Curr[dFunc]);}
+    int dFuncId = DFunc::DF_HAD + Log2(rcDtParam.org.width);
+    int dFuncCfg = DFunc::DF_HAD + Log2(std::min(rcDtParam.org.width, rcDtParam.org.height));
+    if (ApproxInter::ConfigurationId::DFunc_Orig[dFuncCfg]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.org.buf, ApproxInter::offsetApproxId(ApproxInter::BufferId::DFunc_Orig[dFuncId], rcDtParam.org.height), ApproxInter::ConfigurationId::DFunc_Orig[dFuncCfg]);}
+    if (ApproxInter::ConfigurationId::DFunc_Curr[dFuncCfg]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.cur.buf, ApproxInter::offsetApproxId(ApproxInter::BufferId::DFunc_Curr[dFuncId], rcDtParam.org.height), ApproxInter::ConfigurationId::DFunc_Curr[dFuncCfg]);}
   #endif
 
   Distortion distHad = xGetHADs_SIMD<vext, false>( rcDtParam );
 
   #if INSTRUMENT_HAD2SAD
     ApproxSS::end_level();
-    if (ApproxInter::ConfigurationId::DFunc_Orig[dFunc]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.org.buf);}
-    if (ApproxInter::ConfigurationId::DFunc_Curr[dFunc]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.cur.buf);}
+    if (ApproxInter::ConfigurationId::DFunc_Orig[dFuncCfg]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.org.buf);}
+    if (ApproxInter::ConfigurationId::DFunc_Curr[dFuncCfg]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.cur.buf);}
   #endif
 
   Distortion distSad = 0;
@@ -2601,9 +2602,10 @@ Distortion RdCost::xGetHAD2SADs_SIMD( const DistParam &rcDtParam )
   {
     #if INSTRUMENT_HAD2SAD
       ApproxSS::start_level(ApproxInter::LevelId::DFunc[ApproxInter::Take::DF_SAD]);
-      dFunc = DFunc::DF_SAD + Log2(std::min(rcDtParam.org.width, rcDtParam.org.height));
-      if (ApproxInter::ConfigurationId::DFunc_Orig[dFunc]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.org.buf, ApproxInter::BufferId::DFunc_Orig[dFunc], ApproxInter::ConfigurationId::DFunc_Orig[dFunc]);}
-      if (ApproxInter::ConfigurationId::DFunc_Curr[dFunc]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.cur.buf, ApproxInter::BufferId::DFunc_Curr[dFunc], ApproxInter::ConfigurationId::DFunc_Curr[dFunc]);}
+      dFuncId = DFunc::DF_SAD + Log2(rcDtParam.org.width);
+      dFuncCfg = DFunc::DF_SAD + Log2(std::min(rcDtParam.org.width, rcDtParam.org.height));
+      if (ApproxInter::ConfigurationId::DFunc_Orig[dFuncCfg]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.org.buf, ApproxInter::offsetApproxId(ApproxInter::BufferId::DFunc_Orig[dFuncId], rcDtParam.org.height), ApproxInter::ConfigurationId::DFunc_Orig[dFuncCfg]);}
+      if (ApproxInter::ConfigurationId::DFunc_Curr[dFuncCfg]) {ApproxInter::InstrumentIfMarked((void*) rcDtParam.cur.buf, ApproxInter::offsetApproxId(ApproxInter::BufferId::DFunc_Curr[dFuncId], rcDtParam.org.height), ApproxInter::ConfigurationId::DFunc_Curr[dFuncCfg]);}
     #endif
 
     const short* pSrc1   = (const short*)rcDtParam.org.buf;
@@ -2669,8 +2671,8 @@ Distortion RdCost::xGetHAD2SADs_SIMD( const DistParam &rcDtParam )
 
     #if INSTRUMENT_HAD2SAD
       ApproxSS::end_level();
-      if (ApproxInter::ConfigurationId::DFunc_Orig[dFunc]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.org.buf);}
-      if (ApproxInter::ConfigurationId::DFunc_Curr[dFunc]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.cur.buf);}
+      if (ApproxInter::ConfigurationId::DFunc_Orig[dFuncCfg]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.org.buf);}
+      if (ApproxInter::ConfigurationId::DFunc_Curr[dFuncCfg]) {ApproxInter::UninstrumentIfMarked((void*) rcDtParam.cur.buf);}
     #endif
   }
 
