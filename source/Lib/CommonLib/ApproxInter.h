@@ -893,8 +893,8 @@
         constexpr int64_t SSE_Orig =          PRECISE_KNOB;
         constexpr int64_t SSE_Curr =          PRECISE_KNOB;
 
-        constexpr int64_t HAD_Orig =          PRECISE_KNOB;
-        constexpr int64_t HAD_Curr =          PRECISE_KNOB;
+        constexpr int64_t HAD_Orig =          APPROXIMATE_KNOB*2;
+        constexpr int64_t HAD_Curr =          APPROXIMATE_KNOB*2;
 
         constexpr int64_t MaskedSAD_Orig =    SAD_Orig; //APPROXIMATE_KNOB;
         constexpr int64_t MaskedSAD_Curr =    SAD_Curr; //APPROXIMATE_KNOB;
